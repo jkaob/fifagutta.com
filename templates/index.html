@@ -83,19 +83,19 @@ body, html {
 <div class="w3-content w3-container w3-padding-64" id="about">
   <h3 class="w3-center">BRYGGERN</h3>
   <p class="w3-center"><em>Vi elsker øl</em></p>
-  <p>Her kommer svada etterhver</p>
+<!--  <p>Her kommer svada etterhver</p>-->
   <div class="w3-row">
     <div class="w3-col m6 w3-center w3-padding-large">
-      <p><b><i class="fa fa-user w3-margin-right"></i>Oss</b></p><br>
+    <!--  <p><b><i class="fa fa-user w3-margin-right"></i>Oss</b></p><br>
       <img src="/w3images/avatar_hat.jpg" class="w3-round w3-image w3-opacity w3-hover-opacity-off" alt="Photo of Me" width="500" height="333">
-    </div>
+    --></div>
 
     <!-- Hide this text on small devices -->
     <div class="w3-col m6 w3-hide-small w3-padding-large">
-      <p>lorem ipsum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
+      <!--<p>lorem ipsum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
         dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor
         incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-    </div>
+    --></div>
   </div>
   <p class="w3-large w3-center w3-padding-16">Vi er gode på:</p>
   <p class="w3-wide"><i class="fa fa-beer"></i>ØL</p>
@@ -165,19 +165,25 @@ body, html {
         <i class="fa fa-envelope fa-fw w3-hover-text-black w3-xlarge w3-margin-right"></i> Bryggernbois@gmail.com<br>
       </div>
       <p>Sving innom for ett glass <i class="fa fa-beer"></i>, husk å booke:</p>
-      <form action="mailto:bryggernbois@gmail.com" method="post" enctype="text/plain">
+      <form class="gform" data-email="bryggernbois@gmail.com" method="post" action="https://script.google.com/macros/s/AKfycbxYfIskwjZxSxbo2nKGYrSLPqWNQUIz_DQMfF8RILeOU6EcEhb3/exec">
         <div class="w3-row-padding" style="margin:0 -16px 8px -16px">
           <div class="w3-half">
-            <input class="w3-input w3-border" type="text" placeholder="Navn" required name="Name">
+            <input class="w3-input w3-border" type="text" placeholder="Navn" required name="name">
           </div>
           <div class="w3-half">
-            <input class="w3-input w3-border" type="text" placeholder="Mail" required name="Email">
+            <input class="w3-input w3-border" type="text" placeholder="Mail" required name="email">
           </div>
         </div>
-        <input class="w3-input w3-border" type="text" placeholder="Melding" required name="Message">
+        <input class="w3-input w3-border" type="text" placeholder="Melding" required name="message">
         <button class="w3-button w3-black w3-right w3-section" type="submit">
           <i class="fa fa-paper-plane"></i> BOOK
         </button>
+        <div style="display:none" class="thankyou_message">
+           <!-- You can customize the thankyou message by editing the code below -->
+           <h5><em>Takk</em>  for at du kontakter oss!
+            Vi svarer deg så snart som mulig!
+           </h5>
+          </div>
       </form>
     </div>
   </div>
@@ -226,7 +232,9 @@ function toggleFunction() {
         x.className = x.className.replace(" w3-show", "");
     }
 }
-</script>
 
+
+</script>
+<script data-cfasync="false" type="text/javascript" src="/static/form-submission-handler.js"></script>
 </body>
 </html>
