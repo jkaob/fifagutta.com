@@ -11,4 +11,4 @@ def test():
 	return 'Test works!'
 
 if __name__ == "__main__":
-	app.run()
+	app.run(debug=True)
