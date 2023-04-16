@@ -8,10 +8,10 @@ ball = TippeData()
 @app.route('/')
 def index():
 	ball.update()
-	dict = ball.data_dict
+	dict_sorted = ball.get_sorted_dict()
+	names = ball.get_sorted_names()
 	standings = ball.standings
-	sorted_names = ball.get_sorted_names()
-	return render_template('index.html', standings=standings, data_dict=dict, names_sorted=sorted_names)
+	return render_template('index.html', standings=standings, names=names, data_dict=dict_sorted)
 
 
 @app.route('/test')

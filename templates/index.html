@@ -10,49 +10,72 @@ content="Fifagutta tipper tabellen.">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="shortcut icon" type="image/x-icon" href="/static/olav.ico">
 <style>
-body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif;}
-body, html {
-  height: 100%;
-  color: #00538a;
-  line-height: 1.8;
-}
+  body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif;}
+  body, html {
+    height: 100%;
+    color: #00538a;
+    line-height: 1.5;
+  }
 
-/* Create a Parallax Effect */
-.bgimg-1, .bgimg-2, .bgimg-3 {
-  background-attachment: fixed;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
-
-/* First image (Logo. Full height) */
-.bgimg-1 {
-  background-image: url('/static/drillo2.jpg');
-  min-height: 100%;
-}
-
-/* Second image (Portfolio) */
-.bgimg-2 {
-  background-image: url("/static/2008.jpg");
-  min-height: 400px;
-}
-
-/* Third image (Contact) */
-.bgimg-3 {
-  background-image: url("/static/bjarmann2.jpg");
-  min-height: 400px;
-}
-
-.w3-wide {letter-spacing: 10px;}
-.w3-hover-opacity {cursor: pointer;}
-
-/* Turn off parallax scrolling for tablets and phones */
-@media only screen and (max-device-width: 1400px) {
+  /* Create a Parallax Effect */
   .bgimg-1, .bgimg-2, .bgimg-3 {
-    background-attachment: scroll;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+
+  /* First image (Logo. Full height) */
+  .bgimg-1 {
+    background-image: url('/static/drillo2.jpg');
+    min-height: 100%;
+  }
+
+  /* Second image (Portfolio) */
+  .bgimg-2 {
+    background-image: url("/static/2008.jpg");
     min-height: 400px;
   }
-}
+
+  /* Third image (Contact) */
+  .bgimg-3 {
+    background-image: url("/static/bjarmann2.jpg");
+    min-height: 400px;
+  }
+
+  .w3-wide {letter-spacing: 8px;}
+  .w3-hover-opacity {cursor: pointer;}
+
+  /* Turn off parallax scrolling for tablets and phones */
+  @media only screen and (max-device-width: 1400px) {
+    .bgimg-1, .bgimg-2, .bgimg-3 {
+      background-attachment: scroll;
+      min-height: 400px;
+    }
+  }
+  /* Add custom styles for tabs */
+  .tab {
+      display: none;
+  }
+  .tabcontent {
+      padding: 20px;
+      display: none;
+  }
+  .active {
+      display: block;
+  }
+  .w3-bar {
+        display: flex;
+        justify-content: center;
+        background-color: #f0f0f0; /* Change to your desired background color */
+    }
+    .w3-bar .tablink {
+        font-weight: bold;
+        margin: 0 10px; /* Change the value to adjust spacing between tab buttons */
+    }
+    .w3-table-all tr td, .w3-table-all tr th {
+        padding: 4px; /* Adjust the value to reduce or increase the padding */
+    }
 </style>
 
 <!-- Navbar (sit on top) -->
@@ -61,9 +84,10 @@ body, html {
     <a class="w3-bar-item w3-button w3-hover-black w3-hide-medium w3-hide-large w3-right" href="javascript:void(0);" onclick="toggleFunction()" title="Toggle Navigation Menu">
       <i class="fa fa-bars"></i>
     </a>
-    <a href="#home" class="w3-bar-item w3-button"><i class="fa fa-home"></i>TIL TOPPEN</a>
-    <a href="#entries" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-futbol-o" aria-hidden="true"></i>BALLEBALL</a>
-    <a href="#results" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-trophy"></i> RESULTATER </a>
+    <a href="#home" class="w3-bar-item w3-button"><i class="fa fa-home"></i> Hjem</a>
+    <a href="#entries" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-table" aria-hidden="true"></i> Tabellen</a>
+    <a href="#entries" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-futbol-o" aria-hidden="true"></i> Guttas Tips</a>
+    <a href="#results" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-trophy"></i> Resultater </a>
   </div>
 
   <!-- Navbar on small screens -->
@@ -84,15 +108,18 @@ body, html {
 
 <!-- Container (About Section) -->
 <div class="w3-content w3-container w3-padding-64" id="about">
-    <div class="w3-center w3-xxxlarge" > Fifagutta tipper tabellen</div>
-  <p class="w3-justify w3-large"><em>
+    <div class="w3-center w3-xxlarge" > Fifagutta tipper tabellen</div>
+  <p class="w3-justify w3-text-grey w3-large"><em>
 
 Fifagutta (+ Herman Ø, 15 år) har fått blod på tann og penger i øya da de hørte at innsatsen var hele 50 kr per hode. <br>
-Minst én har dermed tippet helt riktig, sies det. Det får vi mest sannsynligvis vite etter siste serierunde, 2. desember.
-<br> <br> </em>
-<b>Regler:</b> Man får ett poeng for hver plass et lag er feil plassert, for hvert lag. Vinneren har minst poeng.
+Minst én har dermed tippet helt riktig, sies det. Det får vi mest sannsynligvis vite etter siste serierunde, 2. desember. </em>
+</p>
+<p class="w3-justify w3-text-grey w3-large">
+
+<b>Regler:</b> Man får ett poeng for hver plass et lag er feil plassert, for hvert lag. Den med minst poeng vinner.
 
   </p> </div>
+</div>
 
 <!-- Second Parallax Image with Logo Text -->
 <div class="bgimg-2 w3-display-container w3-opacity-min">
@@ -100,49 +127,99 @@ Minst én har dermed tippet helt riktig, sies det. Det får vi mest sannsynligvi
   </div>
 </div>
 
-<div class="w3-content w3-container w3-padding-64" id="entries">
-<div class="w3-row w3-center w3-padding-16"><br>
-    <div class="w3-xxlarge">GUTTAS TABELLTIPS</div>
-  <div class="w3-third w3-section">
-  </div>
-  <div class="w3-third w3-section">
-  </div>
-  <div class="w3-third w3-section">
-  </div>
-</div>
 
-  <div class="w3-row">
-    <div class="w3-col m6 w3-center w3-padding-large">
-    <!--  <p><b><i class="fa fa-user w3-margin-right"></i>Oss</b></p><br>
-      <img src="/w3images/avatar_hat.jpg" class="w3-round w3-image w3-opacity w3-hover-opacity-off" alt="Photo of Me" width="500" height="333">
-    --></div>
+<!-- Table with entries -->
+<div class="w3-content w3-container w3-padding-32" id="standings">
+  <div class="w3-row w3-center w3-padding-16"><br>
 
-    <!-- Hide this text on small devices -->
-    <div class="w3-col m6 w3-hide-small w3-padding-large">
-      <!--<p>lorem ipsum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
-        dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor
-        incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-    --></div>
-  </div>
-  <p class="w3-large w3-center w3-padding-16">her er denne teksten</p>
-</div>
+      <div class="w3-xlarge w3-text-black w3-padding-16">Oppdatert Tabell</div>
 
-<div class="w3-row w3-center w3-dark-grey w3-padding-16">
-  <div class="w3-quarter w3-section">
-    <span class="w3-xlarge">3</span><br>
-    Øltyper
+      <table class="w3-table-all">
+          <tr class="w3-black">
+              <th style="width: 70px">Plassering</th>
+              <th>Lag</th>
+              <th style="width: 60px"> S </th>
+              <th style="width: 60px"> +/- </th>
+              <th style="width: 60px"> P </th>
+              <!-- Add more columns as needed -->
+          </tr>
+              {% for team in standings %}
+          <tr>
+              <td style="font-weight: bold">{{ team[0] }}</td>
+              <td>{{ team[1] }}</td>
+              <td>{{ team[2] }}</td>
+              <td>{{ team[3] }}</td>
+              <td>{{ team[4] }}</td>
+              </td>
+              <!-- Render other data as needed -->
+          </tr>
+          {% endfor %}
+
+      </table>
+    </div>
   </div>
-  <div class="w3-quarter w3-section">
-    <span class="w3-xlarge">20+</span><br>
-    Drinker
-  </div>
-  <div class="w3-quarter w3-section">
-    <span class="w3-xlarge">10+</span><br>
-    Kaffetyper
-  </div>
-  <div class="w3-quarter w3-section">
-    <span class="w3-xlarge">150+</span><br>
-    Fornøyde kunder
+
+<div class="w3-content w3-container w3-padding-16" id="entries">
+  <div class="w3-row w3-center w3-padding-16"><br>
+    <div class="w3-xxlarge w3-blue w3-padding-10">GUTTAS TABELLTIPS</div>
+
+    <div class="w3-bar w3-center w3-darkblue">
+        {% for name in names %}
+        <button class="w3-bar-item w3-button tablink" onclick="openTab('{{ name }}')">{{ loop.index|string + ". "+ name }}</button>
+        {% endfor %}
+    </div>
+
+    {% for name in names %}
+    <div id="{{ name }}" class="tabcontent">
+      <div class="w3-large w3-text-grey w3-padding-8">{{ name + "s tabelltips:"}}</div> <!-- Add a headline element for tab name -->
+      <table class="w3-table-all">
+          <tr class="w3-darkblue">
+              <th style="width: 70px; color: black">Plassering</th>
+              <th style="color: black">Lag</th>
+              <th style="width: 60px; color: black"> Straffepoeng</th>
+              <!-- Add more columns as needed -->
+          </tr>
+          {% for team in data_dict[name]['prediction'] %}
+          <tr>
+              <td style="font-weight: bold">{{ loop.index }}</td>
+              <td>{{ team }}</td>
+              <td style="font-weight: bold; color: {% if data_dict[name]['delta'][loop.index-1] == 0 %}green{% elif data_dict[name]['delta'][loop.index-1] > 9 %}red{% endif %}">
+                {{ data_dict[name]['delta'][loop.index-1] }}
+              </td>
+              <!-- Render other data as needed -->
+          </tr>
+          {% endfor %}
+          <tr>
+            <td colspan="2" style="color: black; font-weight: bold;">SUM</td>
+            <td style="color: black; font-weight: bold;">{{ data_dict[name]['points'] }}</td>
+          </tr>
+
+      </table>
+    </div>
+    {% endfor %}
+
+    <script>
+        // Function to switch tabs
+        function openTab(tabName, defaultTab) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablink");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).className += " active";
+          }
+
+        window.onload = function() {
+          var defaultTab = '{{ data_dict|first }}'; // Change this to set the default tab
+          openTab(defaultTab, defaultTab);
+        };
+    </script>
+    </div>
   </div>
 </div>
 
@@ -158,59 +235,34 @@ Minst én har dermed tippet helt riktig, sies det. Det får vi mest sannsynligvi
   </div>
 </div>
 
+
+<!-- Container (Contact Section) -->
+<div class="w3-content w3-container w3-padding-64" id="results">
+
+  <div class="w3-xlarge w3-center w3-blue w3-padding-10">RESULTATER</div>
+
+  <p class="w3-center"><em>Foreløpige resultater. Blir oppdatert fortløpende.</em></p>
+
+  <div class="w3-row w3-padding-8 w3-section">
+
+    {% for name, data in data_dict.items() %}
+    <p class="w3-large q3-padding-4 w3-text-black"></i>{{ loop.index|string + ". " +name }}</p>
+    <div class="w3-light-grey">
+      <div class="w3-container w3-padding-4 w3-dark-grey w3-center" style="width: {{ data.normalized * 100 }}%">
+        {{ data.points }}
+      </div>
+    </div>
+    {% endfor %}
+
+  </div>
+</div>
+
 <!-- Third Parallax Image with Portfolio Text -->
 <div class="bgimg-3 w3-display-container w3-opacity-min">
   <div class="w3-display-middle">
   </div>
 </div>
 
-<!-- Container (Contact Section) -->
-<div class="w3-content w3-container w3-padding-64" id="results">
-  <h3 class="w3-center">RESULTATER</h3>
-
-  <p class="w3-center"><em>Foreløpige resultater. Blir oppdatert fortløpende.</em></p>
-
-  <div class="w3-row w3-padding-32 w3-section">
-
-    <p class="w3-large w3-text-black"><i class="fa fa-trophy"></i> MrMaggyzinho</p>
-    <div class="w3-light-grey">
-      <div class="w3-container w3-padding-8 w3-dark-grey w3-center" style="width:2%">2</div>
-    </div>
-    <p class="w3-large w3-text-black"></i>ZaHaavi</p>
-    <div class="w3-light-grey">
-      <div class="w3-container w3-padding-8 w3-dark-grey w3-center" style="width:20%">8</div>
-    </div>
-    <p class="w3-large w3-text-black"></i>Adrian/Sadrian</p>
-    <div class="w3-light-grey">
-      <div class="w3-container w3-padding-8 w3-dark-grey w3-center" style="width:69%">20</div>
-    </div>
-    <p class="w3-large w3-text-black"></i>#BjarmannUt</p>
-    <div class="w3-light-grey">
-      <div class="w3-container w3-padding-8 w3-dark-grey w3-center" style="width:69%">20</div>
-    </div>
-    <p class="w3-large w3-text-black"></i>Myra Craig</p>
-    <div class="w3-light-grey">
-      <div class="w3-container w3-padding-8 w3-dark-grey w3-center" style="width:69%">20</div>
-    </div>
-    <p class="w3-large w3-text-black"></i>Gianni Infantino</p>
-    <div class="w3-light-grey">
-      <div class="w3-container w3-padding-8 w3-dark-grey w3-center" style="width:69%">20</div>
-    </div>
-    <p class="w3-large w3-text-black"></i>Jakob Haaland Dietz</p>
-    <div class="w3-light-grey">
-      <div class="w3-container w3-padding-8 w3-dark-grey w3-center" style="width:69%">20</div>
-    </div>
-    <p class="w3-large w3-text-black"></i>Joaquin Kravatte</p>
-    <div class="w3-light-grey">
-      <div class="w3-container w3-padding-8 w3-dark-grey w3-center" style="width:69%">20</div>
-    </div>
-    <p class="w3-large w3-text-black"></i>Herman Ø (15)</p>
-    <div class="w3-light-grey">
-      <div class="w3-container w3-padding-8 w3-dark-grey w3-center" style="width:99%">40</div>
-    </div>
-
-  </div>
-</div>
 
 <!-- Footer -->
 <footer class="w3-center w3-black w3-padding-64 w3-opacity w3-hover-opacity-on">
@@ -218,7 +270,7 @@ Minst én har dermed tippet helt riktig, sies det. Det får vi mest sannsynligvi
   <div class="w3-xlarge w3-section">
     <i class="fa fa-messenger w3-hover-opacity"></i>
   </div>
-  <p>Dette her er balleball </p>
+  <p>Dette her er balleball <br> laget av Gianni Infantino 2023 </p>
 </footer>
 
 
