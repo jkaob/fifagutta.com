@@ -53,6 +53,11 @@ content="Fifagutta tipper tabellen.">
       min-height: 400px;
     }
   }
+  @media (max-width: 600px) {
+    h1 {
+      white-space: pre-line; /* Use pre-line to preserve line breaks */
+    }
+  }
   /* Add custom styles for tabs */
   .tab {
       display: none;
@@ -85,15 +90,16 @@ content="Fifagutta tipper tabellen.">
       <i class="fa fa-bars"></i>
     </a>
     <a href="#home" class="w3-bar-item w3-button"><i class="fa fa-home"></i> Hjem</a>
-    <a href="#entries" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-table" aria-hidden="true"></i> Tabellen</a>
+    <a href="#standings" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-table" aria-hidden="true"></i> Tabellen</a>
     <a href="#entries" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-futbol-o" aria-hidden="true"></i> Guttas Tips</a>
     <a href="#results" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-trophy"></i> Resultater </a>
   </div>
 
   <!-- Navbar on small screens -->
   <div id="navDemo" class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium">
-    <a href="#home" class="w3-bar-item w3-button" onclick="toggleFunction()">TIL TOPPEN</a>
-    <a href="#entries" class="w3-bar-item w3-button" onclick="toggleFunction()">BALLEBALL</a>
+    <a href="#home" class="w3-bar-item w3-button" onclick="toggleFunction()"> Hjem</a>
+    <a href="#entries" class="w3-bar-item w3-button" onclick="toggleFunction()"> Guttas Tips</a>
+    <a href="#results" class="w3-bar-item w3-button" onclick="toggleFunction()"> Resultater</a>
   </div>
 </div>
 
@@ -101,7 +107,7 @@ content="Fifagutta tipper tabellen.">
 <div class="bgimg-1 w3-display-container w3-opacity-min" id="home">
 
   <div class="w3-display-middle " style="white-space:nowrap;">
-      <h1 style="text-align:center; color:black; text-shadow: 0 0 8px black; padding: 5px;">FIFAGUTTAS TIPPEKONKURANSE</h1>
+      <h1 style="text-align:center; color:black; text-shadow: 0 0 8px black; padding: 5px;">FIFAGUTTAS<br>TIPPEKONKURANSE</h1>
   </div>
 </div>
 
@@ -111,7 +117,7 @@ content="Fifagutta tipper tabellen.">
     <div class="w3-center w3-xxlarge" > Fifagutta tipper tabellen</div>
   <p class="w3-justify w3-text-grey w3-large"><em>
 
-Fifagutta (+ Herman Ø, 15 år) har fått blod på tann og penger i øya da de hørte at innsatsen var hele 50 kr per hode. <br>
+Fifagutta (og Herman Ø) har fått blod på tann og penger i øya da de hørte at innsatsen var hele 50 kr per hode. <br>
 Minst én har dermed tippet helt riktig, sies det. Det får vi mest sannsynligvis vite etter siste serierunde, 2. desember. </em>
 </p>
 <p class="w3-justify w3-text-grey w3-large">
