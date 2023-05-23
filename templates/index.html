@@ -9,6 +9,7 @@ content="Fifagutta tipper tabellen.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="shortcut icon" type="image/x-icon" href="/static/olav.ico">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"> </script>
 <style>
   body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif;}
   body, html {
@@ -47,7 +48,7 @@ content="Fifagutta tipper tabellen.">
   .w3-hover-opacity {cursor: pointer;}
 
   /* Turn off parallax scrolling for tablets and phones */
-  @media only screen and (max-device-width: 1400px) {
+  @media only screen and (max-device-width: 1200px) {
     .bgimg-1, .bgimg-2, .bgimg-3 {
       background-attachment: scroll;
       min-height: 400px;
@@ -117,7 +118,7 @@ content="Fifagutta tipper tabellen.">
     <div class="w3-center w3-xxlarge" > Fifagutta tipper tabellen</div>
   <p class="w3-justify w3-text-grey w3-large"><em>
 
-Fifagutta (og Herman Ø) har fått blod på tann og penger i øya da de hørte at innsatsen var hele 50 kr per hode. <br>
+Fifagutta (og Herman Ø) har fått reisning da de hørte at innsatsen var hele 50 kr per hode. <br>
 Minst én har dermed tippet helt riktig, sies det. Det får vi mest sannsynligvis vite etter siste serierunde, 2. desember. </em>
 </p>
 <p class="w3-justify w3-text-grey w3-large">
@@ -247,7 +248,21 @@ Minst én har dermed tippet helt riktig, sies det. Det får vi mest sannsynligvi
 
   <div class="w3-xlarge w3-center w3-blue w3-padding-10">RESULTATER</div>
 
-  <p class="w3-center"><em>Foreløpige resultater. Blir oppdatert fortløpende.</em></p>
+
+    <div class="w3-row w3-padding-8 w3-section">
+
+      <!-- History chart -->
+
+      <canvas id="historyChart" style="width:100%;max-width:1200px"></canvas>
+
+
+    </div>
+
+      <p class="w3-center w3-text-grey w3-medium"><em> Grafen over viser historisk poengutvikling etter at alle lag har spilt like mange kamper </em>
+      </p>
+
+
+      <p class="w3-center w3-large"><em>Under vises kontinuerlig oppdaterte resultater..</em></p>
 
   <div class="w3-row w3-padding-8 w3-section">
 
@@ -259,9 +274,48 @@ Minst én har dermed tippet helt riktig, sies det. Det får vi mest sannsynligvi
       </div>
     </div>
     {% endfor %}
-
   </div>
+
+
+
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const dataDict = JSON.parse('{{ data_dict|tojson }}');
+  const historyLength = {{ history_length }};
+
+  const labels = Object.keys(dataDict);
+  const colors = ["plum", "cornflowerblue", "olive", "lightseagreen", "lightblue", "darkslateblue", "lightcoral", "peru", "palegreen"];
+  const xValues = Array.from({length: historyLength}, (_, index) => index + 1);
+  new Chart("historyChart", {
+  type: "line",
+  data: {
+    labels: xValues,
+    datasets: Object.keys(dataDict).map((key, index) => ({
+      data: dataDict[key]['points_history'],
+      label: key,
+      borderColor: colors[index],
+      fill: false
+    }))
+  },
+  options: {
+    legend: { display: true },
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+       x: {
+         display: true,
+         title: {
+           display: true,
+           text: 'Antall kamper spilt',
+         },
+       },
+       // Other scale configurations if needed
+     },
+   }
+  });
+</script>
 
 <!-- Third Parallax Image with Portfolio Text -->
 <div class="bgimg-3 w3-display-container w3-opacity-min">

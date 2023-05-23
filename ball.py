@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 
+N_TEAMS = 16
+
 class Team:
     def __init__(self, team_name, url):
         self.name = team_name
@@ -81,6 +83,43 @@ class Scraper:
                 team.match_results.append(result)
                 team.match_gd.append(goal_diff)
 
+class CsvReader:
+    def __init__(self):
+        self.csv = "history.csv"
+
+    def get_min_played(self):
+        # check if the current table is already saved
+        with open(self.csv, 'r', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            rows = list(reader)
+            if len(rows) <= 1:
+                return 0
+            # return number of matches played at end line
+            return int(rows[-1][0])
+
+    def get_csv_history(self):
+        history = []
+        with open(self.csv, 'r', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            rows = list(reader)
+            min_played = (int)((len(rows)-1) / N_TEAMS)
+            for i in range(min_played):
+                # Append [n_played, pos, team, gd, points]
+                standings = rows[(1 + i*N_TEAMS) : (1+N_TEAMS + i*N_TEAMS)]
+                history.append(standings)
+        print(f"Fetched {min_played} match(es) from file")
+        return history
+
+    def update_csv(self, history, n_matches_to_add, min_played):
+        with open(self.csv, 'a',newline="", encoding='utf-8') as f:
+            writer = csv.writer(f)
+            for n in range(min_played-n_matches_to_add+1, min_played+1):
+                print("Adding standings after match number ", n)
+                standings = history[n-1]
+                for j in range(len(standings)):
+                    # Match number, Position, Team name, GD, Points
+                    writer.writerow([n, j+1, standings[j][0], standings[j][1], standings[j][2]])
+        print(f"Wrote {n_matches_to_add} match(es) to file")
 
 
 
@@ -89,70 +128,71 @@ class Scraper:
 class TippeData:
     def __init__(self):
         self.scraper = Scraper()  # to get table
+        self.reader = CsvReader()
         # Initialize dict with points computation
         self.data_dict = {
             'MrMaggyzinho': {
                 'points': 0,  # total points
                 'normalized': 0.0,
                 'prediction': ['Bodø/Glimt', 'Brann', 'Molde', 'Lillestrøm', 'Rosenborg', 'Viking', 'Stabæk', 'Vålerenga', 'Sarpsborg', 'Odd', 'Strømsgodset', 'Tromsø', 'Sandefjord', 'Aalesund', 'Haugesund', 'HamKam'],
-                'delta' : [0]*16,
-                'rank_history' : []  # penalty points per team
+                'delta' : [0]*N_TEAMS,
+                'points_history' : []  #how many points after each game played
             },
             'Gianni Infantino': {
                 'points': 0,
                 'normalized': 0.0,
                 'prediction': ['Bodø/Glimt', 'Molde', 'Brann', 'Rosenborg', 'Lillestrøm', 'Vålerenga', 'Viking', 'Stabæk', 'Sarpsborg', 'Odd', 'Tromsø', 'Strømsgodset', 'Haugesund', 'HamKam', 'Sandefjord', 'Aalesund', ],
-                'delta' : [0]*16,
-                'rank_history' : []
+                'delta' : [0]*N_TEAMS,
+                'points_history' : []
             },
             'ZaHaavi': {
                 'points': 0,
                 'normalized': 0.0,
                 'prediction': ['Bodø/Glimt', 'Molde', 'Lillestrøm', 'Rosenborg', 'Viking', 'Brann', 'Sarpsborg', 'Vålerenga', 'Stabæk', 'Tromsø', 'Haugesund', 'Odd', 'Strømsgodset', 'Sandefjord', 'Aalesund', 'HamKam' ],
-                'delta' : [0]*16,
-                'rank_history' : []
+                'delta' : [0]*N_TEAMS,
+                'points_history' : []
             },
             '#BjarmannUt': {
                 'points': 0,
                 'normalized': 0.0,
                 'prediction':['Bodø/Glimt', 'Molde', 'Lillestrøm', 'Brann', 'Rosenborg', 'Viking', 'Vålerenga', 'Stabæk', 'Sarpsborg', 'Tromsø', 'Odd', 'Haugesund', 'Strømsgodset', 'Aalesund', 'Sandefjord', 'HamKam' ],
-                'delta' : [0]*16,
-                'rank_history' : []
+                'delta' : [0]*N_TEAMS,
+                'points_history' : []
             },
             'Myra Craig': {
                 'points': 0,
                 'normalized': 0.0,
                 'prediction': ['Molde', 'Bodø/Glimt', 'Lillestrøm', 'Rosenborg', 'Vålerenga', 'Brann', 'Sarpsborg', 'Stabæk', 'Viking', 'Odd', 'Tromsø', 'Strømsgodset', 'Aalesund', 'Haugesund', 'Sandefjord', 'HamKam' ],
-                'delta' : [0]*16,
-                'rank_history' : []
+                'delta' : [0]*N_TEAMS,
+                'points_history' : []
             },
             'Jakob Haaland Dietz': {
                 'points': 0,
                 'normalized': 0.0,
                 'prediction': ['Stabæk', 'Tromsø', 'Sarpsborg', 'Sandefjord', 'Strømsgodset', 'Bodø/Glimt', 'Viking', 'Odd', 'Brann', 'Rosenborg', 'Vålerenga', 'Molde', 'Haugesund', 'HamKam', 'Aalesund', 'Lillestrøm', ],
-                'delta' : [0]*16,
-                'rank_history' : []
+                'delta' : [0]*N_TEAMS,
+                'points_history' : []
             },
             'Adrian/Sadrian': {
                 'points': 0,
                 'normalized': 0.0,
                 'prediction': ['Bodø/Glimt', 'Brann', 'Molde', 'Rosenborg', 'Viking', 'Stabæk', 'Lillestrøm', 'Vålerenga', 'Odd', 'Aalesund', 'Sarpsborg', 'Strømsgodset', 'HamKam', 'Tromsø', 'Sandefjord', 'Haugesund', ],
-                'delta' : [0]*16,
-                'rank_history' : []
+                'delta' : [0]*N_TEAMS,
+                'points_history' : []
             },
             'Joaquin Krave': {
                 'points': 0,
                 'normalized': 0.0,
                 'prediction': ['Bodø/Glimt', 'Molde', 'Brann', 'Rosenborg', 'Lillestrøm', 'Vålerenga', 'Viking', 'Odd', 'Sarpsborg', 'Stabæk', 'Strømsgodset', 'HamKam', 'Tromsø', 'Aalesund', 'Haugesund', 'Sandefjord', ],
-                'delta' : [0]*16,
-                'rank_history' : []
+                'delta' : [0]*N_TEAMS,
+                'points_history' : []
             },
             'Herman Ø (15)': {
                 'points': 0,
                 'normalized': 0.0,
                 'prediction': ['Bodø/Glimt', 'Molde', 'Brann', 'Rosenborg', 'Lillestrøm', 'Viking', 'Vålerenga', 'Odd', 'Sarpsborg', 'Tromsø', 'Stabæk', 'HamKam', 'Strømsgodset', 'Haugesund', 'Aalesund', 'Sandefjord', ],
-                'delta' : [0]*16,
-                'rank_history' : []
+                'delta' : [0]*N_TEAMS,
+                'points_history' : []
             },
         }
         # Initialize teams list with url to match history
@@ -215,40 +255,16 @@ class TippeData:
     def update(self):
         self.fetch_standings()
         self.update_dict()
-
-    def get_csv_min_played(self):
-        # check if the current table is already saved
-        with open(self.csv, 'r') as f:
-            reader = csv.reader(f)
-            rows = list(reader)
-            if len(rows) <= 1:
-                return 0
-            # return number of matches played at end line
-            return int(rows[-1][0])
-
-    def get_csv_history(self):
-        pass
-
-    def update_csv(self, history, n_matches_to_add):
-        with open(self.csv, 'a',newline="") as f:
-            writer = csv.writer(f)
-            for n in range(self.min_played-n_matches_to_add+1, self.min_played+1):
-                print("Adding standings after match number ", n)
-                standings = history[n-1]
-                for j in range(len(standings)):
-                    print(standings[0])
-                    # Match number, Position, Team name
-                    writer.writerow([n, j+1, standings[j][0]])
-            print(f"Wrote {n_matches_to_add} row(s)")
+        self.update_teams()
 
 
 
-
+    # Main history function
     def update_teams(self):
         # Find minimum number of matches played by everyone
         self.min_played = min(self.standings, key=lambda team: team[2])[2]
         # Check how many are saved in csv file
-        csv_min_played = self.get_csv_min_played()
+        csv_min_played = self.reader.get_min_played()
 
         # See what work we must do
         matches_to_add = self.min_played - csv_min_played
@@ -259,19 +275,38 @@ class TippeData:
             for team in self.teams:
                 self.scraper.get_team_history(team)
                 self.update_team_history(team)
-            history = self.update_historic_standings()
-            self.update_csv(history, matches_to_add)
+            history_csv = self.update_historic_standings()
+            self.reader.update_csv(history_csv, matches_to_add, self.min_played)
+            # rewrite history to compute format
+            history = [[
+                [i+1, j+1, history_csv[i][j][0], history_csv[i][j][1], history_csv[i][j][2]]
+                for j in range(N_TEAMS)] for i in range(self.min_played)]
 
         elif (matches_to_add < 0):
             assert(True), "err"
-        else:
-            #compute using csv file
-            history = self.get_csv_history()
-            pass
+        else: #compute using csv file
+            history = self.reader.get_csv_history()
         # Compute points using history
-        for match_standings in history:
+        self.compute_points_history(history)
+
+
+    def compute_points_history(self, history):
+        # for ea match
+        for m in range(len(history)):
+            match_standings = history[m]
+            # for ea contestant
             for name in self.data_dict.keys():
-                self.compute_points(name, self.match_standings)
+                prediction = self.data_dict[name]['prediction']
+                total_points = 0
+                # for ea team: [Match number, Position, Team name, GD, Points]
+                for row in match_standings:
+                    team_name = row[2].split(" ")[0]
+                    team_ind = prediction.index(team_name) # index of team in prediction
+                    prediction_pos = team_ind+1 # table placement
+                    team_pos = (int)(row[1])
+                    points = abs(prediction_pos - team_pos)
+                    total_points += points
+                self.data_dict[name]['points_history'].append(total_points)
 
 
     def update_team_history(self, team):
@@ -289,9 +324,8 @@ class TippeData:
             team.cm_points.append(points)
             team.cm_gd.append(gd)
 
-    def update_historic_standings(self):
-        # TODO: Return if already done
 
+    def update_historic_standings(self):
         # Clear historic position
         for team in self.teams:
             team.cm_pos = []
@@ -312,9 +346,8 @@ class TippeData:
                 team_ref = next((team for team in self.teams if team.name == team_name), None) # find it
                 team_ref.cm_pos.append(i+1)
             history.append(standings)
+        print("row in history:", history[0][0])
         return history
-
-
 
 
 

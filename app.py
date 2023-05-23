@@ -11,7 +11,13 @@ def index():
 	dict_sorted = ball.get_sorted_dict()
 	names = ball.get_sorted_names()
 	standings = ball.standings
-	return render_template('index.html', standings=standings, names=names, data_dict=dict_sorted)
+	history_length = ball.min_played
+	return render_template('index.html',
+							standings=standings,
+							names=names,
+							data_dict=dict_sorted,
+							history_length=history_length
+							)
 
 
 @app.route('/test')
