@@ -54,10 +54,18 @@ content="Fifagutta tipper tabellen.">
       min-height: 400px;
     }
   }
+  @media (min-width: 701px) {
+  #graphContainer {
+    height: 600px; /* Set height to 600px for screens wider than 700px */
+  }
+ }
   @media (max-width: 600px) {
     h1 {
       white-space: pre-line; /* Use pre-line to preserve line breaks */
-    }
+    },
+    #graphContainer {
+    height: 400px; /* Set height to 400px for screens 700px or narrower */
+  }
   }
   /* Add custom styles for tabs */
   .tab {
