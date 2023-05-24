@@ -55,7 +55,7 @@ content="Fifagutta tipper tabellen.">
     }
   }
   @media (min-width: 801px) {
-  #graphContainer {
+  #chart-container {
     height: 600px; /* Set height to 600px for screens wider than 700px */
   }
  }
@@ -63,7 +63,7 @@ content="Fifagutta tipper tabellen.">
     h1 {
       white-space: pre-line; /* Use pre-line to preserve line breaks */
     },
-    #graphContainer {
+    #chart-container {
     height: 400px; /* Set height to 400px for screens 700px or narrower */
   }
   }
@@ -264,13 +264,13 @@ Minst én har dermed tippet helt riktig, sies det. Det får vi mest sannsynligvi
           width: 100%;
           max-width: 1200px;
           max-height: 600px;
-          height: : 400px;
+          height: : 500px;
         }
       </style>
 
       <!-- History chart -->
       <div class="chart-container">
-        <canvas id="historyChart" style="width:100%;max-width:1200px"></canvas>
+        <canvas id="historyChart" style="height:500px;width:100%;max-width:1200px"></canvas>
       </div>
 
 
