@@ -111,15 +111,16 @@ class CsvReader:
         return history
 
     def update_csv(self, history, n_matches_to_add, min_played):
-        with open(self.csv, 'a',newline="", encoding='utf-8') as f:
-            writer = csv.writer(f)
-            for n in range(min_played-n_matches_to_add+1, min_played+1):
-                print("Adding standings after match number ", n)
-                standings = history[n-1]
-                for j in range(len(standings)):
-                    # Match number, Position, Team name, GD, Points
-                    writer.writerow([n, j+1, standings[j][0], standings[j][1], standings[j][2]])
-        print(f"Wrote {n_matches_to_add} match(es) to file")
+        return
+        # with open(self.csv, 'a',newline="", encoding='utf-8') as f:
+        #     writer = csv.writer(f)
+        #     for n in range(min_played-n_matches_to_add+1, min_played+1):
+        #         print("Adding standings after match number ", n)
+        #         standings = history[n-1]
+        #         for j in range(len(standings)):
+        #             # Match number, Position, Team name, GD, Points
+        #             writer.writerow([n, j+1, standings[j][0], standings[j][1], standings[j][2]])
+        # print(f"Wrote {n_matches_to_add} match(es) to file")
 
 
 
