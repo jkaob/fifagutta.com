@@ -111,16 +111,15 @@ class CsvReader:
         return history
 
     def update_csv(self, history, n_matches_to_add, min_played):
-        return
-        # with open(self.csv, 'a',newline="", encoding='utf-8') as f:
-        #     writer = csv.writer(f)
-        #     for n in range(min_played-n_matches_to_add+1, min_played+1):
-        #         print("Adding standings after match number ", n)
-        #         standings = history[n-1]
-        #         for j in range(len(standings)):
-        #             # Match number, Position, Team name, GD, Points
-        #             writer.writerow([n, j+1, standings[j][0], standings[j][1], standings[j][2]])
-        # print(f"Wrote {n_matches_to_add} match(es) to file")
+        with open(self.csv, 'a',newline="", encoding='utf-8') as f:
+            writer = csv.writer(f)
+            for n in range(min_played-n_matches_to_add+1, min_played+1):
+                print("Adding standings after match number ", n)
+                standings = history[n-1]
+                for j in range(len(standings)):
+                    # Match number, Position, Team name, GD, Points
+                    writer.writerow([n, j+1, standings[j][0], standings[j][1], standings[j][2]])
+        print(f"Wrote {n_matches_to_add} match(es) to file")
 
 
 
@@ -268,25 +267,25 @@ class TippeData:
         csv_min_played = self.reader.get_min_played()
 
         # See what work we must do
-        matches_to_add = self.min_played - csv_min_played
-        print("matches to add: ", matches_to_add)
-        history = []
-        if (matches_to_add > 0):
-            # Fetch online results
-            for team in self.teams:
-                self.scraper.get_team_history(team)
-                self.update_team_history(team)
-            history_csv = self.update_historic_standings()
-            self.reader.update_csv(history_csv, matches_to_add, self.min_played)
-            # rewrite history to compute format
-            history = [[
-                [i+1, j+1, history_csv[i][j][0], history_csv[i][j][1], history_csv[i][j][2]]
-                for j in range(N_TEAMS)] for i in range(self.min_played)]
+        # matches_to_add = self.min_played - csv_min_played
+        # history = []
+        # if (matches_to_add > 0):
+        #     # Fetch online results
+        #     for team in self.teams:
+        #         self.scraper.get_team_history(team)
+        #         self.update_team_history(team)
+        #     history_csv = self.update_historic_standings()
+        #     self.reader.update_csv(history_csv, matches_to_add, self.min_played)
+        #     # rewrite history to compute format
+        #     history = [[
+        #         [i+1, j+1, history_csv[i][j][0], history_csv[i][j][1], history_csv[i][j][2]]
+        #         for j in range(N_TEAMS)] for i in range(self.min_played)]
 
-        elif (matches_to_add < 0):
-            assert(True), "err"
-        else: #compute using csv file
-            history = self.reader.get_csv_history()
+        # elif (matches_to_add < 0):
+        #     assert(True), "err"
+        # else: #compute using csv file
+        #     history = self.reader.get_csv_history()
+        history = self.reader.get_csv_history() #TODO: PLACEHOLDER FOR BUG. FIX THIS! 
         # Compute points using history
         self.compute_points_history(history)
 
