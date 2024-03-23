@@ -1,4 +1,4 @@
-from ball import TippeData
+from ball23 import TippeData
 import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
