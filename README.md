@@ -1,3 +1,8 @@
 ## fifagutta.com
 
-Fifagutta tipper eliteserietabellen 2023
+Fifagutta tipper obos 2024
+
+
+Nettsiden finner du på
+
+https://fifagutta.vercel.app
