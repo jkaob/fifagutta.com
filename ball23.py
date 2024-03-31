@@ -7,6 +7,45 @@ from common import Team, CsvReader, Scraper
 N_TEAMS = 16
 
 
+class CsvReader23:
+    def __init__(self, filename : str, n_teams : int):
+        self.csv = filename
+        self.n_teams = n_teams
+
+    def get_min_matches_played(self):
+        # check if the current table is already saved
+        with open(self.csv, 'r', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            rows = list(reader)
+            if len(rows) <= 1:
+                return 0
+            # return number of matches played at end line
+            return int(rows[-1][0])
+
+    def get_csv_history(self):
+        history = []
+        with open(self.csv, 'r', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            rows = list(reader)
+            min_played = (int)((len(rows)-1) / self.n_teams)
+            for i in range(min_played):
+                # Append [n_played, pos, team, gd, points]
+                standings = rows[(1 + i*self.n_teams) : (1+self.n_teams + i*self.n_teams)]
+                history.append(standings)
+        print(f"Fetched {min_played} match(es) from file")
+        return history
+
+    def update_csv(self, history, n_matches_to_add, min_played):
+        with open(self.csv, 'a',newline="", encoding='utf-8') as f:
+            writer = csv.writer(f)
+            for n in range(min_played-n_matches_to_add+1, min_played+1):
+                print("Adding standings after match number ", n)
+                standings = history[n-1]
+                for j in range(len(standings)):
+                    # Match number, Position, Team name, GD, Points
+                    writer.writerow([n, j+1, standings[j][0], standings[j][1], standings[j][2]])
+        print(f"Wrote {n_matches_to_add} match(es) to file")
+
 
 class Scraper23(Scraper):
     def __init__(self):

@@ -1,9 +1,10 @@
 import csv
 
 class Team:
-    def __init__(self, team_name, url=""):
+    def __init__(self, team_name, team_short=""):
         self.name = team_name
-        self.url = url
+        self.short = team_short
+        self.url = None
         self.match_results = [] #W,L,D for each match
         self.match_gd = [] #GD for each match
         self.cm_points = [] # cumulative
@@ -40,9 +41,9 @@ class Scraper:
 
 class TippeData:
 
-    def __init__(self, scraper, csvreader):
-        self.scraper = scraper #Scraper()  # to get table
-        self.reader = csvreader
+    def __init__(self):
+        self.scraper = None #Scraper()  # to get table
+        self.reader = None
         # Initialize dict with points computation
         
         # Initialize teams list with url to match history
@@ -50,7 +51,7 @@ class TippeData:
         self.teams = []
         self.csv = ""
         self.min_played = 0
-        self.standings = []
+        self.standings = []  # [ [pos, name, n_played, goal_diff, n_points] ]
 
     def set_data_dict(self, entries):
         self.data_dict = {}
@@ -67,7 +68,7 @@ class TippeData:
     def compute_points(self, name):
         prediction = self.data_dict[name]['prediction']
         total_points = 0
-        print("standings: ", self.standings)
+        #print("standings: ", self.standings)
         for row in self.standings:
             team_name = row[1].split(" ")[0]
             team_ind = prediction.index(team_name) # index of team in prediction
@@ -101,31 +102,12 @@ class TippeData:
         #self.update_teams()
 
 
-    # Main history function
+    # Main history function TODO 
     def update_teams(self):
         # Find minimum number of matches played by everyone
         self.min_played = min(self.standings, key=lambda team: team[2])[2]
         # Check how many are saved in csv file
         csv_min_played = self.reader.get_min_matches_played()
-
-        # See what work we must do
-        # matches_to_add = self.min_played - csv_min_played
-        # history = []
-        # if (matches_to_add > 0):
-        #     # Fetch online results
-        #     for team in self.teams:
-        #         self.scraper.get_team_history(team)
-        #         self.update_team_history(team)
-        #     history_csv = self.update_historic_standings()
-        #     self.reader.update_csv(history_csv, matches_to_add, self.min_played)
-        #     # rewrite history to compute format
-        #     history = [[
-        #         [i+1, j+1, history_csv[i][j][0], history_csv[i][j][1], history_csv[i][j][2]]
-        #         for j in range(N_TEAMS)] for i in range(self.min_played)]
-
-        # elif (matches_to_add < 0):
-        #     assert(True), "err"
-        # else: #compute using csv file
         #     history = self.reader.get_csv_history()
         history = self.reader.get_csv_history() #TODO: PLACEHOLDER FOR BUG. FIX THIS! 
         # Compute points using history
@@ -190,47 +172,12 @@ class TippeData:
             history.append(standings)
         print("row in history:", history[0][0])
         return history
+    
+    def print_standings(self):
+        print("POS,TEAM,PLAYED,GD,POINTS")
+        for r in self.standings:
+            print(r)
 
-
-
-class CsvReader:
-    def __init__(self, filename : str, n_teams : int):
-        self.csv = filename
-        self.n_teams = n_teams
-
-    def get_min_matches_played(self):
-        # check if the current table is already saved
-        with open(self.csv, 'r', encoding='utf-8') as f:
-            reader = csv.reader(f)
-            rows = list(reader)
-            if len(rows) <= 1:
-                return 0
-            # return number of matches played at end line
-            return int(rows[-1][0])
-
-    def get_csv_history(self):
-        history = []
-        with open(self.csv, 'r', encoding='utf-8') as f:
-            reader = csv.reader(f)
-            rows = list(reader)
-            min_played = (int)((len(rows)-1) / self.n_teams)
-            for i in range(min_played):
-                # Append [n_played, pos, team, gd, points]
-                standings = rows[(1 + i*self.n_teams) : (1+self.n_teams + i*self.n_teams)]
-                history.append(standings)
-        print(f"Fetched {min_played} match(es) from file")
-        return history
-
-    def update_csv(self, history, n_matches_to_add, min_played):
-        with open(self.csv, 'a',newline="", encoding='utf-8') as f:
-            writer = csv.writer(f)
-            for n in range(min_played-n_matches_to_add+1, min_played+1):
-                print("Adding standings after match number ", n)
-                standings = history[n-1]
-                for j in range(len(standings)):
-                    # Match number, Position, Team name, GD, Points
-                    writer.writerow([n, j+1, standings[j][0], standings[j][1], standings[j][2]])
-        print(f"Wrote {n_matches_to_add} match(es) to file")
 
 
 
