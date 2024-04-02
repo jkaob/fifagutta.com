@@ -2,30 +2,40 @@ import csv
 
 class Team:
     def __init__(self, team_name, team_short=""):
-        self.name = team_name
-        self.short = team_short
+        self.name = team_name.split(" ")[0]  #  e.g. Sandnes
+        self.name_full = team_name # e.g. Sandnes Ulf
+        self.short = team_short  # Abbreviation (ULF)
         self.url = None
-        self.match_results = [] #W,L,D for each match
-        self.match_gd = [] #GD for each match
+        self.match_results = [] # e.g. [W, D, L, D, ]
+        self.match_gd = [] #GD for each match [+3, -2, -1]
         self.cm_points = [] # cumulative
         self.cm_gd = []
         self.cm_pos = []
         self.n_played = 0
 
 class Contestant:
-    def __init__(self, name) -> None:
+    def __init__(self, name, name_short="") -> None:
         self.name = name
         self.data = {
             'points': 0,  # total points
             'normalized': 0.0,
-            'prediction': [],
-            'delta' : [],
-            'points_history' : []  #how many points after each game played
+            'prediction': [],  # ranked team names # TODO : replace with teams themselves
+            #'short' : [],
+            'delta' : [],  # for each team, how many penalty points
+            'points_history' : [],  #how many points contestant had after each game played
         }
+        self.short = name_short
+        self.avatar = ""  # path to avatar #TODO
+
+    def set_avatar(self, path):
+        self.avatar = path
+
     def set_prediction(self, prediction):
         self.data['prediction'] = prediction
         self.data['delta'] = [0] * len(prediction)
 
+    # def set_prediction_short(self, prediction_short):
+    #     self.data['short'] = prediction_short
 
 class Scraper:
     def __init__(self, url, csv) -> None:
@@ -45,60 +55,106 @@ class TippeData:
         self.scraper = None #Scraper()  # to get table
         self.reader = None
         # Initialize dict with points computation
+
+        # list of Contestant objects, each with their betting data
+        self.contestants = []
         
         # Initialize teams list with url to match history
-        self.data_dict = {}
+        #self.data_dict = {} # key: name. value: contestants.data
         self.teams = []
         self.csv = ""
         self.min_played = 0
         self.standings = []  # [ [pos, name, n_played, goal_diff, n_points] ]
 
-    def set_data_dict(self, entries):
-        self.data_dict = {}
-        for name, value in entries.items():
-            contestant = Contestant(name)
-            contestant.set_prediction(value)
-            self.data_dict[name] = contestant.data
+    def set_contestant(self, contestant):
+        for c in self.contestants:
+            if c.name == contestant.name:
+                print(f"contestant {c.name} already added")
+                return
+        self.contestants.append(contestant)
 
+    def get_contestant(self, name):
+        for c in self.contestants:
+            if c.name == name:
+                return c
+            
+    def get_team(self, team_name):
+        for team in self.teams:
+            if team.name == team_name \
+                or team.name.split(' ')[0] == team_name.split(' ')[0] \
+                or team.name.split(' ')[0] == team_name:
+                    return team
+        print(f"could not find team {team_name}!")
+        return None
+    
+    def get_team_short(self, team_name):
+        team = self.get_team(team_name)
+        if team is None or not team.short:
+            print(f"could not find team {team_name} short")
+            return None
+        return team.short
+
+    # def set_data_dict(self, entries):
+    #     if not self.teams:
+    #         print(f"teams not set! cant set data dict")
+    #         return
+        
+    #     self.data_dict = {}
+    #     for name, value in entries.items():
+    #         contestant = Contestant(name)
+    #         contestant.set_prediction(value)
+    #         team_shorts = [self.get_team_short(team_name) for team_name in value]
+    #         contestant.set_prediction_short(team_shorts)
+    #         self.data_dict[name] = contestant.data
 
     def fetch_standings(self):
         self.standings = self.scraper.get_standings()
         return self.standings
 
     def compute_points(self, name):
-        prediction = self.data_dict[name]['prediction']
+        contestant = self.get_contestant(name)
+        prediction = contestant.data['prediction']
         total_points = 0
         #print("standings: ", self.standings)
         for row in self.standings:
             team_name = row[1].split(" ")[0]
-            team_ind = prediction.index(team_name) # index of team in prediction
+            # team_ind = prediction.index(team_name) 
+            # index of team in prediction
+            team_ind = next((index for index, obj in enumerate(prediction) \
+                             if obj.name == team_name), None)
             prediction_pos = team_ind+1 # table placement
             team_pos = row[0]
-            points = abs(prediction_pos - team_pos)
-            self.data_dict[name]['delta'][team_ind] = points # store points
+            points = abs(prediction_pos - team_pos) # TODO - not use absolute here, but later 
+            contestant.data['delta'][team_ind] = points # store points
             total_points += points
-        self.data_dict[name]['points'] = total_points # store total points
+        contestant.data['points'] = total_points # store total points
         return total_points
 
-    def update_dict(self):
-        for name in self.data_dict:
-            points = self.compute_points(name)
-            self.data_dict[name]['points'] = points
-        # Add normalized
-        max_points = self.data_dict[max(self.data_dict, key=lambda x: self.data_dict[x]['points'])]['points']
-        for name in self.data_dict:
-            self.data_dict[name]['normalized'] = self.data_dict[name]['points'] / max_points
+    def update_current_points(self):
+        for contestant in self.contestants:
+            self.compute_points(contestant.name)
+        # Add normalized points for visualization
+        max_points = max(contestant.data['points'] for contestant in self.contestants)
+        for contestant in self.contestants:
+            contestant.data['normalized'] = contestant.data['points'] / max_points
 
+
+    def get_sorted_contestants(self):
+        sorted_contestants = sorted(self.contestants, key=lambda contestant: contestant.data['points'])
+        return sorted_contestants
+        # Create a dictionary with contestant names as keys and their data as values, sorted by 'points'
+        #return {contestant.name: contestant.data for contestant in sorted(self.contestants, key=lambda contestant: contestant.data['points'])}
+    
     def get_sorted_names(self):
-        return sorted(self.data_dict.keys(), key=lambda x: self.data_dict[x]['points'])
-
-    def get_sorted_dict(self):
-        return dict(sorted(self.data_dict.items(), key=lambda x: x[1]['points'], reverse=False))
+        # Sort the contestants based on 'points' and return their names
+        return [contestant.name for contestant in self.get_sorted_contestants()]
 
 
+    # MAIN FCN - DO THIS ONLINE
     def update(self):
         self.fetch_standings()
-        self.update_dict()
+        self.update_current_points()
+        self.update_teams_history() # TODO
         #self.update_teams()
 
 
@@ -119,8 +175,8 @@ class TippeData:
         for m in range(len(history)):
             match_standings = history[m]
             # for ea contestant
-            for name in self.data_dict.keys():
-                prediction = self.data_dict[name]['prediction']
+            for contestant in self.contestants:
+                prediction = contestant.data['prediction']
                 total_points = 0
                 # for ea team: [Match number, Position, Team name, GD, Points]
                 for row in match_standings:
@@ -177,6 +233,10 @@ class TippeData:
         print("POS,TEAM,PLAYED,GD,POINTS")
         for r in self.standings:
             print(r)
+
+    def print_contestants(self):
+        for c in self.get_sorted_contestants():
+            print(f"{c.name}: {c.data['points']} points")
 
 
 

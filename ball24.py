@@ -96,11 +96,12 @@ class Scraper24(Scraper):
                 name = team_element.string # team name
 
                 td_elements = row.find_all("td") # get number data
-                assert len(td_elements) == 10, f"Expected 10 elements, found  {len(td_elements)}"
+                n_exp = 11
+                assert len(td_elements) == n_exp, f"Expected {n_exp} elements, found  {len(td_elements)}"
                 pos = int(td_elements[0].get_text())
                 n_played = int(td_elements[2].get_text())
-                goal_diff = int(td_elements[-2].get_text())
-                n_points = int(td_elements[-1].get_text())
+                goal_diff = int(td_elements[-3].get_text())
+                n_points = int(td_elements[-2].get_text())
                 # Append team status to current standings
                 team = [pos, name, n_played, goal_diff, n_points]
                 standings.append(team)
@@ -111,29 +112,47 @@ class TippeData24(TippeData):
     def __init__(self):
         super().__init__()
         self.teams = [
-            Team('Aalesund', 'AFK'),
+            Team('Aalesund', 'AAFK'),
             Team('Bryne', 'BRY'),
-            Team('Egersund', 'EGE'),
+            Team('Egersund', 'EGER'),
             Team('Kongsvinger', 'KIL'),
             Team('Levanger', 'LEV'),
             Team('Lyn', 'LYN'),
             Team('Mjøndalen', 'MIF'),
-            Team('Moss', 'MOS'),
+            Team('Moss', 'MOSS'),
             Team('Ranheim TF', 'RAN'),
             Team('Raufoss', 'RAU'),
             Team('Sandnes Ulf', 'ULF'),
-            Team('Sogndal', 'SGN'),
+            Team('Sogndal', 'SOGN'),
             Team('Stabæk', 'STB'),
-            Team('Start', 'STR'),
+            Team('Start', 'STRT'),
             Team('Vålerenga', 'VIF'),
             Team('Åsane', 'ÅSA'),
         ]
         self.reader = CsvReader24("data/2024.csv", self.teams)
         self.scraper = Scraper24()
 
-        entries = data.tips24.ENTRIES
-        self.set_data_dict(entries)
+        entries = data.tips24.ENTRIES # {Name: List[team_name]}
+        self.prepare_contestant_entries(entries)
 
+    def prepare_contestant_entries(self, entries):
+        if not self.teams:
+            print(f"teams not set! cant set data dict")
+            return
+        # entries: {Name: { prediction: [], short: "", avatar : ""} }
+        for name, data in entries.items():
+            contestant = Contestant(name, data['short'])
+            contestant.set_avatar(data['avatar'])
+            prediction = []
+            for team_name in data['prediction']: # add each team in order 
+                team = self.get_team(team_name)
+                if not team:
+                    print(f"did not find team {team_name}")
+                    return
+                prediction.append(team)
+            contestant.set_prediction(prediction)
+            # add contestant to list of contestants
+            self.set_contestant(contestant)
 
     def update_team_csv(self):
         updated_something = False
@@ -162,18 +181,20 @@ class TippeData24(TippeData):
 
 def main():
     ball = TippeData24()
+    
     ball.fetch_standings()
-    ball.update_dict()
-
     ball.print_standings()
+    
+    ball.update_current_points()
+    ball.print_contestants()
+    
+    return 
 
     n = ball.reader.get_min_matches_played()
 
     for name in ball.get_sorted_names():
         e = ball.data_dict[name]
         print(name,":", e['points'], f"[{e['normalized']:.2f}]")
-
-    s = ball.get_sorted_dict()
 
 
 
