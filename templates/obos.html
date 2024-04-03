@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description"
-content="Fifagutta tipper tabellen.">
+content="Fifagutta tipper OBOS.">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -28,7 +28,7 @@ content="Fifagutta tipper tabellen.">
 
   /* First image (Logo. Full height) */
   .bgimg-1 {
-    background-image: url('/static/drillo2.jpg');
+    background-image: url('/static/bob.jpg');
     min-height: 100%;
   }
 
@@ -40,7 +40,7 @@ content="Fifagutta tipper tabellen.">
 
   /* Third image (Contact) */
   .bgimg-3 {
-    background-image: url("/static/bjarmann2.jpg");
+    background-image: url("/static/drillo2.jpg");
     min-height: 400px;
   }
 
@@ -65,7 +65,7 @@ content="Fifagutta tipper tabellen.">
     },
     #chart-container {
     height: 400px; /* Set height to 400px for screens 700px or narrower */
-  }
+    }
   }
   /* Add custom styles for tabs */
   .tab {
@@ -122,18 +122,20 @@ content="Fifagutta tipper tabellen.">
 
 
 <!-- Container (About Section) -->
-<div class="w3-content w3-container w3-padding-64" id="about">
-    <div class="w3-center w3-xxlarge" > Fifagutta tipper tabellen</div>
-  <p class="w3-justify w3-text-grey w3-large"><em>
-
-Fifagutta (og Herman Ø) har fått reisning da de hørte at innsatsen var hele 50 kr per hode. <br>
-Minst én har dermed tippet helt riktig, sies det. Det får vi mest sannsynligvis vite etter siste serierunde, 2. desember. </em>
-</p>
-<p class="w3-justify w3-text-grey w3-large">
-
-<b>Regler:</b> Man får ett poeng for hver plass et lag er feil plassert, for hvert lag. Den med minst poeng vinner.
-
-  </p> </div>
+<div class="w3-content w3-container w3-padding-64" id="about" style="max-width: 800px; margin: auto;">
+  <div class="w3-center w3-xxlarge">Fifagutta tipper tabellen</div>
+  <p class="w3-justify w3-text-grey w3-large" style="text-align: center;"><em>
+    Til tross for nedrykk, er skyene bak himmelen alltid Blaa! 
+    <br>
+    Vi slipper VAR. Vi slipper Bergen. Vi vil ha eksotiske bortekamper, noe som byr på unike reiser og nye eventyr for oss trofaste supportere. 
+    La oss se frem til disse mulighetene og sammen støtte laget vårt på veien tilbake. 
+    <br><br>
+    Tenk deg en uforglemmelig opplevelse som premie - kanskje en drømmeferie for hele familien, billetter til et familievennlig sted som en fornøyelsespark, 
+    eller til og med billetter til en utendørskonsert! Det vil avsløres på den store premieseremonien som vil finne sted i slutten av 2024.
+  </em></p>
+  <p class="w3-justify w3-text-grey w3-large" style="text-align: center;">
+    <b>Regler:</b> Man får ett poeng for hver plass et lag er feil plassert, for hvert lag. Den med minst poeng vinner.
+  </p>
 </div>
 
 <!-- Second Parallax Image with Logo Text -->
@@ -174,9 +176,34 @@ Minst én har dermed tippet helt riktig, sies det. Det får vi mest sannsynligvi
     </div>
   </div>
 
+  <!-- Table showing all bets next to each other -->
+  <div class="w3-content w3-container w3-padding-16" id="compact-entries">
+    <div class="w3-row w3-center w3-padding-16">
+      <div class="w3-xxlarge w3-blue w3-padding-10">TIPSENE</div>
+      <table class="w3-table-all w3-centered">
+        <tr class="w3-darkblue">
+          <th style="color: black"></th>
+          {% for contestant in contestants %}
+          <th style="color: black">{{ contestant.short }}</th>
+          {% endfor %}
+        </tr>
+        {% for i in range(1, 17) %} <!-- Assuming there are 16 teams -->
+        <tr>
+          <td style="font-weight: bold">{{ i }}</td>
+          {% for contestant in contestants %}
+          <td>{{ contestant.data['prediction'][i-1].short }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+
+
+<!-- Container (Bets Section) -->
 <div class="w3-content w3-container w3-padding-16" id="entries">
   <div class="w3-row w3-center w3-padding-16"><br>
-    <div class="w3-xxlarge w3-blue w3-padding-10">GUTTAS TABELLTIPS</div>
+    <div class="w3-xxlarge w3-blue w3-padding-10">Poengoversikt</div>
 
     <div class="w3-bar w3-center w3-darkblue">
         {% for name in names %}
@@ -184,31 +211,29 @@ Minst én har dermed tippet helt riktig, sies det. Det får vi mest sannsynligvi
         {% endfor %}
     </div>
 
-    {% for name in names %}
-    <div id="{{ name }}" class="tabcontent">
-      <div class="w3-large w3-text-grey w3-padding-8">{{ name + "s tabelltips:"}}</div> <!-- Add a headline element for tab name -->
-      <table class="w3-table-all">
-          <tr class="w3-darkblue">
-              <th style="width: 70px; color: black">Plassering</th>
-              <th style="color: black">Lag</th>
-              <th style="width: 60px; color: black"> Straffepoeng</th>
-              <!-- Add more columns as needed -->
-          </tr>
-          {% for team in data_dict[name]['prediction'] %}
-          <tr>
-              <td style="font-weight: bold">{{ loop.index }}</td>
-              <td>{{ team }}</td>
-              <td style="font-weight: bold; color: {% if data_dict[name]['delta'][loop.index-1] == 0 %}green{% elif data_dict[name]['delta'][loop.index-1] > 9 %}red{% endif %}">
-                {{ data_dict[name]['delta'][loop.index-1] }}
-              </td>
-              <!-- Render other data as needed -->
-          </tr>
-          {% endfor %}
-          <tr>
-            <td colspan="2" style="color: black; font-weight: bold;">SUM</td>
-            <td style="color: black; font-weight: bold;">{{ data_dict[name]['points'] }}</td>
-          </tr>
 
+    {% for contestant in contestants %}
+    <div id="{{ contestant.name }}" class="tabcontent">
+      <div class="w3-large w3-text-grey w3-padding-8">{{ contestant.name + "s tabelltips:"}}</div>
+      <table class="w3-table-all">
+        <tr class="w3-darkblue">
+          <th style="width: 70px; color: black">Plassering</th>
+          <th style="color: black">Lag</th>
+          <th style="width: 60px; color: black">Straffepoeng</th>
+        </tr>
+        {% for team in contestant.data['prediction'] %}
+        <tr>
+          <td style="font-weight: bold">{{ loop.index }}</td>
+          <td>{{ team.name_full }}</td>
+          <td style="font-weight: bold; color: {% if contestant.data['delta'][loop.index-1] == 0 %}green{% elif contestant.data['delta'][loop.index-1] > 9 %}red{% endif %}">
+            {{ contestant.data['delta'][loop.index-1] }}
+          </td>
+        </tr>
+        {% endfor %}
+        <tr>
+          <td colspan="2" style="color: black; font-weight: bold;">SUM</td>
+          <td style="color: black; font-weight: bold;">{{ contestant.data['points'] }}</td>
+        </tr>
       </table>
     </div>
     {% endfor %}
@@ -228,9 +253,8 @@ Minst én har dermed tippet helt riktig, sies det. Det får vi mest sannsynligvi
             document.getElementById(tabName).style.display = "block";
             document.getElementById(tabName).className += " active";
           }
-
         window.onload = function() {
-          var defaultTab = '{{ data_dict|first }}'; // Change this to set the default tab
+          var defaultTab = '{{ contestants[0].name }}'; // Change this to set the default tab
           openTab(defaultTab, defaultTab);
         };
     </script>
@@ -238,7 +262,6 @@ Minst én har dermed tippet helt riktig, sies det. Det får vi mest sannsynligvi
   </div>
 </div>
 
-<!-- Container (Portfolio Section) -->
 
 
 <!-- Modal for full size images on click-->
@@ -253,12 +276,9 @@ Minst én har dermed tippet helt riktig, sies det. Det får vi mest sannsynligvi
 
 <!-- Container (Contact Section) -->
 <div class="w3-content w3-container w3-padding-64" id="results">
-
-  <div class="w3-xlarge w3-center w3-blue w3-padding-10">RESULTATER</div>
-
+  <div class="w3-xlarge w3-center w3-blue w3-padding-10">Poengutvikling</div>
 
     <div class="w3-row w3-padding-8 w3-section">
-
       <style>
         .chart-container {
           width: 100%;
@@ -272,63 +292,70 @@ Minst én har dermed tippet helt riktig, sies det. Det får vi mest sannsynligvi
       <div class="chart-container">
         <canvas id="historyChart" style="height:500px;width:100%;max-width:1200px"></canvas>
       </div>
-
-
     </div>
 
-      <p class="w3-center w3-text-grey w3-medium"><em> Grafen over viser historisk poengutvikling etter at alle lag har spilt like mange kamper </em>
-      </p>
-
-
-      <p class="w3-center w3-large"><em>Under vises kontinuerlig oppdaterte resultater..</em></p>
+    <p class="w3-center w3-text-grey w3-medium">
+      <em> Grafen over viser historisk poengutvikling etter at alle lag har spilt like mange kamper </em>
+    </p>
 
   <div class="w3-row w3-padding-8 w3-section">
+  <div class="w3-xlarge w3-center w3-cyan w3-padding-10">LEDERTABELL</div>
 
-    {% for name, data in data_dict.items() %}
-    <p class="w3-large q3-padding-4 w3-text-black"></i>{{ loop.index|string + ". " +name }}</p>
-    <div class="w3-light-grey">
-      <div class="w3-container w3-padding-4 w3-dark-grey w3-center" style="width: {{ data.normalized * 100 }}%">
-        {{ data.points }}
-      </div>
+  {% for contestant in contestants %}
+  <div class="w3-row w3-margin-bottom">
+    <div class="w3-col s9 w3-large w3-text-black">
+      {{ loop.index }}. {{ contestant.name }}
     </div>
-    {% endfor %}
+    <div class="w3-col s3 w3-large w3-text-grey w3-right-align">
+      {{ contestant.data['points'] }} pts
+    </div>
   </div>
+  <div class="w3-light-grey">
+    <!-- Use loop.index to alternate colors -->
+    <div class="{{ 'w3-blue' if loop.index % 2 == 0 else 'w3-indigo' }}" style="height:24px;width:{{ contestant.data['normalized'] * 100 }}%"></div>
+  </div>
+  {% endfor %}
+</div>
+
+
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  const dataDict = JSON.parse('{{ data_dict|tojson }}');
-  const historyLength = {{ history_length }};
+  const contestants = JSON.parse('{{ contestants_json|tojson }}');  // Convert the list of Contestant objects to JSON
+  const historyLength = contestants[0].data.points_history.length; // Length of the first contestant's points_history
 
-  const labels = Object.keys(dataDict);
+  const labels = contestants.map(contestant => contestant.name);  // Use contestant names as labels
   const colors = ["plum", "cornflowerblue", "olive", "lightseagreen", "lightblue", "darkslateblue", "lightcoral", "peru", "palegreen"];
   const xValues = Array.from({length: historyLength}, (_, index) => index + 1);
+
   new Chart("historyChart", {
-  type: "line",
-  data: {
-    labels: xValues,
-    datasets: Object.keys(dataDict).map((key, index) => ({
-      data: dataDict[key]['points_history'],
-      label: key,
-      borderColor: colors[index],
-      fill: false
-    }))
-  },
-  options: {
-    legend: { display: true },
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-       x: {
-         display: true,
-         title: {
+    type: "line",
+    data: {
+      labels: xValues,
+      datasets: contestants.map((contestant, index) => ({
+        data: contestant.data.points_history,  // Use points_history from each contestant's data
+        label: contestant.name,
+        borderColor: colors[index % colors.length],  // Use modulo to loop through colors if there are more contestants than colors
+        fill: false
+      }))
+    },
+    options: {
+      legend: { display: true },
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+         x: {
            display: true,
-           text: 'Antall kamper spilt',
+           title: {
+             display: true,
+             text: 'Antall kamper spilt',
+           },
          },
+         // Other scale configurations if needed
        },
-       // Other scale configurations if needed
-     },
-   }
+     }
   });
 </script>
 
@@ -345,7 +372,7 @@ Minst én har dermed tippet helt riktig, sies det. Det får vi mest sannsynligvi
   <div class="w3-xlarge w3-section">
     <i class="fa fa-messenger w3-hover-opacity"></i>
   </div>
-  <p>Dette her er balleball <br> laget av Gianni Infantino 2023 </p>
+  <p>Dette her er balleball <br> laget av Schrødingers Støvel 2024 </p>
 </footer>
 
 
