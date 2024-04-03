@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 import common
-from common import Team, CsvReader, Scraper
+from common import Team, CsvReader, Scraper, TippeData, Contestant
 
 N_TEAMS = 16
 
@@ -101,6 +101,80 @@ class Scraper23(Scraper):
                 print(home_team, goals_str, away_team, result, "gd =", goal_diff)
                 team.match_results.append(result)
                 team.match_gd.append(goal_diff)
+
+
+class TippeData23(TippeData):
+
+    # Main history function TODO 
+    def update_teams(self):
+        # Find minimum number of matches played by everyone
+        self.min_played = min(self.standings, key=lambda team: team[2])[2]
+        # Check how many are saved in csv file
+        csv_min_played = self.reader.get_min_matches_played()
+        #     history = self.reader.get_csv_history()
+        history = self.reader.get_csv_history() #TODO: PLACEHOLDER FOR BUG. FIX THIS! 
+        # Compute points using history
+        self.compute_points_history(history)
+
+
+    def compute_points_history(self, history):
+        # for ea match
+        for m in range(len(history)):
+            match_standings = history[m]
+            # for ea contestant
+            for contestant in self.contestants:
+                prediction = contestant.data['prediction']
+                total_points = 0
+                # for ea team: [Match number, Position, Team name, GD, Points]
+                for row in match_standings:
+                    team_name = row[2].split(" ")[0]
+                    team_ind = prediction.index(team_name) # index of team in prediction
+                    prediction_pos = team_ind+1 # table placement
+                    team_pos = (int)(row[1])
+                    points = abs(prediction_pos - team_pos)
+                    total_points += points
+                self.data_dict[name]['points_history'].append(total_points)
+
+
+    def update_team_history(self, team):
+        if len(team.cm_points) == len(team.match_results):
+            return # already updated (probably)
+        team.n_played = len(team.match_results)
+        points = 0
+        gd = 0
+        for i in range(team.n_played):
+            if (team.match_results[i] == "W"):
+                points += 3
+            elif (team.match_results[i] == "D"):
+                points += 1
+            gd += team.match_gd[i]
+            team.cm_points.append(points)
+            team.cm_gd.append(gd)
+
+
+    def update_historic_standings(self):
+        # Clear historic position
+        for team in self.teams:
+            team.cm_pos = []
+        history = []
+        # Basically create standings for each match played
+        for i in range(self.min_played):
+            standings = []
+            for team in self.teams:
+                info = (team.name, team.cm_gd[i], team.cm_points[i])
+                standings.append(info)
+            # Sort standings on points and GD
+            standings.sort(key=lambda x: (x[2], x[1]), reverse=True)
+            print(f"\nGame #{i+1}:\nPos |   Team    | GD | Points ")
+            for i in range(len(standings)):
+                print(i+1, standings[i])
+                # Save historic position to the teams object
+                team_name = standings[i][0]
+                team_ref = next((team for team in self.teams if team.name == team_name), None) # find it
+                team_ref.cm_pos.append(i+1)
+            history.append(standings)
+        print("row in history:", history[0][0])
+        return history
 
 
 

@@ -310,6 +310,10 @@ class TippeData24(TippeData):
     def compute_contestant_points_timeseries(self):
         # read csv file "POS" for i in range(n_min_played)
         n_pos_written = self.reader.get_n_pos_rows_written()
+        
+        for contestant in self.contestants:
+            contestant.data['points_history'] = [] # empty previous stuff
+
         for round_number in range(1, n_pos_written+1):
             round_standings = self.reader.get_simple_standings_at_round_number(round_number)
             print("Round", round_number, "standings:", round_standings)
@@ -329,8 +333,27 @@ class TippeData24(TippeData):
                 # append round points to history
                 contestant.data['points_history'].append(round_points)
 
-    def update_teams(self):
-        did_update_teams = self.update_team_csv()
+
+
+    # MAIN FCN - DO THIS ONLINE
+    def update_contestants(self):
+        self.fetch_standings() # get latest standings online
+        self.update_current_points()  # compute current points of contestants
+        # Assuming CSV file has been updated
+        self.compute_contestant_points_timeseries()
+
+    # TO BE RUN BY WORKFLOW
+    def update_csv(self):
+        self.fetch_standings()
+        self.update_team_csv()
+        self.update_csv_positions()
+    # print("\n  # Get number of Pos Rows Written")
+    # ball.reader.get_n_pos_rows_written()
+
+    # print("\n  # Compute Standings After Full Round")
+    # ball.compute_standings_after_full_round(round_number=1)
+
+
 
 
 
@@ -349,11 +372,11 @@ def main():
     print("\n  # Update CSV with latest games")
     ball.update_team_csv()
     
-    print("\n  # Get number of Pos Rows Written")
-    ball.reader.get_n_pos_rows_written()
+    # print("\n  # Get number of Pos Rows Written")
+    # ball.reader.get_n_pos_rows_written()
 
-    print("\n  # Compute Standings After Full Round")
-    ball.compute_standings_after_full_round(round_number=1)
+    # print("\n  # Compute Standings After Full Round")
+    # ball.compute_standings_after_full_round(round_number=1)
     
     print("\n  # Update CSV positions")
     ball.update_csv_positions()

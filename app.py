@@ -9,16 +9,17 @@ balleball = TippeData24()
 
 @app.route('/')
 def index():
-	balleball.update()
+	balleball.update_contestants()
 	contestants = balleball.get_sorted_contestants()
+	contestants_json = [contestant.to_dict() for contestant in contestants]
 	names = balleball.get_sorted_names()
-	dict_sorted = balleball.get_sorted_dict()
 	standings = balleball.standings
 	return render_template(
 		'obos.html',
 		standings=standings,
 		names=names,
-		contestants=contestants, # TODO
+		contestants=contestants, 
+		contestants_json=contestants_json
 	)
 	
 

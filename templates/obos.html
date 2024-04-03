@@ -179,12 +179,12 @@ content="Fifagutta tipper OBOS.">
   <!-- Table showing all bets next to each other -->
   <div class="w3-content w3-container w3-padding-16" id="compact-entries">
     <div class="w3-row w3-center w3-padding-16">
-      <div class="w3-xxlarge w3-blue w3-padding-10">Oversikt</div>
+      <div class="w3-xxlarge w3-blue w3-padding-10">TIPSENE</div>
       <table class="w3-table-all w3-centered">
         <tr class="w3-darkblue">
           <th style="color: black"></th>
           {% for contestant in contestants %}
-          <th style="color: black">{{ contestant.name }}</th>
+          <th style="color: black">{{ contestant.short }}</th>
           {% endfor %}
         </tr>
         {% for i in range(1, 17) %} <!-- Assuming there are 16 teams -->
@@ -200,9 +200,10 @@ content="Fifagutta tipper OBOS.">
   </div>
 
 
+<!-- Container (Bets Section) -->
 <div class="w3-content w3-container w3-padding-16" id="entries">
   <div class="w3-row w3-center w3-padding-16"><br>
-    <div class="w3-xxlarge w3-blue w3-padding-10">TIPSENE</div>
+    <div class="w3-xxlarge w3-blue w3-padding-10">Poengoversikt</div>
 
     <div class="w3-bar w3-center w3-darkblue">
         {% for name in names %}
@@ -261,7 +262,6 @@ content="Fifagutta tipper OBOS.">
   </div>
 </div>
 
-<!-- Container (Portfolio Section) -->
 
 
 <!-- Modal for full size images on click-->
@@ -276,24 +276,88 @@ content="Fifagutta tipper OBOS.">
 
 <!-- Container (Contact Section) -->
 <div class="w3-content w3-container w3-padding-64" id="results">
+  <div class="w3-xlarge w3-center w3-blue w3-padding-10">Poengutvikling</div>
 
-  <div class="w3-xlarge w3-center w3-blue w3-padding-10">Resultater</div>
+    <div class="w3-row w3-padding-8 w3-section">
+      <style>
+        .chart-container {
+          width: 100%;
+          max-width: 1200px;
+          max-height: 600px;
+          height: 500px;
+        }
+      </style>
 
-  <div class="w3-row w3-padding-8 w3-section">
-
-    {% for name, data in data_dict.items() %}
-    <p class="w3-large q3-padding-4 w3-text-black"></i>{{ loop.index|string + ". " +name }}</p>
-    <div class="w3-light-grey">
-      <div class="w3-container w3-padding-4 w3-dark-grey w3-center" style="width: {{ data.normalized * 100 }}%">
-        {{ data.points }}
+      <!-- History chart -->
+      <div class="chart-container">
+        <canvas id="historyChart" style="height:500px;width:100%;max-width:1200px"></canvas>
       </div>
     </div>
-    {% endfor %}
+
+    <p class="w3-center w3-text-grey w3-medium">
+      <em> Grafen over viser historisk poengutvikling etter at alle lag har spilt like mange kamper </em>
+    </p>
+
+  <div class="w3-row w3-padding-8 w3-section">
+  <div class="w3-xlarge w3-center w3-cyan w3-padding-10">LEDERTABELL</div>
+
+  {% for contestant in contestants %}
+  <div class="w3-row w3-margin-bottom">
+    <div class="w3-col s9 w3-large w3-text-black">
+      {{ loop.index }}. {{ contestant.name }}
+    </div>
+    <div class="w3-col s3 w3-large w3-text-grey w3-right-align">
+      {{ contestant.data['points'] }} pts
+    </div>
   </div>
+  <div class="w3-light-grey">
+    <!-- Use loop.index to alternate colors -->
+    <div class="{{ 'w3-blue' if loop.index % 2 == 0 else 'w3-indigo' }}" style="height:24px;width:{{ contestant.data['normalized'] * 100 }}%"></div>
+  </div>
+  {% endfor %}
+</div>
 
 
 
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const contestants = JSON.parse('{{ contestants_json|tojson }}');  // Convert the list of Contestant objects to JSON
+  const historyLength = contestants[0].data.points_history.length; // Length of the first contestant's points_history
+
+  const labels = contestants.map(contestant => contestant.name);  // Use contestant names as labels
+  const colors = ["plum", "cornflowerblue", "olive", "lightseagreen", "lightblue", "darkslateblue", "lightcoral", "peru", "palegreen"];
+  const xValues = Array.from({length: historyLength}, (_, index) => index + 1);
+
+  new Chart("historyChart", {
+    type: "line",
+    data: {
+      labels: xValues,
+      datasets: contestants.map((contestant, index) => ({
+        data: contestant.data.points_history,  // Use points_history from each contestant's data
+        label: contestant.name,
+        borderColor: colors[index % colors.length],  // Use modulo to loop through colors if there are more contestants than colors
+        fill: false
+      }))
+    },
+    options: {
+      legend: { display: true },
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+         x: {
+           display: true,
+           title: {
+             display: true,
+             text: 'Antall kamper spilt',
+           },
+         },
+         // Other scale configurations if needed
+       },
+     }
+  });
+</script>
 
 <!-- Third Parallax Image with Portfolio Text -->
 <div class="bgimg-3 w3-display-container w3-opacity-min">

@@ -5,18 +5,25 @@ class Team:
         self.name = team_name.split(" ")[0]  #  e.g. Sandnes
         self.name_full = team_name # e.g. Sandnes Ulf
         self.short = team_short  # Abbreviation (ULF)
-        self.url = None
-        self.match_results = [] # e.g. [W, D, L, D, ]
-        self.match_gd = [] #GD for each match [+3, -2, -1]
-        self.cm_points = [] # cumulative
-        self.cm_gd = []
-        self.cm_pos = []
-        self.n_played = 0
-        self.match_history = {}  #  match_data = {
-            #     'points': csv_entry[2],
-            #     'gd': csv_entry[3],
-            #     'pos': None
-            # }
+        #self.match_results = [] # e.g. [W, D, L, D, ]
+        #self.match_gd = [] #GD for each match [+3, -2, -1]
+        #self.cm_points = [] # cumulative
+        #self.cm_gd = []
+        #self.cm_pos = []
+        #self.n_played = 0
+        self.match_history = {} # {key= match_number . Value= {
+                                #     'points': int,
+                                #     'gd': int,
+                                #     'pos': int
+                                # }
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'name_full': self.name_full,
+            'short': self.short,
+            # Include other necessary attributes
+        }
+
 
 class Contestant:
     def __init__(self, name, name_short="") -> None:
@@ -38,6 +45,23 @@ class Contestant:
     def set_prediction(self, prediction):
         self.data['prediction'] = prediction
         self.data['delta'] = [0] * len(prediction)
+
+    def to_dict(self):
+        #print("points history length: ", len(self.data['points_history']))
+        return {
+            'name': self.name,
+            'data': {
+                'points': self.data['points'],
+                'normalized': self.data['normalized'],
+                'prediction': [team.to_dict() for team in self.data['prediction']],
+                'delta': self.data['delta'],
+                'points_history': self.data['points_history'],
+                # Include other necessary attributes
+            },
+            'short': self.short,
+            'avatar': self.avatar,
+            # Include other necessary attributes
+        }
 
     # def set_prediction_short(self, prediction_short):
     #     self.data['short'] = prediction_short
@@ -160,80 +184,10 @@ class TippeData:
     def update(self):
         self.fetch_standings()
         self.update_current_points()
-        self.update_teams_history() # TODO
+        #self.update_teams_history() # TODO
         #self.update_teams()
 
 
-    # Main history function TODO 
-    def update_teams(self):
-        # Find minimum number of matches played by everyone
-        self.min_played = min(self.standings, key=lambda team: team[2])[2]
-        # Check how many are saved in csv file
-        csv_min_played = self.reader.get_min_matches_played()
-        #     history = self.reader.get_csv_history()
-        history = self.reader.get_csv_history() #TODO: PLACEHOLDER FOR BUG. FIX THIS! 
-        # Compute points using history
-        self.compute_points_history(history)
-
-
-    def compute_points_history(self, history):
-        # for ea match
-        for m in range(len(history)):
-            match_standings = history[m]
-            # for ea contestant
-            for contestant in self.contestants:
-                prediction = contestant.data['prediction']
-                total_points = 0
-                # for ea team: [Match number, Position, Team name, GD, Points]
-                for row in match_standings:
-                    team_name = row[2].split(" ")[0]
-                    team_ind = prediction.index(team_name) # index of team in prediction
-                    prediction_pos = team_ind+1 # table placement
-                    team_pos = (int)(row[1])
-                    points = abs(prediction_pos - team_pos)
-                    total_points += points
-                self.data_dict[name]['points_history'].append(total_points)
-
-
-    def update_team_history(self, team):
-        if len(team.cm_points) == len(team.match_results):
-            return # already updated (probably)
-        team.n_played = len(team.match_results)
-        points = 0
-        gd = 0
-        for i in range(team.n_played):
-            if (team.match_results[i] == "W"):
-                points += 3
-            elif (team.match_results[i] == "D"):
-                points += 1
-            gd += team.match_gd[i]
-            team.cm_points.append(points)
-            team.cm_gd.append(gd)
-
-
-    def update_historic_standings(self):
-        # Clear historic position
-        for team in self.teams:
-            team.cm_pos = []
-        history = []
-        # Basically create standings for each match played
-        for i in range(self.min_played):
-            standings = []
-            for team in self.teams:
-                info = (team.name, team.cm_gd[i], team.cm_points[i])
-                standings.append(info)
-            # Sort standings on points and GD
-            standings.sort(key=lambda x: (x[2], x[1]), reverse=True)
-            print(f"\nGame #{i+1}:\nPos |   Team    | GD | Points ")
-            for i in range(len(standings)):
-                print(i+1, standings[i])
-                # Save historic position to the teams object
-                team_name = standings[i][0]
-                team_ref = next((team for team in self.teams if team.name == team_name), None) # find it
-                team_ref.cm_pos.append(i+1)
-            history.append(standings)
-        print("row in history:", history[0][0])
-        return history
     
     def print_standings(self):
         print("POS,TEAM,PLAYED,GD,POINTS")
