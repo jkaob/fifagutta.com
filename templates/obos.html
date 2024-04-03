@@ -65,7 +65,7 @@ content="Fifagutta tipper OBOS.">
     },
     #chart-container {
     height: 400px; /* Set height to 400px for screens 700px or narrower */
-  }
+    }
   }
   /* Add custom styles for tabs */
   .tab {
@@ -179,23 +179,23 @@ content="Fifagutta tipper OBOS.">
   <!-- Table showing all bets next to each other -->
   <div class="w3-content w3-container w3-padding-16" id="compact-entries">
     <div class="w3-row w3-center w3-padding-16">
-        <div class="w3-xxlarge w3-blue w3-padding-10">Oversikt</div>
-        <table class="w3-table-all w3-centered">
-            <tr class="w3-darkblue">
-                <th style="color: black"></th>
-                {% for name in names %}
-                <th style="color: black">{{ name }}</th>
-                {% endfor %}
-            </tr>
-            {% for i in range(1, 17) %} <!-- Assuming there are 16 teams -->
-            <tr>
-                <td style="font-weight: bold">{{ i }}</td>
-                {% for name in names %}
-                <td>{{ data_dict[name]['short'][i-1] }}</td> <!-- Adjust if your data structure is different -->
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </table>
+      <div class="w3-xxlarge w3-blue w3-padding-10">Oversikt</div>
+      <table class="w3-table-all w3-centered">
+        <tr class="w3-darkblue">
+          <th style="color: black"></th>
+          {% for contestant in contestants %}
+          <th style="color: black">{{ contestant.name }}</th>
+          {% endfor %}
+        </tr>
+        {% for i in range(1, 17) %} <!-- Assuming there are 16 teams -->
+        <tr>
+          <td style="font-weight: bold">{{ i }}</td>
+          {% for contestant in contestants %}
+          <td>{{ contestant.data['prediction'][i-1].short }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
     </div>
   </div>
 
@@ -210,31 +210,29 @@ content="Fifagutta tipper OBOS.">
         {% endfor %}
     </div>
 
-    {% for name in names %}
-    <div id="{{ name }}" class="tabcontent">
-      <div class="w3-large w3-text-grey w3-padding-8">{{ name + "s tabelltips:"}}</div> <!-- Add a headline element for tab name -->
-      <table class="w3-table-all">
-          <tr class="w3-darkblue">
-              <th style="width: 70px; color: black">Plassering</th>
-              <th style="color: black">Lag</th>
-              <th style="width: 60px; color: black"> Straffepoeng</th>
-              <!-- Add more columns as needed -->
-          </tr>
-          {% for team in data_dict[name]['prediction'] %}
-          <tr>
-              <td style="font-weight: bold">{{ loop.index }}</td>
-              <td>{{ team }}</td>
-              <td style="font-weight: bold; color: {% if data_dict[name]['delta'][loop.index-1] == 0 %}green{% elif data_dict[name]['delta'][loop.index-1] > 9 %}red{% endif %}">
-                {{ data_dict[name]['delta'][loop.index-1] }}
-              </td>
-              <!-- Render other data as needed -->
-          </tr>
-          {% endfor %}
-          <tr>
-            <td colspan="2" style="color: black; font-weight: bold;">SUM</td>
-            <td style="color: black; font-weight: bold;">{{ data_dict[name]['points'] }}</td>
-          </tr>
 
+    {% for contestant in contestants %}
+    <div id="{{ contestant.name }}" class="tabcontent">
+      <div class="w3-large w3-text-grey w3-padding-8">{{ contestant.name + "s tabelltips:"}}</div>
+      <table class="w3-table-all">
+        <tr class="w3-darkblue">
+          <th style="width: 70px; color: black">Plassering</th>
+          <th style="color: black">Lag</th>
+          <th style="width: 60px; color: black">Straffepoeng</th>
+        </tr>
+        {% for team in contestant.data['prediction'] %}
+        <tr>
+          <td style="font-weight: bold">{{ loop.index }}</td>
+          <td>{{ team.name_full }}</td>
+          <td style="font-weight: bold; color: {% if contestant.data['delta'][loop.index-1] == 0 %}green{% elif contestant.data['delta'][loop.index-1] > 9 %}red{% endif %}">
+            {{ contestant.data['delta'][loop.index-1] }}
+          </td>
+        </tr>
+        {% endfor %}
+        <tr>
+          <td colspan="2" style="color: black; font-weight: bold;">SUM</td>
+          <td style="color: black; font-weight: bold;">{{ contestant.data['points'] }}</td>
+        </tr>
       </table>
     </div>
     {% endfor %}
@@ -254,9 +252,8 @@ content="Fifagutta tipper OBOS.">
             document.getElementById(tabName).style.display = "block";
             document.getElementById(tabName).className += " active";
           }
-
         window.onload = function() {
-          var defaultTab = '{{ data_dict|first }}'; // Change this to set the default tab
+          var defaultTab = '{{ contestants[0].name }}'; // Change this to set the default tab
           openTab(defaultTab, defaultTab);
         };
     </script>
@@ -280,7 +277,7 @@ content="Fifagutta tipper OBOS.">
 <!-- Container (Contact Section) -->
 <div class="w3-content w3-container w3-padding-64" id="results">
 
-  <div class="w3-xlarge w3-center w3-blue w3-padding-10">RESULTATER</div>
+  <div class="w3-xlarge w3-center w3-blue w3-padding-10">Resultater</div>
 
   <div class="w3-row w3-padding-8 w3-section">
 

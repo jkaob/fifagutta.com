@@ -12,6 +12,11 @@ class Team:
         self.cm_gd = []
         self.cm_pos = []
         self.n_played = 0
+        self.match_history = {}  #  match_data = {
+            #     'points': csv_entry[2],
+            #     'gd': csv_entry[3],
+            #     'pos': None
+            # }
 
 class Contestant:
     def __init__(self, name, name_short="") -> None:
@@ -19,7 +24,7 @@ class Contestant:
         self.data = {
             'points': 0,  # total points
             'normalized': 0.0,
-            'prediction': [],  # ranked team names # TODO : replace with teams themselves
+            'prediction': [],  # Team list in order
             #'short' : [],
             'delta' : [],  # for each team, how many penalty points
             'points_history' : [],  #how many points contestant had after each game played
@@ -51,7 +56,8 @@ class Scraper:
 
 class TippeData:
 
-    def __init__(self):
+    def __init__(self, debug=False):
+        self.debug = debug
         self.scraper = None #Scraper()  # to get table
         self.reader = None
         # Initialize dict with points computation
@@ -233,10 +239,13 @@ class TippeData:
         print("POS,TEAM,PLAYED,GD,POINTS")
         for r in self.standings:
             print(r)
+        print("-------------------------")
 
     def print_contestants(self):
+        print("---Current leaderboard---")
         for c in self.get_sorted_contestants():
             print(f"{c.name}: {c.data['points']} points")
+        print("-------------------------")
 
 
 

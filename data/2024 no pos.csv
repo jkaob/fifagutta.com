@@ -1,5 +1,5 @@
 team,n_played,points,gd,pos
-Stabæk,1,1,0,10
+Stabæk,1,1,0,-
 Stabæk,2,-,-,-
 Stabæk,3,-,-,-
 Stabæk,4,-,-,-
@@ -29,7 +29,7 @@ Stabæk,27,-,-,-
 Stabæk,28,-,-,-
 Stabæk,29,-,-,-
 Stabæk,30,-,-,-
-Aalesund,1,1,0,5
+Aalesund,1,1,0,-
 Aalesund,2,-,-,-
 Aalesund,3,-,-,-
 Aalesund,4,-,-,-
@@ -59,7 +59,7 @@ Aalesund,27,-,-,-
 Aalesund,28,-,-,-
 Aalesund,29,-,-,-
 Aalesund,30,-,-,-
-Bryne,1,3,2,2
+Bryne,1,3,2,-
 Bryne,2,-,-,-
 Bryne,3,-,-,-
 Bryne,4,-,-,-
@@ -89,7 +89,7 @@ Bryne,27,-,-,-
 Bryne,28,-,-,-
 Bryne,29,-,-,-
 Bryne,30,-,-,-
-Egersund,1,3,1,3
+Egersund,1,3,1,-
 Egersund,2,-,-,-
 Egersund,3,-,-,-
 Egersund,4,-,-,-
@@ -119,7 +119,7 @@ Egersund,27,-,-,-
 Egersund,28,-,-,-
 Egersund,29,-,-,-
 Egersund,30,-,-,-
-Kongsvinger,1,3,1,4
+Kongsvinger,1,3,1,-
 Kongsvinger,2,-,-,-
 Kongsvinger,3,-,-,-
 Kongsvinger,4,-,-,-
@@ -149,7 +149,7 @@ Kongsvinger,27,-,-,-
 Kongsvinger,28,-,-,-
 Kongsvinger,29,-,-,-
 Kongsvinger,30,-,-,-
-Levanger,1,1,0,6
+Levanger,1,1,0,-
 Levanger,2,-,-,-
 Levanger,3,-,-,-
 Levanger,4,-,-,-
@@ -179,7 +179,7 @@ Levanger,27,-,-,-
 Levanger,28,-,-,-
 Levanger,29,-,-,-
 Levanger,30,-,-,-
-Lyn,1,0,-3,16
+Lyn,1,0,-3,-
 Lyn,2,-,-,-
 Lyn,3,-,-,-
 Lyn,4,-,-,-
@@ -209,7 +209,7 @@ Lyn,27,-,-,-
 Lyn,28,-,-,-
 Lyn,29,-,-,-
 Lyn,30,-,-,-
-Mjøndalen,1,1,0,7
+Mjøndalen,1,1,0,-
 Mjøndalen,2,-,-,-
 Mjøndalen,3,-,-,-
 Mjøndalen,4,-,-,-
@@ -239,7 +239,7 @@ Mjøndalen,27,-,-,-
 Mjøndalen,28,-,-,-
 Mjøndalen,29,-,-,-
 Mjøndalen,30,-,-,-
-Moss,1,3,3,1
+Moss,1,3,3,-
 Moss,2,-,-,-
 Moss,3,-,-,-
 Moss,4,-,-,-
@@ -269,7 +269,7 @@ Moss,27,-,-,-
 Moss,28,-,-,-
 Moss,29,-,-,-
 Moss,30,-,-,-
-Ranheim,1,0,-1,13
+Ranheim,1,0,-1,-
 Ranheim,2,-,-,-
 Ranheim,3,-,-,-
 Ranheim,4,-,-,-
@@ -299,7 +299,7 @@ Ranheim,27,-,-,-
 Ranheim,28,-,-,-
 Ranheim,29,-,-,-
 Ranheim,30,-,-,-
-Raufoss,1,1,0,8
+Raufoss,1,1,0,-
 Raufoss,2,-,-,-
 Raufoss,3,-,-,-
 Raufoss,4,-,-,-
@@ -329,7 +329,7 @@ Raufoss,27,-,-,-
 Raufoss,28,-,-,-
 Raufoss,29,-,-,-
 Raufoss,30,-,-,-
-Sandnes,1,0,-1,14
+Sandnes,1,0,-1,-
 Sandnes,2,-,-,-
 Sandnes,3,-,-,-
 Sandnes,4,-,-,-
@@ -359,7 +359,7 @@ Sandnes,27,-,-,-
 Sandnes,28,-,-,-
 Sandnes,29,-,-,-
 Sandnes,30,-,-,-
-Sogndal,1,1,0,9
+Sogndal,1,1,0,-
 Sogndal,2,-,-,-
 Sogndal,3,-,-,-
 Sogndal,4,-,-,-
@@ -389,7 +389,7 @@ Sogndal,27,-,-,-
 Sogndal,28,-,-,-
 Sogndal,29,-,-,-
 Sogndal,30,-,-,-
-Start,1,0,-2,15
+Start,1,0,-2,-
 Start,2,-,-,-
 Start,3,-,-,-
 Start,4,-,-,-
@@ -419,7 +419,7 @@ Start,27,-,-,-
 Start,28,-,-,-
 Start,29,-,-,-
 Start,30,-,-,-
-Vålerenga,1,1,0,11
+Vålerenga,1,1,0,-
 Vålerenga,2,-,-,-
 Vålerenga,3,-,-,-
 Vålerenga,4,-,-,-
@@ -449,7 +449,7 @@ Vålerenga,27,-,-,-
 Vålerenga,28,-,-,-
 Vålerenga,29,-,-,-
 Vålerenga,30,-,-,-
-Åsane,1,1,0,12
+Åsane,1,1,0,-
 Åsane,2,-,-,-
 Åsane,3,-,-,-
 Åsane,4,-,-,-

@@ -11,14 +11,14 @@ balleball = TippeData24()
 def index():
 	balleball.update()
 	contestants = balleball.get_sorted_contestants()
-	dict_sorted = balleball.get_sorted_dict()
 	names = balleball.get_sorted_names()
+	dict_sorted = balleball.get_sorted_dict()
 	standings = balleball.standings
 	return render_template(
 		'obos.html',
 		standings=standings,
 		names=names,
-		data_dict=contestants, # TODO
+		contestants=contestants, # TODO
 	)
 	
 
