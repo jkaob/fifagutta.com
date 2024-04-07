@@ -71,7 +71,7 @@ class TippeData24(TippeData):
             Team('Ranheim TF', 'RAN'),
             Team('Raufoss', 'RAU'),
             Team('Sandnes Ulf', 'ULF'),
-            Team('Sogndal', 'SOGN'),
+            Team('Sogndal', 'SGN'),
             Team('Start', 'STA'),
             Team('Vålerenga', 'VIF'),
             Team('Åsane', 'ÅSA'),

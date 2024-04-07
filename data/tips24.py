@@ -19,7 +19,7 @@ ENTRIES = {
             'Egersund',
             ],
         "avatar": "static/avatar/mr.jpg",  # Example path to avatar image
-        "short": "Mr.M"  # Short form or abbreviation
+        "short": "MrM"  # Short form or abbreviation
     },
     "Bob Bradleyan": {
         "prediction" : [
@@ -63,7 +63,7 @@ ENTRIES = {
             'Levanger',
         ],
         "avatar": "path/to/myra_craig/avatar.png",  # Example path to avatar image
-        "short": "Myra"  # Short form or abbreviation
+        "short": "Myr"  # Short form or abbreviation
     },
     "ZaHaavi": {
         "prediction": [
@@ -85,7 +85,7 @@ ENTRIES = {
             'Åsane',
         ],
         "avatar": "path/to/zahaavi/avatar.png",
-        "short": "ZH"
+        "short": "ZaH"
     },
     "Schrødingers Støvel": {
         "prediction": [
@@ -107,7 +107,7 @@ ENTRIES = {
             'Åsane',
         ],
         "avatar": "path/to/schrodinger/avatar.png",
-        "short": "SS"
+        "short": "S.S"
     },
     "Joaqin Krave": {
         "prediction": [
@@ -129,7 +129,7 @@ ENTRIES = {
             'Raufoss',
         ],
         "avatar": "path/to/joaqin/avatar.png",
-        "short": "JK"
+        "short": "J.K"
     },
     "Facebook-bruker": {
         "prediction": [
@@ -151,7 +151,7 @@ ENTRIES = {
             'Levanger',
         ],
         "avatar": "path/to/facebookbruker/avatar.png",
-        "short": "FB"
+        "short": "F-B"
     },
     "ingo=goat": {
         "prediction": [
@@ -173,7 +173,7 @@ ENTRIES = {
             'Egersund',
         ],
         "avatar": "path/to/ingo/avatar.png",
-        "short": "ingo"
+        "short": "i=g"
     },
     "Herman Hammy Høstensen": {
         "prediction": [
@@ -195,6 +195,6 @@ ENTRIES = {
             'Levanger',
         ],
         "avatar": "path/to/herman/avatar.png",
-        "short": "H.Ø."
+        "short": "H.Ø"
     }
 }
