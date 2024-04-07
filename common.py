@@ -190,10 +190,12 @@ class TippeData:
 
     
     def print_standings(self):
-        print("POS,TEAM,PLAYED,GD,POINTS")
+        header = "{:<4} {:<15} {:<7} {:<4} {:<6}".format("POS", "TEAM", "PLAYED", "GD", "POINTS")
+        print(header)
         for r in self.standings:
-            print(r)
-        print("-------------------------")
+            line = "{:<4} {:<15} {:<7} {:<4} {:<6}".format(*r)
+            print(line)
+        print("-" * len(header))
 
     def print_contestants(self):
         print("---Current leaderboard---")

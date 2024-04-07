@@ -57,8 +57,10 @@ class CsvReader24():
         self.team_names = [t.name for t in teams]
         self.n_teams = len(self.team_names)
 
-    def get_team_entry(self, team_name, round_number):
-        with open(self.csv, 'r', encoding='utf-8') as f:
+    def get_team_entry(self, team_name, round_number, input_fname=""):
+        if input_fname == "":
+            input_fname = self.csv
+        with open(input_fname, 'r', encoding='utf-8') as f:
             reader = csv.reader(f)
             next(reader)  # Skip header row
             for row in reader:
@@ -71,32 +73,36 @@ class CsvReader24():
                 
 
     # n_matches for a specific team
-    def get_n_matches_played(self, team_name):
+    def get_n_matches_played(self, team_name, input_fname=""):
         n_matches_played = 0
-        with open(self.csv, 'r', encoding='utf-8') as f:
+        if input_fname == "":
+            input_fname = self.csv
+        with open(input_fname, 'r', encoding='utf-8') as f:
             reader = csv.reader(f)
             next(reader)  # Skip header row
             for row in reader:
                 if row[0] == team_name and row[2] != '-':
                     n_matches_played += 1
         if self.debug:
-            print(f"{team_name} has played {n_matches_played} matches")
+            print(f"{team_name} has {n_matches_played} matches saved")
         return n_matches_played
     
-    def get_min_matches_played(self):
+    def get_min_matches_played(self, input_fname=""):
         print("checking number of rounds played...")
         n_min = 2*(self.n_teams-1)
         for name in self.team_names:
-            n_played = self.get_n_matches_played(name)
+            n_played = self.get_n_matches_played(name, input_fname)
             n_min = min(n_min, n_played)
         print(f"->all teams have played at least {n_min} rounds")
         return n_min
     
     # checks file, and sees how many "pos" rows have been written via fcn write_team_pos()
     # i.e. how many standings
-    def get_n_pos_rows_written(self):
+    def get_n_pos_rows_written(self, input_fname=""):
         n_rows = None
-        with open(self.csv, 'r', newline='', encoding='utf-8') as f:
+        if input_fname == "":
+            input_fname = self.csv
+        with open(input_fname, 'r', encoding='utf-8') as f:
             reader = csv.reader(f)
             next(reader)
 
@@ -128,14 +134,16 @@ class CsvReader24():
                 print(f"ERROR! {current_team} has {current_n_rows} 'pos' rows, but expected {n_rows}!")
 
         if self.debug and n_rows is not None:
-            print(f"{n_rows} 'pos' rows have been written for each team")
+            print(f"->{n_rows} 'pos' rows already written for each team")
         return n_rows if n_rows is not None else 0
     
     
     # get sorted list of standings at round number
-    def get_simple_standings_at_round_number(self, round_number):
+    def get_simple_standings_at_round_number(self, round_number, input_fname=""):
         round_standings = []
-        with open(self.csv, 'r', newline='', encoding='utf-8') as f:
+        if input_fname == "":
+            input_fname = self.csv
+        with open(input_fname, 'r', encoding='utf-8') as f:
             reader = csv.reader(f)
             next(reader) # skip header
             for row in reader:
@@ -143,43 +151,58 @@ class CsvReader24():
                     if row[4].isdigit():
                         round_standings.append([row[0], int(row[4])])
                     else:
-                        print(f"ERROR: round {round_number} not found for team {row[0]}")
+                        raise ValueError(f"ERROR: round {round_number} not found for team {row[0]}")
+
         # sort and return
         round_standings.sort(key=lambda x: (x[1]))
         return round_standings
     
 
-    def write_team_entry(self, team_name, round_number, new_points, new_gd):
+    def write_team_entry(self, team_name, round_number, new_points, new_gd, output_fname="", input_fname=""):
         updated_rows = []
-        with open(self.csv, 'r', newline='', encoding='utf-8') as f:
+        new_row = None
+        if input_fname == "":
+            input_fname = self.csv
+        with open(input_fname, 'r', newline='', encoding='utf-8') as f:
             reader = csv.reader(f)
             for row in reader:
                 if row[0] == team_name and int(row[1]) == round_number:
-                    row[2] = new_points  # Update points
-                    row[3] = new_gd  # Update goal difference
+                    row[2] = str(new_points)  # Update points
+                    row[3] = str(new_gd)  # Update goal difference
+                    new_row = row
                 updated_rows.append(row)
-        with open(self.csv, 'w', newline='', encoding='utf-8') as f:
+            if new_row is None:
+                raise ValueError(f"ERROR: did not find row {round_number} for {team_name}!")
+
+        # write
+        if output_fname == "":
+            output_fname = self.csv
+        with open(output_fname, 'w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
             writer.writerows(updated_rows)
-        print(f"->added round {round_number} for {team_name}\n")
+        print(f"->wrote round {round_number} for {team_name}: {new_row}\n")
 
 
     # updates the "pos" column of a team
-    def write_team_pos(self, team_name, round_number, new_position):
+    def write_team_pos(self, team_name, round_number, new_position, output_fname="", input_fname=""):
         updated_rows = []
-        with open(self.csv, 'r', newline='', encoding='utf-8') as f:
+        if input_fname == "":
+            input_fname = self.csv
+        with open(input_fname, 'r', newline='', encoding='utf-8') as f:
             reader = csv.reader(f)
             for row in reader:
                 if row[0] == team_name and int(row[1]) == round_number:
                     if row[4] != "-":
-                        print(f"{team_name} pos already set")
-                        return False
+                        raise ValueError(f"ERROR: {team_name} pos already set")
                     row[4] = new_position  
                 updated_rows.append(row)
-        with open(self.csv, 'w', newline='', encoding='utf-8') as f:
+        # write
+        if output_fname == "":
+            output_fname = self.csv
+        with open(output_fname, 'w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
             writer.writerows(updated_rows)
-        print(f"->updated position at round {round_number} for {team_name}\n")
+        print(f"->wrote pos at round {round_number} for {team_name}\n")
         return True
 
 
@@ -189,20 +212,20 @@ class TippeData24(TippeData):
     def __init__(self, debug=False):
         super().__init__(debug)
         self.teams = [
-            Team('Aalesund', 'AAFK'),
+            Team('Stabæk', 'STB'),
+            Team('Aalesund', 'AFK'),
             Team('Bryne', 'BRY'),
-            Team('Egersund', 'EGER'),
+            Team('Egersund', 'EGE'),
             Team('Kongsvinger', 'KIL'),
             Team('Levanger', 'LEV'),
             Team('Lyn', 'LYN'),
             Team('Mjøndalen', 'MIF'),
-            Team('Moss', 'MOSS'),
+            Team('Moss', 'MOS'),
             Team('Ranheim TF', 'RAN'),
             Team('Raufoss', 'RAU'),
             Team('Sandnes Ulf', 'ULF'),
             Team('Sogndal', 'SOGN'),
-            Team('Stabæk', 'STB'),
-            Team('Start', 'STRT'),
+            Team('Start', 'STA'),
             Team('Vålerenga', 'VIF'),
             Team('Åsane', 'ÅSA'),
         ]
@@ -232,7 +255,7 @@ class TippeData24(TippeData):
             self.set_contestant(contestant)
 
     # update CSV file from current standings for each team not already updated
-    def update_team_csv(self):
+    def update_team_csv(self, output_fname="", input_fname=""):
         updated_something = False
         for team in self.teams:
             # find the row in standings for this teame
@@ -242,24 +265,26 @@ class TippeData24(TippeData):
                     team_standing = standing
                     break  # Exit loop once the matching team is found
             if team_standing is None:
-                print(f"err. did not find team {team.name} in standings")
+                print(f"ERROR did not find team {team.name} in standings")
                 return False
             
             team.n_played = int(team_standing[2]) 
-            csv_n_played = self.reader.get_n_matches_played(team.name)
+            csv_n_played = self.reader.get_n_matches_played(team.name, input_fname)
             if (team.n_played == csv_n_played): 
                 if self.debug:
-                    print(f"->already saved match {team.n_played} for {team.name}")
+                    print(f"already saved round {team.n_played} for {team.name}\n")
                 continue # already saved last match played - continue
 
-            self.reader.write_team_entry(team.name, team.n_played, team_standing[4], team_standing[3])
+            self.reader.write_team_entry(
+                team.name, team.n_played, team_standing[4], team_standing[3], 
+                output_fname, input_fname)
             updated_something = True
         return updated_something
     
-    def compute_standings_after_full_round(self, round_number):
+    def compute_standings_after_full_round(self, round_number, input_fname=""):
         # read historic data
         for team in self.teams:
-            csv_entry = self.reader.get_team_entry(team.name, round_number)
+            csv_entry = self.reader.get_team_entry(team.name, round_number, input_fname=input_fname)
             if csv_entry is None:
                 print("ERROR: Returning")
                 return 
@@ -289,34 +314,46 @@ class TippeData24(TippeData):
     
     # check CSV file, find min_played for all teams; check if min_played has "pos" for each team
     # if not, need to add "pos" for the teams
-    def update_csv_positions(self):
-        n_registered_matches = self.reader.get_min_matches_played()
-        n_registered_positions = self.reader.get_n_pos_rows_written()
+    # return if something was updated
+    def update_csv_positions(self, output_fname="", input_fname=""):
+        print("HEREEEE")
+        n_registered_matches = self.reader.get_min_matches_played(input_fname=input_fname)
+        n_registered_positions = self.reader.get_n_pos_rows_written(input_fname=input_fname)
+        if self.debug:
+            print(f"already registered {n_registered_matches} matches. already registered {n_registered_positions}")
         if n_registered_matches == n_registered_positions:
-            return True
+            print(f"->latest position already updated")
+            return False
         if abs(n_registered_positions-n_registered_matches) > 1:
             print(f"WARN: registered matches is {n_registered_matches} but registered positions is only {n_registered_positions} ")
-        
+            
         # Compute positions for all rounds that havent gotten this
         for round_number in range(n_registered_positions+1, n_registered_matches+1):
-            self.compute_standings_after_full_round(round_number)
+            self.compute_standings_after_full_round(round_number, input_fname)
 
         # Update "pos" column for each team
         for team in self.teams:
-            self.reader.write_team_pos(team.name, round_number, team.match_history[round_number]['pos'])
+            self.reader.write_team_pos(team.name, round_number, 
+                                       team.match_history[round_number]['pos'],
+                                       output_fname, input_fname="")
+        if self.debug:
+            print(f"->added 'pos' for each team round {n_registered_matches}")
+        return True
 
 
     # compute the points_history for each contestant, using csv positions
-    def compute_contestant_points_timeseries(self):
+    def compute_contestant_points_timeseries(self, input_fname=""):
         # read csv file "POS" for i in range(n_min_played)
-        n_pos_written = self.reader.get_n_pos_rows_written()
+        n_pos_written = self.reader.get_n_pos_rows_written(input_fname=input_fname)
         
         for contestant in self.contestants:
             contestant.data['points_history'] = [] # empty previous stuff
 
         for round_number in range(1, n_pos_written+1):
-            round_standings = self.reader.get_simple_standings_at_round_number(round_number)
-            print("Round", round_number, "standings:", round_standings)
+            round_standings = self.reader.get_simple_standings_at_round_number(round_number, input_fname=input_fname)
+
+            if self.debug:
+                print("Round", round_number, "standings:", round_standings)
             
             #compute points for each contestants using those standings
             for contestant in self.contestants:
@@ -335,23 +372,23 @@ class TippeData24(TippeData):
 
 
 
-    # MAIN FCN - DO THIS ONLINE
-    def update_contestants(self):
+    # TO BE RUN BY WORKFLOW
+    def update_csv(self, output_fname=""):
+        self.fetch_standings()
+        did_update = False
+        did_update = did_update or self.update_team_csv(output_fname=output_fname)
+        did_update = did_update or self.update_csv_positions(
+            output_fname=output_fname, input_fname=output_fname)
+        print(f"updated file {output_fname}: {did_update}")
+
+    # MAIN FCN - RUN AT REFRESH
+    def update_contestants(self, input_fname=""):
         self.fetch_standings() # get latest standings online
         self.update_current_points()  # compute current points of contestants
         # Assuming CSV file has been updated
-        self.compute_contestant_points_timeseries()
+        self.compute_contestant_points_timeseries(input_fname=input_fname)
+        print(f"computed contestants' points history")
 
-    # TO BE RUN BY WORKFLOW
-    def update_csv(self):
-        self.fetch_standings()
-        self.update_team_csv()
-        self.update_csv_positions()
-    # print("\n  # Get number of Pos Rows Written")
-    # ball.reader.get_n_pos_rows_written()
-
-    # print("\n  # Compute Standings After Full Round")
-    # ball.compute_standings_after_full_round(round_number=1)
 
 
 
@@ -361,16 +398,20 @@ def main():
     debug = True
     ball = TippeData24(debug)
 
+    temp_fname = "data/2024-debug.csv"
+
     print("\n  # Fetch standings")
     ball.fetch_standings()
     ball.print_standings()
 
-    print("\n  # Update points of contestants")
-    ball.update_current_points()
-    ball.print_contestants()
+    #print("\n  # Update points of contestants")
+    #ball.update_current_points()
+    #ball.print_contestants()
 
-    print("\n  # Update CSV with latest games")
-    ball.update_team_csv()
+    print(f"\n  # Update {temp_fname} with latest games")
+    ball.update_csv(output_fname=temp_fname)
+    ball.update_contestants(input_fname=temp_fname)
+
     
     # print("\n  # Get number of Pos Rows Written")
     # ball.reader.get_n_pos_rows_written()
@@ -378,18 +419,13 @@ def main():
     # print("\n  # Compute Standings After Full Round")
     # ball.compute_standings_after_full_round(round_number=1)
     
-    print("\n  # Update CSV positions")
-    ball.update_csv_positions()
+    # print("\n  # Update CSV positions")
+    # ball.update_csv_positions()
 
-    print("\n  # Compute Contestant Timeseries")
-    ball.compute_contestant_points_timeseries()
-
-    
-    
+    # print("\n  # Compute Contestant Timeseries")
+    # ball.compute_contestant_points_timeseries()
 
     
-    n = ball.reader.get_min_matches_played()
-
 
 
 
