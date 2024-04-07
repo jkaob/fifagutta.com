@@ -92,7 +92,6 @@ class TippeData:
         # Initialize teams list with url to match history
         #self.data_dict = {} # key: name. value: contestants.data
         self.teams = []
-        self.csv = ""
         self.min_played = 0
         self.standings = []  # [ [pos, name, n_played, goal_diff, n_points] ]
 
