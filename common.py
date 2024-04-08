@@ -35,6 +35,7 @@ class Contestant:
             #'short' : [],
             'delta' : [],  # for each team, how many penalty points
             'points_history' : [],  #how many points contestant had after each game played
+            'corrects' : []  # bool : True if prediction is correct
         }
         self.short = name_short
         self.avatar = ""  # path to avatar #TODO
@@ -45,6 +46,7 @@ class Contestant:
     def set_prediction(self, prediction):
         self.data['prediction'] = prediction
         self.data['delta'] = [0] * len(prediction)
+        self.data['corrects'] = [False] * len(prediction)
 
     def to_dict(self):
         #print("points history length: ", len(self.data['points_history']))
@@ -155,6 +157,7 @@ class TippeData:
             team_pos = row[0]
             points = abs(prediction_pos - team_pos) # TODO - not use absolute here, but later 
             contestant.data['delta'][team_ind] = points # store points
+            contestant.data['corrects'][team_ind] = (points == 0)
             total_points += points
         contestant.data['points'] = total_points # store total points
         return total_points

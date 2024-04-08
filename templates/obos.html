@@ -191,10 +191,19 @@ content="Fifagutta tipper OBOS.">
         <tr>
           <td style="font-weight: bold">{{ i }}</td>
           {% for contestant in contestants %}
-          <td>{{ contestant.data['prediction'][i-1].short }}</td>
+          <td style="{{ 'color: green; font-weight: bold;' if contestant.data['corrects'][i-1] else '' }}">{{ contestant.data['prediction'][i-1].short }}</td>
           {% endfor %}
         </tr>
         {% endfor %}
+        <!-- Add a new row for the total number of 'True's in 'corrects' -->
+        <tr class="w3-darkblue">
+          <th style="color: black;">&#x2714;</th> <!-- Checkmark emoji -->
+          {% for contestant in contestants %}
+          <th style="color: cadetblue"> <!-- Set text color to grey -->
+            {{ contestant.data['corrects'] | select('equalto', true) | list | length }}
+          </th>
+          {% endfor %}
+        </tr>
       </table>
     </div>
   </div>
