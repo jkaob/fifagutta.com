@@ -1,0 +1,46 @@
+name: update-csv
+
+on:  
+  schedule:
+    - cron: 0 23 * * *
+  workflow_dispatch:
+
+jobs:
+  update-csv:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'  # Use the version of Python that matches your project's requirements
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt  
+
+
+
+      - name: Update CSV and write to backup file
+        run: |
+          python -c "
+          import os
+          from ball24 import action_update_csv
+
+          # Call the action_update_csv function with dir_prefix set to GITHUB_WORKSPACE
+          action_update_csv(dir_prefix=os.getenv('GITHUB_WORKSPACE'), backup_only=True)
+          "
+
+      - name: Commit and push if there are changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add data/backup/time/*
+          git commit -m 'Update backup files' || echo 'No changes to commit'
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
