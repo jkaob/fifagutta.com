@@ -6,6 +6,7 @@ import data.tips24
 from common import TippeData, Scraper, Team, Contestant
 from reader import CsvReader24
 import os
+import datetime
 
 # get current standings every day
 # check each team n matches played
@@ -268,7 +269,7 @@ class TippeData24(TippeData):
             print(f"updated matches of file  {output_fname or self.reader.csv}")
         if updated_pos:
             print(f"updated positions of file  {output_fname or self.reader.csv}")
-        return updated_pos
+        return updated_pos, updated_matches
 
     # MAIN FCN - RUN AT REFRESH
     def update_contestants(self, input_fname=""):
@@ -277,6 +278,32 @@ class TippeData24(TippeData):
         # Assuming CSV file has been updated
         self.compute_contestant_points_timeseries(input_fname=input_fname)
         print(f"computed contestants' points history")
+
+
+def action_update_csv(backup_only=True):
+    ball = TippeData24()
+
+    now = datetime.datetime.now()
+    backup_time = f'data/backup/time/2024-{now.month:02d}-{now.day:02d}-{now.hour:02d}:{now.minute:02d}'
+
+    if backup_only:
+        ball.update_csv(output_fname=backup_time)
+        return
+    
+    updated_pos, updated_matches = ball.update_csv()
+
+    # make backup whenever something has changed
+    if updated_matches or updated_pos:
+        shutil.copy(ball.reader.csv, backup_time)
+        print(f"\nBackup file at {backup_time}")
+
+    if updated_pos:
+        num = ball.reader.get_n_pos_rows_written()
+        backup = f"data/backup/2024-r{num}"
+        shutil.copy(ball.reader.csv, backup)
+        print(f"\nBackup file at {backup}")
+
+
 
 
 
@@ -301,14 +328,21 @@ def main():
     else:
         print("\nFETCHING STANDINGS AND UPDATING CSV\n")
 
-        backup_fname = "data/backup/2024-"
-        updated_pos = ball.update_csv()
+        action_update_csv(backup_only=True)
 
-        if updated_pos:
-            num = ball.reader.get_n_pos_rows_written()
-            backup = f"data/backup/2024-r{num}"
-            shutil.copy(ball.reader.csv, backup)
-            print(f"\nBackup file at {backup}")
+        # update MAIN csv
+        # updated_pos, updated_mathces = ball.update_csv()
+
+        # if updated_matches or updated_pos:
+        #     backup = f"data/backup/2024-{MONTH}-{DAY}-{HOUR}:{MINUTE}"
+        #     shutil.copy(ball.reader.csv, backup)
+        #     print(f"\nBackup file at {backup}")
+
+        # if updated_pos:
+        #     num = ball.reader.get_n_pos_rows_written()
+        #     backup = f"data/backup/2024-r{num}"
+        #     shutil.copy(ball.reader.csv, backup)
+        #     print(f"\nBackup file at {backup}")
 
     #print("\n  # Update points of contestants")
     #ball.update_current_points()
