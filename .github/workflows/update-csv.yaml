@@ -27,13 +27,7 @@ jobs:
 
       - name: Update CSV and write to backup file
         run: |
-          python -c "
-          import os
-          from ball24 import action_update_csv
-
-          # Call the action_update_csv function with dir_prefix set to GITHUB_WORKSPACE
-          action_update_csv(dir_prefix=os.getenv('GITHUB_WORKSPACE'), backup_only=True)
-          "
+          python entrypoint.py
 
       - name: Commit and push if there are changes
         run: |
