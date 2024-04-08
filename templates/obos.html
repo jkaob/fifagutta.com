@@ -204,6 +204,15 @@ content="Fifagutta tipper OBOS.">
           </th>
           {% endfor %}
         </tr>
+        <!-- Display total points-->
+        <tr class="w3-darkblue"> 
+          <th style="color: black; font-weight: bold">P</th> 
+          {% for contestant in contestants %}
+          <th style="color: grey"> <!-- Set text color to grey -->
+            {{ contestant.data['points'] }}
+          </th>
+          {% endfor %}
+        </tr>
       </table>
     </div>
   </div>
