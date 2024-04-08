@@ -15,3 +15,4 @@ Nettsiden finner du på https://fifagutta.vercel.app
 - hvem har flest riktige 
 - hvilket lag har skuffet / imponert mest 
 - hvilket lag som ble tippet mest likt / forskjellig
+- gjennomsnittstabellen aka samlet fifagutta tips
