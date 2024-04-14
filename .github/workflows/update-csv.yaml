@@ -34,7 +34,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add data/backup/time/*
-          git pull
+          git pull origin main
           git commit -m 'Updated data with latest standings' || echo 'No changes to commit'
           git push
         env:
