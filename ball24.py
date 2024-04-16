@@ -310,8 +310,12 @@ def action_update_csv(dir_prefix=None, backup_only=True):
 
         # Hotfix - use full path to ensure stuff is saved
         full_csv_path = f"{dir_prefix}/data/2024.csv"
-        shutil.copy(ball.reader.csv, full_csv_path)
-        print(f"\nSaved CSV file at {full_csv_path}")
+        try:
+            shutil.copy(ball.reader.csv, full_csv_path)
+            print(f"\nSaved CSV file at {full_csv_path}")
+        except:
+            print(f"\nFile should be found at {full_csv_path}")
+            pass 
 
     if updated_pos:
         num = ball.reader.get_n_pos_rows_written()
