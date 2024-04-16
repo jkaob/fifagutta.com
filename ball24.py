@@ -259,6 +259,10 @@ class TippeData24(TippeData):
     def update_csv(self, output_fname="", input_fname=""):
         self.fetch_standings()
 
+        if (output_fname=="" and input_fname==""):
+            output_fname = self.reader.csv
+            input_fname = self.reader.csv
+
         updated_matches = self.update_team_csv(
             output_fname=output_fname, input_fname=input_fname)
         
@@ -280,7 +284,10 @@ class TippeData24(TippeData):
         print(f"computed contestants' points history")
 
 
-def action_update_csv(dir_prefix="", backup_only=True):
+def action_update_csv(dir_prefix=None, backup_only=True):
+    if (dir_prefix is None):
+        dir_prefix = os.getcwd()
+
     ball = TippeData24()
 
     now = datetime.datetime.now()
@@ -296,14 +303,19 @@ def action_update_csv(dir_prefix="", backup_only=True):
     # update main CSV file here
     updated_pos, updated_matches = ball.update_csv()
 
-    # make backup whenever something has changed
     if updated_matches or updated_pos:
+        # make backup whenever something has changed
         shutil.copy(ball.reader.csv, backup_time)
         print(f"\nBackup file at {backup_time}")
 
+        # Hotfix - use full path to ensure stuff is saved
+        full_csv_path = f"{dir_prefix}/data/2024.csv"
+        shutil.copy(ball.reader.csv, full_csv_path)
+        print(f"\nSaved CSV file at {full_csv_path}")
+
     if updated_pos:
         num = ball.reader.get_n_pos_rows_written()
-        backup = f"data/backup/2024-r{num}"
+        backup = f"{dir_prefix}/data/backup/2024-r{num}.csv"
         shutil.copy(ball.reader.csv, backup)
         print(f"\nBackup file at {backup}")
 
@@ -332,7 +344,7 @@ def main():
     else:
         print("\nFETCHING STANDINGS AND UPDATING CSV\n")
 
-        action_update_csv(backup_only=True)
+        action_update_csv(backup_only=False)
 
         # update MAIN csv
         # updated_pos, updated_mathces = ball.update_csv()
