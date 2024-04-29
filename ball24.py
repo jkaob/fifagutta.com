@@ -294,7 +294,7 @@ def action_update_csv(dir_prefix=None, backup_only=True):
 
     backup_dir = f"{dir_prefix}/data/backup/time"  # Adjust the directory path
     os.makedirs(backup_dir, exist_ok=True)  # Ensure the backup directory exists
-    backup_time = f"{backup_dir}/2024-{now.month:02d}-{now.day:02d}-{now.hour:02d}:{now.minute:02d}.csv"
+    backup_time = f"{backup_dir}/2024-{now.month:02d}-{now.day:02d}-{now.hour:02d}.{now.minute:02d}.csv"
 
     if backup_only:
         ball.update_csv(output_fname=backup_time)
