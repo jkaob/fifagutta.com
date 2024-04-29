@@ -16,6 +16,7 @@ class Team:
                                 #     'gd': int,
                                 #     'pos': int
                                 # }
+        self.avg_placement = 0
     def to_dict(self):
         return {
             'name': self.name,
@@ -65,8 +66,6 @@ class Contestant:
             # Include other necessary attributes
         }
 
-    # def set_prediction_short(self, prediction_short):
-    #     self.data['short'] = prediction_short
 
 class Scraper:
     def __init__(self, url, csv) -> None:
@@ -125,18 +124,6 @@ class TippeData:
             return None
         return team.short
 
-    # def set_data_dict(self, entries):
-    #     if not self.teams:
-    #         print(f"teams not set! cant set data dict")
-    #         return
-        
-    #     self.data_dict = {}
-    #     for name, value in entries.items():
-    #         contestant = Contestant(name)
-    #         contestant.set_prediction(value)
-    #         team_shorts = [self.get_team_short(team_name) for team_name in value]
-    #         contestant.set_prediction_short(team_shorts)
-    #         self.data_dict[name] = contestant.data
 
     def fetch_standings(self):
         self.standings = self.scraper.get_standings()
@@ -174,9 +161,7 @@ class TippeData:
     def get_sorted_contestants(self):
         sorted_contestants = sorted(self.contestants, key=lambda contestant: contestant.data['points'])
         return sorted_contestants
-        # Create a dictionary with contestant names as keys and their data as values, sorted by 'points'
-        #return {contestant.name: contestant.data for contestant in sorted(self.contestants, key=lambda contestant: contestant.data['points'])}
-    
+ 
     def get_sorted_names(self):
         # Sort the contestants based on 'points' and return their names
         return [contestant.name for contestant in self.get_sorted_contestants()]
@@ -186,8 +171,6 @@ class TippeData:
     def update(self):
         self.fetch_standings()
         self.update_current_points()
-        #self.update_teams_history() # TODO
-        #self.update_teams()
 
 
     

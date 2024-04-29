@@ -82,6 +82,29 @@ class TippeData24(TippeData):
 
         entries = data.tips24.ENTRIES # {Name: List[team_name]}
         self.prepare_contestant_entries(entries)
+        self.set_contestant(self.create_average_contestant())
+
+    def create_average_contestant(self):
+        for team in self.teams:
+            team.avg_placement = 0
+        for contestant in self.contestants:
+            for index, team in enumerate(contestant.data['prediction']):
+                self.teams[self.teams.index(team)].avg_placement += (index + 1)
+        for team in self.teams:
+            team.avg_placement = team.avg_placement / (float)(len(self.teams))
+
+        # sort teams based on their avg_placement in rising order
+        sorted_teams = sorted(self.teams, key=lambda x: x.avg_placement)
+        avg_contestant = Contestant("fifagutta", "AVG")
+        avg_contestant.set_prediction(sorted_teams)
+        
+        # Optionally, print each team's average placement for verification
+        if self.debug:
+            for team in sorted_teams:
+                print("team", team.name, "avg:", team.avg_placement)
+        # Return or store the average contestant
+        return avg_contestant
+
 
     def prepare_contestant_entries(self, entries):
         if not self.teams:
@@ -331,7 +354,7 @@ def action_update_csv(dir_prefix=None, backup_only=True):
 
 
 def main():
-    debug = False
+    debug = True
     ball = TippeData24(debug)
 
     if debug:
@@ -342,8 +365,8 @@ def main():
         ball.print_standings()
 
         print(f"\n  # Update {temp_fname} with latest games")
-        ball.update_csv(input_fname=temp_fname, output_fname=temp_fname)
-        ball.update_contestants(input_fname=temp_fname)
+        # ball.update_csv(input_fname=temp_fname, output_fname=temp_fname)
+        #ball.update_contestants(input_fname=temp_fname)
 
     else:
         print("\nFETCHING STANDINGS AND UPDATING CSV\n")
@@ -364,9 +387,9 @@ def main():
         #     shutil.copy(ball.reader.csv, backup)
         #     print(f"\nBackup file at {backup}")
 
-    #print("\n  # Update points of contestants")
-    #ball.update_current_points()
-    #ball.print_contestants()
+    print("\n  # Update points of contestants")
+    ball.update_current_points()
+    ball.print_contestants()
 
 
     
