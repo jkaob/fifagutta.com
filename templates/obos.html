@@ -59,6 +59,13 @@ content="Fifagutta tipper OBOS.">
     height: 600px; /* Set height to 600px for screens wider than 700px */
   }
  }
+ /* Make table scrollable on small screens */
+ @media (max-width: 800px) {
+    .scrollable-table {
+      overflow-x: auto; /* Enable horizontal scrolling */
+    }
+  }
+
   @media (max-width: 800px) {
     h1 {
       white-space: pre-line; /* Use pre-line to preserve line breaks */
@@ -180,40 +187,48 @@ content="Fifagutta tipper OBOS.">
   <div class="w3-content w3-container w3-padding-16" id="compact-entries">
     <div class="w3-row w3-center w3-padding-16">
       <div class="w3-xxlarge w3-blue w3-padding-10">TIPSENE</div>
-      <table class="w3-table-all w3-centered">
-        <tr class="w3-darkblue">
-          <th style="color: black"></th>
-          {% for contestant in contestants %}
-          <th style="color: black">{{ contestant.short }}</th>
+        <div class="scrollable-table"> <!-- Wrapper for scrollable table -->
+        <table class="w3-table-all w3-centered">
+          <tr class="w3-darkblue">
+            <th style="color: black"></th>
+            {% for contestant in contestants %}
+            <th style="color: black">
+              {% if contestant.short == "AVG" %}
+                <i class="fa fa-futbol-o"></i>
+              {% else %}
+                {{ contestant.short }}
+              {% endif %}
+            </th>
+            {% endfor %}
+          </tr>
+          {% for i in range(1, 17) %} <!-- Assuming there are 16 teams -->
+          <tr>
+            <td style="font-weight: bold">{{ i }}</td>
+            {% for contestant in contestants %}
+            <td style="{{ 'color: green; font-weight: bold;' if contestant.data['corrects'][i-1] else '' }}">{{ contestant.data['prediction'][i-1].short }}</td>
+            {% endfor %}
+          </tr>
           {% endfor %}
-        </tr>
-        {% for i in range(1, 17) %} <!-- Assuming there are 16 teams -->
-        <tr>
-          <td style="font-weight: bold">{{ i }}</td>
-          {% for contestant in contestants %}
-          <td style="{{ 'color: green; font-weight: bold;' if contestant.data['corrects'][i-1] else '' }}">{{ contestant.data['prediction'][i-1].short }}</td>
-          {% endfor %}
-        </tr>
-        {% endfor %}
-        <!-- Add a new row for the total number of 'True's in 'corrects' -->
-        <tr class="w3-darkblue">
-          <th style="color: black;">&#x2714;</th> <!-- Checkmark emoji -->
-          {% for contestant in contestants %}
-          <th style="color: cadetblue"> <!-- Set text color to grey -->
-            {{ contestant.data['corrects'] | select('equalto', true) | list | length }}
-          </th>
-          {% endfor %}
-        </tr>
-        <!-- Display total points-->
-        <tr class="w3-darkblue"> 
-          <th style="color: black; font-weight: bold">P</th> 
-          {% for contestant in contestants %}
-          <th style="color: grey"> <!-- Set text color to grey -->
-            {{ contestant.data['points'] }}
-          </th>
-          {% endfor %}
-        </tr>
-      </table>
+          <!-- Add a new row for the total number of 'True's in 'corrects' -->
+          <tr class="w3-darkblue">
+            <th style="color: black;">&#x2714;</th> <!-- Checkmark emoji -->
+            {% for contestant in contestants %}
+            <th style="color: cadetblue"> <!-- Set text color to grey -->
+              {{ contestant.data['corrects'] | select('equalto', true) | list | length }}
+            </th>
+            {% endfor %}
+          </tr>
+          <!-- Display total points-->
+          <tr class="w3-darkblue"> 
+            <th style="color: black; font-weight: bold">P</th> 
+            {% for contestant in contestants %}
+            <th style="color: grey"> <!-- Set text color to grey -->
+              {{ contestant.data['points'] }}
+            </th>
+            {% endfor %}
+          </tr>
+        </table>
+      </div>
     </div>
   </div>
 
