@@ -1,6 +1,6 @@
 name: update-csv
 
-on:  
+on:
   schedule:
     - cron: 0 21 * * *
   workflow_dispatch:
@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt  
+          pip install -r requirements.txt
 
 
 
@@ -33,7 +33,7 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add data/2024.csv
+          git add data/2025.csv
           git add data/backup/*
           git pull origin main
           git commit -m 'Updated data with latest standings' || echo 'No changes to commit'

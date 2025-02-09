@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Last Year's Results</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- W3.CSS and Font Awesome for basic styling and icons -->
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- Chart.js for the history graph -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+  <style>
+    body { font-family: "Lato", sans-serif; margin: 0; padding: 0; }
+    .container { max-width: 1200px; margin: auto; }
+    h2 { text-align: center; margin-top: 40px; }
+    .w3-table-all { margin: auto; width: 100%; }
+    .chart-container {
+      width: 100%;
+      max-width: 1200px;
+      height: 500px;
+      margin: auto;
+    }
+    /* Responsive horizontal scrolling for the results table if needed */
+    @media (max-width: 800px) {
+      .scrollable-table { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Final Results Section -->
+  <div class="container w3-container w3-padding-32" id="final-results">
+    <h2>Final Results</h2>
+    <div class="scrollable-table">
+      <table class="w3-table-all">
+        <tr class="w3-black">
+          <th style="width: 70px">Plassering</th>
+          <th>Lag</th>
+          <th style="width: 60px">S</th>
+          <th style="width: 60px">+/-</th>
+          <th style="width: 60px">P</th>
+        </tr>
+        {% for team in standings %}
+        <tr>
+          <td style="font-weight: bold">{{ team[0] }}</td>
+          <td>{{ team[1] }}</td>
+          <td>{{ team[2] }}</td>
+          <td>{{ team[3] }}</td>
+          <td>{{ team[4] }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+
+  <!-- History Graph and Leaderboard Section -->
+  <div class="container w3-container w3-padding-64" id="history">
+    <h2>Poengutvikling</h2>
+    <div class="chart-container">
+      <canvas id="historyChart" style="width:100%; height:100%;"></canvas>
+    </div>
+    <p class="w3-center w3-text-grey w3-medium">
+      <em>Grafen viser historisk poengutvikling etter at alle lag har spilt like mange kamper</em>
+    </p>
+    <div class="w3-container w3-padding-32">
+      <h3 class="w3-center">LEDERTABELL</h3>
+      {% for contestant in contestants %}
+      <div class="w3-row w3-margin-bottom">
+        <div class="w3-col s9 w3-large w3-text-black">
+          {{ loop.index }}. {{ contestant.name }}
+        </div>
+        <div class="w3-col s3 w3-large w3-text-grey w3-right-align">
+          {{ contestant.data['points'] }} pts
+        </div>
+      </div>
+      <div class="w3-light-grey">
+        <div class="{{ 'w3-blue' if loop.index % 2 == 0 else 'w3-indigo' }}"
+             style="height:24px; width:{{ contestant.data['normalized'] * 100 }}%;">
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <script>
+    // Parse contestants JSON passed from Flask
+    const contestants = JSON.parse('{{ contestants_json|tojson }}');
+    // Assume each contestant has a points_history array of equal length
+    const historyLength = contestants[0].data.points_history.length;
+    const labels = Array.from({length: historyLength}, (_, i) => i + 1);
+    const colors = ["plum", "cornflowerblue", "olive", "lightseagreen", "lightblue", "darkslateblue", "lightcoral", "peru", "palegreen"];
+
+    new Chart("historyChart", {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: contestants.map((contestant, index) => ({
+          data: contestant.data.points_history,
+          label: contestant.name,
+          borderColor: colors[index % colors.length],
+          fill: false
+        }))
+      },
+      options: {
+        legend: { display: true },
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            display: true,
+            title: { display: true, text: 'Antall kamper spilt' }
+          }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>

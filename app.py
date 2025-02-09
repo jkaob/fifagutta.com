@@ -1,43 +1,47 @@
 from flask import Flask, render_template
 from ball24 import TippeData24
-#from ball23 import TippeData
+from ball25 import TippeData25
+#from ball23 import TippeDataBase
 
 app = Flask(__name__)
 
-#ball = TippeData()
-balleball = TippeData24()
-
+#ball = TippeDataBase()
 @app.route('/')
 def index():
-	balleball.update_contestants()
-	contestants = balleball.get_sorted_contestants()
+	balleball25 = TippeData25()
+	balleball25.update_contestants()
+	contestants = balleball25.get_sorted_contestants()
 	contestants_json = [contestant.to_dict() for contestant in contestants]
-	names = balleball.get_sorted_names()
-	standings = balleball.standings
+	names = balleball25.get_sorted_names()
+	standings = balleball25.standings
 	return render_template(
-		'obos.html',
+		'obos25.html',
 		standings=standings,
 		names=names,
-		contestants=contestants, 
+		contestants=contestants,
 		contestants_json=contestants_json
 	)
-	
+
+@app.route('/2024')
+def index24():
+	balleball24 = TippeData24()
+	balleball24.update_contestants(fetch=Falses)
+	contestants = balleball24.get_sorted_contestants()
+	contestants_json = [contestant.to_dict() for contestant in contestants]
+	names = balleball24.get_sorted_names()
+	standings = balleball24.standings
+	return render_template(
+		'r-24.html',
+		standings=standings,
+		names=names,
+		contestants=contestants,
+		contestants_json=contestants_json
+	)
+
 
 @app.route('/2023')
 def hjelp():
 	return "vi rykket ned"
-	# ball.update()
-	# dict_sorted = ball.get_sorted_dict()
-	# names = ball.get_sorted_names()
-	# standings = ball.standings
-	# history_length = ball.min_played
-	# return render_template('index.html',
-	# 						standings=standings,
-	# 						names=names,
-	# 						data_dict=dict_sorted,
-	# 						history_length=history_length
-	# 						)
-
 
 @app.route('/test')
 def test():

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+<title>Fifagutta</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description"
+content="Fifagutta tipper OBOS (igjen)!">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="shortcut icon" type="image/x-icon" href="/static/olav.ico">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"> </script>
+<style>
+  body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif;}
+  body, html {
+    height: 100%;
+    color: #00538a;
+    line-height: 1.5;
+  }
+
+  /* Create a Parallax Effect */
+  .bgimg-1, .bgimg-2, .bgimg-3 {
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+
+  /* First image (Logo. Full height) */
+  .bgimg-1 {
+    background-image: url('/static/bob.jpg');
+    min-height: 100%;
+  }
+
+  /* Second image (Portfolio) */
+  .bgimg-2 {
+    background-image: url("/static/2008.jpg");
+    min-height: 400px;
+  }
+
+  /* Third image (Contact) */
+  .bgimg-3 {
+    background-image: url("/static/drillo2.jpg");
+    min-height: 400px;
+  }
+
+  .w3-wide {letter-spacing: 8px;}
+  .w3-hover-opacity {cursor: pointer;}
+
+  /* Turn off parallax scrolling for tablets and phones */
+  @media only screen and (max-device-width: 1200px) {
+    .bgimg-1, .bgimg-2, .bgimg-3 {
+      background-attachment: scroll;
+      min-height: 400px;
+    }
+  }
+  @media (min-width: 801px) {
+  #chart-container {
+    height: 600px; /* Set height to 600px for screens wider than 700px */
+  }
+ }
+ /* Make table scrollable on small screens */
+ @media (max-width: 800px) {
+    .scrollable-table {
+      overflow-x: auto; /* Enable horizontal scrolling */
+    }
+  }
+
+  @media (max-width: 800px) {
+    h1 {
+      white-space: pre-line; /* Use pre-line to preserve line breaks */
+    },
+    #chart-container {
+    height: 400px; /* Set height to 400px for screens 700px or narrower */
+    }
+  }
+  /* Add custom styles for tabs */
+  .tab {
+      display: none;
+  }
+  .tabcontent {
+      padding: 20px;
+      display: none;
+  }
+  .active {
+      display: block;
+  }
+  .w3-bar {
+        display: flex;
+        justify-content: center;
+        background-color: #f0f0f0; /* Change to your desired background color */
+    }
+    .w3-bar .tablink {
+        font-weight: bold;
+        margin: 0 10px; /* Change the value to adjust spacing between tab buttons */
+    }
+    .w3-table-all tr td, .w3-table-all tr th {
+        padding: 4px; /* Adjust the value to reduce or increase the padding */
+    }
+</style>
+
+<!-- Navbar (sit on top) -->
+<div class="w3-top">
+  <div class="w3-bar" id="myNavbar">
+    <a class="w3-bar-item w3-button w3-hover-black w3-hide-medium w3-hide-large w3-right" href="javascript:void(0);" onclick="toggleFunction()" title="Toggle Navigation Menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <a href="#home" class="w3-bar-item w3-button"><i class="fa fa-home"></i> Hjem</a>
+    <a href="#standings" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-table" aria-hidden="true"></i> Tabellen</a>
+    <a href="#entries" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-futbol-o" aria-hidden="true"></i> Guttas Tips</a>
+    <a href="#results" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-trophy"></i> Resultater </a>
+  </div>
+
+  <!-- Navbar on small screens -->
+  <div id="navDemo" class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium">
+    <a href="#home" class="w3-bar-item w3-button" onclick="toggleFunction()"> Hjem</a>
+    <a href="#entries" class="w3-bar-item w3-button" onclick="toggleFunction()"> Guttas Tips</a>
+    <a href="#results" class="w3-bar-item w3-button" onclick="toggleFunction()"> Resultater</a>
+  </div>
+</div>
+
+<!-- First Parallax Image with Logo Text -->
+<div class="bgimg-1 w3-display-container w3-opacity-min" id="home">
+
+  <div class="w3-display-middle " style="white-space:nowrap;">
+      <h1 style="text-align:center; color:black; text-shadow: 0 0 8px black; padding: 5px;">FIFAGUTTAS<br>TIPPEKONKURANSE</h1>
+  </div>
+</div>
+
+
+<!-- Container (About Section) -->
+<div class="w3-content w3-container w3-padding-64" id="about" style="max-width: 800px; margin: auto;">
+  <div class="w3-center w3-xxlarge">Fifagutta tipper tabellen</div>
+  <p class="w3-justify w3-text-grey w3-large" style="text-align: center;"><em>
+    Vi er her igjen!
+    <br>
+    Tiden er moden for å vise deres ekspertise. Hva kan Kokos-ligaen finne på i år som vi ikke allerede har sett?
+    Alle gode ting er to! Stabæk skal opp igjen, men hva med de andre lagene?
+    <br><br>
+    MrMaggyzinho vant den første, fulle utgaven av fifagutta.no, men nytt Blaatt år, nye muligheter!
+    Hvem tar seieren i år?
+  </em></p>
+  <p class="w3-justify w3-text-grey w3-large" style="text-align: center;">
+    <b>Regler:</b> Man får ett poeng for hver plass et lag er feil plassert, for hvert lag. Den med minst poeng vinner.
+  </p>
+</div>
+
+<!-- Second Parallax Image with Logo Text -->
+<div class="bgimg-2 w3-display-container w3-opacity-min">
+  <div class="w3-display-middle">
+  </div>
+</div>
+
+
+<!-- Table with entries -->
+<div class="w3-content w3-container w3-padding-32" id="standings">
+  <div class="w3-row w3-center w3-padding-16"><br>
+
+      <div class="w3-xlarge w3-text-black w3-padding-16">Oppdatert Tabell</div>
+
+      <table class="w3-table-all">
+          <tr class="w3-black">
+              <th style="width: 70px">Plassering</th>
+              <th>Lag</th>
+              <th style="width: 60px"> S </th>
+              <th style="width: 60px"> +/- </th>
+              <th style="width: 60px"> P </th>
+              <!-- Add more columns as needed -->
+          </tr>
+              {% for team in standings %}
+          <tr>
+              <td style="font-weight: bold">{{ team[0] }}</td>
+              <td>{{ team[1] }}</td>
+              <td>{{ team[2] }}</td>
+              <td>{{ team[3] }}</td>
+              <td>{{ team[4] }}</td>
+              </td>
+              <!-- Render other data as needed -->
+          </tr>
+          {% endfor %}
+
+      </table>
+    </div>
+  </div>
+
+  <!-- Table showing all bets next to each other -->
+  <div class="w3-content w3-container w3-padding-16" id="compact-entries">
+    <div class="w3-row w3-center w3-padding-16">
+      <div class="w3-xxlarge w3-blue w3-padding-10">TIPSENE</div>
+        <div class="scrollable-table"> <!-- Wrapper for scrollable table -->
+        <table class="w3-table-all w3-centered">
+          <tr class="w3-darkblue">
+            <th style="color: black"></th>
+            {% for contestant in contestants %}
+            <th style="color: black">
+              {% if contestant.short == "AVG" %}
+                <i class="fa fa-futbol-o"></i>
+              {% else %}
+                {{ contestant.short }}
+              {% endif %}
+            </th>
+            {% endfor %}
+          </tr>
+          {% for i in range(1, 17) %} <!-- Assuming there are 16 teams -->
+          <tr>
+            <td style="font-weight: bold">{{ i }}</td>
+            {% for contestant in contestants %}
+            <td style="{{ 'color: green; font-weight: bold;' if contestant.data['corrects'][i-1] else '' }}">{{ contestant.data['prediction'][i-1].short }}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+          <!-- Add a new row for the total number of 'True's in 'corrects' -->
+          <tr class="w3-darkblue">
+            <th style="color: black;">&#x2714;</th> <!-- Checkmark emoji -->
+            {% for contestant in contestants %}
+            <th style="color: cadetblue"> <!-- Set text color to grey -->
+              {{ contestant.data['corrects'] | select('equalto', true) | list | length }}
+            </th>
+            {% endfor %}
+          </tr>
+          <!-- Display total points-->
+          <tr class="w3-darkblue">
+            <th style="color: black; font-weight: bold">P</th>
+            {% for contestant in contestants %}
+            <th style="color: grey"> <!-- Set text color to grey -->
+              {{ contestant.data['points'] }}
+            </th>
+            {% endfor %}
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+<!-- Container (Bets Section) -->
+<div class="w3-content w3-container w3-padding-16" id="entries">
+  <div class="w3-row w3-center w3-padding-16"><br>
+    <div class="w3-xxlarge w3-blue w3-padding-10">Poengoversikt</div>
+
+    <div class="w3-bar w3-center w3-darkblue">
+        {% for name in names %}
+        <button class="w3-bar-item w3-button tablink" onclick="openTab('{{ name }}')">{{ loop.index|string + ". "+ name }}</button>
+        {% endfor %}
+    </div>
+
+
+    {% for contestant in contestants %}
+    <div id="{{ contestant.name }}" class="tabcontent">
+      <div class="w3-large w3-text-grey w3-padding-8">{{ contestant.name + "s tabelltips:"}}</div>
+      <table class="w3-table-all">
+        <tr class="w3-darkblue">
+          <th style="width: 70px; color: black">Plassering</th>
+          <th style="color: black">Lag</th>
+          <th style="width: 60px; color: black">Straffepoeng</th>
+        </tr>
+        {% for team in contestant.data['prediction'] %}
+        <tr>
+          <td style="font-weight: bold">{{ loop.index }}</td>
+          <td>{{ team.name_full }}</td>
+          <td style="font-weight: bold; color: {% if contestant.data['delta'][loop.index-1] == 0 %}green{% elif contestant.data['delta'][loop.index-1] > 9 %}red{% endif %}">
+            {{ contestant.data['delta'][loop.index-1] }}
+          </td>
+        </tr>
+        {% endfor %}
+        <tr>
+          <td colspan="2" style="color: black; font-weight: bold;">SUM</td>
+          <td style="color: black; font-weight: bold;">{{ contestant.data['points'] }}</td>
+        </tr>
+      </table>
+    </div>
+    {% endfor %}
+
+    <script>
+        // Function to switch tabs
+        function openTab(tabName, defaultTab) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablink");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).className += " active";
+          }
+        window.onload = function() {
+          var defaultTab = '{{ contestants[0].name }}'; // Change this to set the default tab
+          openTab(defaultTab, defaultTab);
+        };
+    </script>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Modal for full size images on click-->
+<div id="modal01" class="w3-modal w3-black" onclick="this.style.display='none'">
+  <span class="w3-button w3-large w3-black w3-display-topright" title="Close Modal Image"><i class="fa fa-remove"></i></span>
+  <div class="w3-modal-content w3-animate-zoom w3-center w3-transparent w3-padding-64">
+    <img id="img01" class="w3-image">
+    <p id="caption" class="w3-opacity w3-large"></p>
+  </div>
+</div>
+
+
+<!-- Container (Contact Section) -->
+<div class="w3-content w3-container w3-padding-64" id="results">
+  <div class="w3-xlarge w3-center w3-blue w3-padding-10">Poengutvikling</div>
+
+    <div class="w3-row w3-padding-8 w3-section">
+      <style>
+        .chart-container {
+          width: 100%;
+          max-width: 1200px;
+          max-height: 600px;
+          height: 500px;
+        }
+      </style>
+
+      <!-- History chart -->
+      <div class="chart-container">
+        <canvas id="historyChart" style="height:500px;width:100%;max-width:1200px"></canvas>
+      </div>
+    </div>
+
+    <p class="w3-center w3-text-grey w3-medium">
+      <em> Grafen over viser historisk poengutvikling etter at alle lag har spilt like mange kamper </em>
+    </p>
+
+  <div class="w3-row w3-padding-8 w3-section">
+  <div class="w3-xlarge w3-center w3-cyan w3-padding-10">LEDERTABELL</div>
+
+  {% for contestant in contestants %}
+  <div class="w3-row w3-margin-bottom">
+    <div class="w3-col s9 w3-large w3-text-black">
+      {{ loop.index }}. {{ contestant.name }}
+    </div>
+    <div class="w3-col s3 w3-large w3-text-grey w3-right-align">
+      {{ contestant.data['points'] }} pts
+    </div>
+  </div>
+  <div class="w3-light-grey">
+    <!-- Use loop.index to alternate colors -->
+    <div class="{{ 'w3-blue' if loop.index % 2 == 0 else 'w3-indigo' }}" style="height:24px;width:{{ contestant.data['normalized'] * 100 }}%"></div>
+  </div>
+  {% endfor %}
+</div>
+
+
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const contestants = JSON.parse('{{ contestants_json|tojson }}');  // Convert the list of Contestant objects to JSON
+  const historyLength = contestants[0].data.points_history.length; // Length of the first contestant's points_history
+
+  const labels = contestants.map(contestant => contestant.name);  // Use contestant names as labels
+  const colors = ["plum", "cornflowerblue", "olive", "lightseagreen", "lightblue", "darkslateblue", "lightcoral", "peru", "palegreen"];
+  const xValues = Array.from({length: historyLength}, (_, index) => index + 1);
+
+  new Chart("historyChart", {
+    type: "line",
+    data: {
+      labels: xValues,
+      datasets: contestants.map((contestant, index) => ({
+        data: contestant.data.points_history,  // Use points_history from each contestant's data
+        label: contestant.name,
+        borderColor: colors[index % colors.length],  // Use modulo to loop through colors if there are more contestants than colors
+        fill: false
+      }))
+    },
+    options: {
+      legend: { display: true },
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+         x: {
+           display: true,
+           title: {
+             display: true,
+             text: 'Antall kamper spilt',
+           },
+         },
+         // Other scale configurations if needed
+       },
+     }
+  });
+</script>
+
+<!-- Third Parallax Image with Portfolio Text -->
+<div class="bgimg-3 w3-display-container w3-opacity-min">
+  <div class="w3-display-middle">
+  </div>
+</div>
+
+
+<!-- Footer -->
+<footer class="w3-center w3-black w3-padding-64 w3-opacity w3-hover-opacity-on">
+  <a href="#home" class="w3-button w3-light-grey"><i class="fa fa-arrow-up w3-margin-right"></i>Til toppen</a>
+  <div class="w3-xlarge w3-section">
+    <i class="fa fa-messenger w3-hover-opacity"></i>
+  </div>
+  <p>Dette her er balleball <br> laget av Schrødingers Støvel 2024 </p>
+</footer>
+
+
+
+<script>
+// Modal Image Gallery
+function onClick(element) {
+  document.getElementById("img01").src = element.src;
+  document.getElementById("modal01").style.display = "block";
+  var captionText = document.getElementById("caption");
+  captionText.innerHTML = element.alt;
+}
+
+// Change style of navbar on scroll
+window.onscroll = function() {myFunction()};
+function myFunction() {
+    var navbar = document.getElementById("myNavbar");
+    if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+        navbar.className = "w3-bar" + " w3-card" + " w3-animate-top" + " w3-white";
+    } else {
+        navbar.className = navbar.className.replace(" w3-card w3-animate-top w3-white", "");
+    }
+}
+
+// Used to toggle the menu on small screens when clicking on the menu button
+function toggleFunction() {
+    var x = document.getElementById("navDemo");
+    if (x.className.indexOf("w3-show") == -1) {
+        x.className += " w3-show";
+    } else {
+        x.className = x.className.replace(" w3-show", "");
+    }
+}
+
+
+</script>
+</body>
+</html>

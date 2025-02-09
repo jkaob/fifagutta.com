@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 import common
-from common import Team, CsvReader, Scraper, TippeData, Contestant
+from common import Team, CsvReader, Scraper, TippeDataBase, Contestant
 
 N_TEAMS = 16
 
@@ -103,7 +103,7 @@ class Scraper23(Scraper):
                 team.match_gd.append(goal_diff)
 
 
-class TippeData23(TippeData):
+class TippeData23(TippeDataBase):
 
     # Main history function TODO 
     def update_teams(self):
@@ -267,7 +267,7 @@ teams = [
 
 
 def main():
-    ball = TippeData()
+    ball = TippeDataBase()
     ball.fetch_standings()
     ball.update_dict()
 

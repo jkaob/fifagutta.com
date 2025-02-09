@@ -1,8 +1,8 @@
 import csv
-from common import TippeData, Scraper, Team, Contestant
+from common import Scraper, Team, Contestant
 import os
 
-class CsvReader24():
+class CsvReader():
     def __init__(self, filename: str, teams, debug=False):
         self.debug = debug
         self.csv = filename
@@ -25,7 +25,7 @@ class CsvReader24():
                     return row
         print(f"could not get entry for {team_name} round {round_number}")
         return None
-                
+
 
     # n_matches for a specific team
     def get_n_matches_played(self, team_name, input_fname=""):
@@ -41,7 +41,7 @@ class CsvReader24():
         if self.debug:
             print(f"{team_name} has {n_matches_played} matches saved")
         return n_matches_played
-    
+
     def get_min_matches_played(self, input_fname=""):
         print("checking number of rounds played...")
         n_min = 2*(self.n_teams-1)
@@ -50,7 +50,7 @@ class CsvReader24():
             n_min = min(n_min, n_played)
         print(f"->all teams have played at least {n_min} rounds")
         return n_min
-    
+
     # checks file, and sees how many "pos" rows have been written via fcn write_team_pos()
     # i.e. how many standings
     def get_n_pos_rows_written(self, input_fname=""):
@@ -76,10 +76,10 @@ class CsvReader24():
                             n_rows = current_n_rows
                         elif n_rows != current_n_rows:
                             print(f"ERROR! {current_team} has {current_n_rows} but previous team had {n_rows}!")
-                    
+
                         current_n_rows = 0
                     current_team = team
-                
+
                 # check if pos has been updated
                 if pos.isdigit():
                     current_n_rows += 1
@@ -90,8 +90,8 @@ class CsvReader24():
         if self.debug and n_rows is not None:
             print(f"->{n_rows} 'pos' rows already written for each team")
         return n_rows if n_rows is not None else 0
-    
-    
+
+
     # get sorted list of standings at round number
     def get_simple_standings_at_round_number(self, round_number, input_fname=""):
         round_standings = []
@@ -110,9 +110,9 @@ class CsvReader24():
         # sort and return
         round_standings.sort(key=lambda x: (x[1]))
         return round_standings
-    
 
-    def write_team_entry(self, team_name, round_number, new_points, new_gd, 
+
+    def write_team_entry(self, team_name, round_number, new_points, new_gd,
                          output_fname="", input_fname=""):
         updated_rows = []
         new_row = None
@@ -149,7 +149,7 @@ class CsvReader24():
                 if row[0] == team_name and int(row[1]) == round_number:
                     if row[4] != "-":
                         raise ValueError(f"ERROR: {team_name} pos already set")
-                    row[4] = new_position  
+                    row[4] = new_position
                 updated_rows.append(row)
         # write
         if output_fname == "":
@@ -159,4 +159,3 @@ class CsvReader24():
             writer.writerows(updated_rows)
         print(f"->wrote pos at round {round_number} for {team_name}\n")
         return True
-

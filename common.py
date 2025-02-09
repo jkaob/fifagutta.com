@@ -1,4 +1,6 @@
 import csv
+from bs4 import BeautifulSoup
+import requests
 
 class Team:
     def __init__(self, team_name, team_short=""):
@@ -67,126 +69,42 @@ class Contestant:
         }
 
 
-class Scraper:
-    def __init__(self, url, csv) -> None:
-        self.url = url
-        self.csv = csv 
-    
-    def get_standings(self):
-        pass 
-    
+
+class Scraper():
+    def __init__(self, year) -> None:
+        self.year = year
+        self.url = 'https://www.obos-ligaen.no/resultater'
+        self.csv = f'data/{year}.csv'
+
     def get_team_history(self, team : Team):
         pass
 
+    def get_standings(self):
+        r = requests.get(self.url)
+        soup = BeautifulSoup(r.content, 'html.parser', from_encoding='utf-8')
+        league_table = soup.find('table', class_="table--persist-area table table--league-obos")
+        standings = []
+        for tbody in league_table.find_all("tbody"):
+            # ea row has all info we need
+            # iterate over each team
+            for row in tbody.find_all("tr", class_="table__row"):
+                team_element = row.find("span", class_="table__typo--full")
+                assert team_element is not None, "Expected to find team"
+                name = team_element.string # team name
 
-class TippeData:
-
-    def __init__(self, debug=False):
-        self.debug = debug
-        self.scraper = None #Scraper()  # to get table
-        self.reader = None
-        # Initialize dict with points computation
-
-        # list of Contestant objects, each with their betting data
-        self.contestants = []
-        
-        # Initialize teams list with url to match history
-        #self.data_dict = {} # key: name. value: contestants.data
-        self.teams = []
-        self.min_played = 0
-        self.standings = []  # [ [pos, name, n_played, goal_diff, n_points] ]
-
-    def set_contestant(self, contestant):
-        for c in self.contestants:
-            if c.name == contestant.name:
-                print(f"contestant {c.name} already added")
-                return
-        self.contestants.append(contestant)
-
-    def get_contestant(self, name):
-        for c in self.contestants:
-            if c.name == name:
-                return c
-            
-    def get_team(self, team_name):
-        for team in self.teams:
-            if team.name == team_name \
-                or team.name.split(' ')[0] == team_name.split(' ')[0] \
-                or team.name.split(' ')[0] == team_name:
-                    return team
-        print(f"could not find team {team_name}!")
-        return None
-    
-    def get_team_short(self, team_name):
-        team = self.get_team(team_name)
-        if team is None or not team.short:
-            print(f"could not find team {team_name} short")
-            return None
-        return team.short
+                td_elements = row.find_all("td") # get number data
+                n_exp = 10
+                assert len(td_elements) == n_exp, f"Expected {n_exp} elements, found  {len(td_elements)}"
+                pos = int(td_elements[0].get_text())
+                n_played = int(td_elements[2].get_text())
+                goal_diff = int(td_elements[-2].get_text())
+                n_points = int(td_elements[-1].get_text())
+                # Append team status to current standings
+                team = [pos, name, n_played, goal_diff, n_points]
+                standings.append(team)
+        return standings
 
 
-    def fetch_standings(self):
-        self.standings = self.scraper.get_standings()
-        return self.standings
-
-    def compute_points(self, name):
-        contestant = self.get_contestant(name)
-        prediction = contestant.data['prediction']
-        total_points = 0
-        #print("standings: ", self.standings)
-        for row in self.standings:
-            team_name = row[1].split(" ")[0]
-            # team_ind = prediction.index(team_name) 
-            # index of team in prediction
-            team_ind = next((index for index, obj in enumerate(prediction) \
-                             if obj.name == team_name), None)
-            prediction_pos = team_ind+1 # table placement
-            team_pos = row[0]
-            points = abs(prediction_pos - team_pos) # TODO - not use absolute here, but later 
-            contestant.data['delta'][team_ind] = points # store points
-            contestant.data['corrects'][team_ind] = (points == 0)
-            total_points += points
-        contestant.data['points'] = total_points # store total points
-        return total_points
-
-    def update_current_points(self):
-        for contestant in self.contestants:
-            self.compute_points(contestant.name)
-        # Add normalized points for visualization
-        max_points = max(contestant.data['points'] for contestant in self.contestants)
-        for contestant in self.contestants:
-            contestant.data['normalized'] = contestant.data['points'] / max_points
-
-
-    def get_sorted_contestants(self):
-        sorted_contestants = sorted(self.contestants, key=lambda contestant: contestant.data['points'])
-        return sorted_contestants
- 
-    def get_sorted_names(self):
-        # Sort the contestants based on 'points' and return their names
-        return [contestant.name for contestant in self.get_sorted_contestants()]
-
-
-    # MAIN FCN - DO THIS ONLINE
-    def update(self):
-        self.fetch_standings()
-        self.update_current_points()
-
-
-    
-    def print_standings(self):
-        header = "{:<4} {:<15} {:<7} {:<4} {:<6}".format("POS", "TEAM", "PLAYED", "GD", "POINTS")
-        print(header)
-        for r in self.standings:
-            line = "{:<4} {:<15} {:<7} {:<4} {:<6}".format(*r)
-            print(line)
-        print("-" * len(header))
-
-    def print_contestants(self):
-        print("---Current leaderboard---")
-        for c in self.get_sorted_contestants():
-            print(f"{c.name}: {c.data['points']} points")
-        print("-------------------------")
 
 
 

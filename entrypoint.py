@@ -1,4 +1,7 @@
-import ball24
+import ball25
 import os
 
-ball24.action_update_csv(dir_prefix=os.getenv('GITHUB_WORKSPACE'), backup_only=False)
+YEAR=2025
+
+
+ball25.action_update_csv(dir_prefix=os.getenv('GITHUB_WORKSPACE'), backup_only=False)
