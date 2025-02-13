@@ -25,6 +25,7 @@ class TippeDataBase:
         self.teams = []
         self.min_played = 0
         self.standings = []  # [ [pos, name, n_played, goal_diff, n_points] ]
+        self.standings_simple = []
 
     def set_contestant(self, contestant):
         for c in self.contestants:
@@ -59,23 +60,38 @@ class TippeDataBase:
         self.standings = self.scraper.get_standings()
         return self.standings
 
+    def get_latest_standings_from_csv(self):
+        self.standings_simple = self.reader.get_simple_standings_at_round_number(
+            self.reader.get_n_pos_rows_written())
+        print("STANDINGS:", self.standings_simple)
+
+
     def compute_points(self, name):
         contestant = self.get_contestant(name)
         prediction = contestant.data['prediction']
         total_points = 0
-        #print("standings: ", self.standings)
-        for row in self.standings:
-            team_name = row[1].split(" ")[0]
-            # team_ind = prediction.index(team_name)
-            # index of team in prediction
-            team_ind = next((index for index, obj in enumerate(prediction) \
+        # Select the appropriate standings and define a row extractor
+        if self.standings:
+            s = self.standings
+            extract = lambda row: (row[1].split(" ")[0], row[0])
+        elif self.standings_simple:
+            s = self.standings_simple
+            extract = lambda row: (row[0], row[1])
+        else:
+            print("no data")
+
+        for row in s:
+            team_name, team_pos = extract(row)
+            team_ind = next((index for index, obj in enumerate(prediction)
                              if obj.name == team_name), None)
-            prediction_pos = team_ind+1 # table placement
-            team_pos = row[0]
-            points = abs(prediction_pos - team_pos) # TODO - not use absolute here, but later
-            contestant.data['delta'][team_ind] = points # store points
+            if team_ind is None:
+                continue  # or handle the error if the team isn't found
+            prediction_pos = team_ind + 1  # Convert index to table placement
+            points = abs(prediction_pos - team_pos)
+            contestant.data['delta'][team_ind] = points  # store points
             contestant.data['corrects'][team_ind] = (points == 0)
             total_points += points
+
         contestant.data['points'] = total_points # store total points
         return total_points
 
@@ -85,7 +101,7 @@ class TippeDataBase:
         # Add normalized points for visualization
         max_points = max(contestant.data['points'] for contestant in self.contestants)
         for contestant in self.contestants:
-            contestant.data['normalized'] = contestant.data['points'] / max_points
+            contestant.data['normalized'] = 0.0 if max_points==0.0 else contestant.data['points'] / max_points
 
 
     def get_sorted_contestants(self):
@@ -348,11 +364,12 @@ class TippeData(TippeDataBase):
     def update_contestants(self, fetch=True, input_fname=""):
         if (fetch):
             self.fetch_standings() # get latest standings online
-            self.update_current_points()  # compute current points of contestants
+        else:
+            self.get_latest_standings_from_csv()
+
+        self.update_current_points()  # compute current points of contestants
         # Assuming CSV file has been updated
         self.compute_contestant_points_timeseries(input_fname=input_fname)
-        if (not fetch):
-            print("TODO get results from history")
         print(f"computed contestants' points history")
 
 
