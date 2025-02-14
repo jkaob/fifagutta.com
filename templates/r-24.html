@@ -1,36 +1,146 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Last Year's Results</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- W3.CSS and Font Awesome for basic styling and icons -->
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <!-- Chart.js for the history graph -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-  <style>
-    body { font-family: "Lato", sans-serif; margin: 0; padding: 0; }
-    .container { max-width: 1200px; margin: auto; }
-    h2 { text-align: center; margin-top: 40px; }
-    .w3-table-all { margin: auto; width: 100%; }
-    .chart-container {
-      width: 100%;
-      max-width: 1200px;
-      height: 500px;
-      margin: auto;
-    }
-    /* Responsive horizontal scrolling for the results table if needed */
-    @media (max-width: 800px) {
-      .scrollable-table { overflow-x: auto; }
-    }
-  </style>
-</head>
-<body>
+{% extends "base.html" %}
 
-  <!-- Final Results Section -->
-  <div class="container w3-container w3-padding-32" id="final-results">
-    <h2>Final Results</h2>
+{% block content %}
+
+<style>
+#podium-bars {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  margin-top: 0px;
+}
+
+.podium-bar {
+  width: 30%;
+  position: relative;
+  text-align: center;
+  border: 2px solid #ccc;
+}
+
+.podium-bar.first {
+  height: 170px;
+  background-color: #FFD700; /* Gold for 1st */
+}
+
+.podium-bar.second {
+  height: 110px;
+  background-color: silver; /* Silver for 2nd */
+}
+
+.podium-bar.third {
+  height: 80px;
+  background-color: #cd7f32; /* Bronze for 3rd */
+}
+.podium-number {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 48px;
+  color: white;
+  font-weight: bold;
+}
+.podium-name {
+  position: absolute;
+  top: -30px;
+  width: 100%;
+  color: black;
+  font-weight: bold;
+}
+body {
+  background-color: #E1F1F7; /* light blue */
+}
+</style>
+<!-- <body class="w3-light-blue">#E1F1F7 -->
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+<script>
+  window.onload = function() {
+    confetti({
+      particle_count: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+  };
+</script>
+
+  <div id="header-image" style="margin: 10px 0;">
+    <img src="/static/w24.png" alt="Obos-kongen 2024" style="width:90%; max-width:1200px; display:block; margin:auto;">
+  </div>
+
+  <!-- Winners Podium -->
+  <div class="w3-container w3-padding-64" id="podium">
+    <!-- <div class="w3-xxlarge w3-gold w3-padding-10">ÅRETS TIPS 2024</div> -->
+    <!-- <div class="w3-xxlarge w3-padding-10" style="background-color: #FFD700; text-align: center; color: black;">ÅRETS TIPS 2024</div> -->
+    <div id="podium-bars">
+      <div class="podium-bar second">
+        <div class="podium-number">2</div>
+        <div class="podium-name">{{ contestants[1].name }}</div>
+      </div>
+      <div class="podium-bar first">
+        <div class="podium-number">1</div>
+        <div class="podium-name">{{ contestants[0].name }}</div>
+      </div>
+      <div class="podium-bar third">
+        <div class="podium-number">3</div>
+        <div class="podium-name">{{ contestants[2].name }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table showing all bets next to each other -->
+  <div class="w3-content w3-container w3-padding-16" id="compact-entries">
+    <div class="w3-row w3-center w3-padding-16">
+      <div class="w3-xxlarge w3-blue w3-padding-10">TIPS 2024</div>
+        <div class="scrollable-table"> <!-- Wrapper for scrollable table -->
+        <table class="w3-table-all w3-centered">
+          <tr class="w3-darkblue">
+            <th style="color: black"></th>
+            {% for contestant in contestants %}
+            <th style="color: black">
+              {% if contestant.short == "AVG" %}
+                <i class="fa fa-futbol-o"></i>
+              {% else %}
+                {{ contestant.short }}
+              {% endif %}
+            </th>
+            {% endfor %}
+          </tr>
+          {% for i in range(1, 17) %} <!-- Assuming there are 16 teams -->
+          <tr>
+            <td style="font-weight: bold">{{ i }}</td>
+            {% for contestant in contestants %}
+            <td style="{{ 'color: green; font-weight: bold;' if contestant.data['corrects'][i-1] else '' }}">{{ contestant.data['prediction'][i-1].short }}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+          <!-- Add a new row for the total number of 'True's in 'corrects' -->
+          <tr class="w3-darkblue">
+            <th style="color: black;">&#x2714;</th> <!-- Checkmark emoji -->
+            {% for contestant in contestants %}
+            <th style="color: cadetblue"> <!-- Set text color to grey -->
+              {{ contestant.data['corrects'] | select('equalto', true) | list | length }}
+            </th>
+            {% endfor %}
+          </tr>
+          <!-- Display total points-->
+          <tr class="w3-darkblue">
+            <th style="color: black; font-weight: bold">P</th>
+            {% for contestant in contestants %}
+            <th style="color: grey"> <!-- Set text color to grey -->
+              {{ contestant.data['points'] }}
+            </th>
+            {% endfor %}
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Final Results Table -->
+  <!-- <div class="w3-content w3-container w3-padding-64" id="results">
+    <h2 class="w3-center">Final Results</h2>
     <div class="scrollable-table">
       <table class="w3-table-all">
         <tr class="w3-black">
@@ -51,69 +161,49 @@
         {% endfor %}
       </table>
     </div>
-  </div>
+  </div> -->
 
-  <!-- History Graph and Leaderboard Section -->
-  <div class="container w3-container w3-padding-64" id="history">
-    <h2>Poengutvikling</h2>
-    <div class="chart-container">
+  <!-- History Graph Section -->
+  <div class="w3-content w3-container w3-padding-64" id="history">
+    <h2 class="w3-center">Poengutvikling 2024</h2>
+    <div class="chart-container" style="margin:auto; max-width:1200px; height:500px;">
       <canvas id="historyChart" style="width:100%; height:100%;"></canvas>
     </div>
-    <p class="w3-center w3-text-grey w3-medium">
-      <em>Grafen viser historisk poengutvikling etter at alle lag har spilt like mange kamper</em>
-    </p>
-    <div class="w3-container w3-padding-32">
-      <h3 class="w3-center">LEDERTABELL</h3>
-      {% for contestant in contestants %}
-      <div class="w3-row w3-margin-bottom">
-        <div class="w3-col s9 w3-large w3-text-black">
-          {{ loop.index }}. {{ contestant.name }}
-        </div>
-        <div class="w3-col s3 w3-large w3-text-grey w3-right-align">
-          {{ contestant.data['points'] }} pts
-        </div>
-      </div>
-      <div class="w3-light-grey">
-        <div class="{{ 'w3-blue' if loop.index % 2 == 0 else 'w3-indigo' }}"
-             style="height:24px; width:{{ contestant.data['normalized'] * 100 }}%;">
-        </div>
-      </div>
-      {% endfor %}
-    </div>
   </div>
 
-  <script>
-    // Parse contestants JSON passed from Flask
-    const contestants = JSON.parse('{{ contestants_json|tojson }}');
-    // Assume each contestant has a points_history array of equal length
-    const historyLength = contestants[0].data.points_history.length;
-    const labels = Array.from({length: historyLength}, (_, i) => i + 1);
-    const colors = ["plum", "cornflowerblue", "olive", "lightseagreen", "lightblue", "darkslateblue", "lightcoral", "peru", "palegreen"];
 
-    new Chart("historyChart", {
-      type: "line",
-      data: {
-        labels: labels,
-        datasets: contestants.map((contestant, index) => ({
-          data: contestant.data.points_history,
-          label: contestant.name,
-          borderColor: colors[index % colors.length],
-          fill: false
-        }))
-      },
-      options: {
-        legend: { display: true },
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            display: true,
-            title: { display: true, text: 'Antall kamper spilt' }
-          }
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const contestants = JSON.parse('{{ contestants_json|tojson }}');
+  const historyLength = contestants[0].data.points_history.length;
+  const labels = Array.from({length: historyLength}, (_, i) => i + 1);
+  const colors = ["plum", "cornflowerblue", "olive", "lightseagreen", "lightblue", "darkslateblue", "lightcoral", "peru", "palegreen"];
+
+  new Chart("historyChart", {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: contestants.map((contestant, index) => ({
+        data: contestant.data.points_history,
+        label: contestant.name,
+        borderColor: colors[index % colors.length],
+        fill: false
+      }))
+    },
+    options: {
+      legend: { display: true },
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          display: true,
+          title: { display: true, text: 'Antall kamper spilt' }
         }
       }
-    });
-  </script>
-
-</body>
-</html>
+    }
+  });
+</script>
+{% endblock %}

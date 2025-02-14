@@ -91,9 +91,9 @@ class TippeDataBase:
             contestant.data['delta'][team_ind] = points  # store points
             contestant.data['corrects'][team_ind] = (points == 0)
             total_points += points
-
         contestant.data['points'] = total_points # store total points
         return total_points
+
 
     def update_current_points(self):
         for contestant in self.contestants:
