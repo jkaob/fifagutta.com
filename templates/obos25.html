@@ -1,22 +1,7 @@
-<!DOCTYPE html>
-<html>
-<title>Fifagutta</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description"
-content="Fifagutta tipper OBOS (igjen)!">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<link rel="shortcut icon" type="image/x-icon" href="/static/olav.ico">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"> </script>
+{% extends "base.html" %}
+
+{% block content %}
 <style>
-  body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif;}
-  body, html {
-    height: 100%;
-    color: #00538a;
-    line-height: 1.5;
-  }
 
   /* Create a Parallax Effect */
   .bgimg-1, .bgimg-2, .bgimg-3 {
@@ -28,13 +13,13 @@ content="Fifagutta tipper OBOS (igjen)!">
 
   /* First image (Logo. Full height) */
   .bgimg-1 {
-    background-image: url('/static/gutta.jpg');
+    background-image: url('/static/2008.jpg');
     min-height: 100%;
   }
 
   /* Second image (Portfolio) */
   .bgimg-2 {
-    background-image: url("/static/2008.jpg");
+    background-image: url("/static/gull.jpg");
     min-height: 400px;
   }
 
@@ -85,39 +70,12 @@ content="Fifagutta tipper OBOS (igjen)!">
   .active {
       display: block;
   }
-  .w3-bar {
-        display: flex;
-        justify-content: center;
-        background-color: #f0f0f0; /* Change to your desired background color */
-    }
-    .w3-bar .tablink {
-        font-weight: bold;
-        margin: 0 10px; /* Change the value to adjust spacing between tab buttons */
-    }
-    .w3-table-all tr td, .w3-table-all tr th {
-        padding: 4px; /* Adjust the value to reduce or increase the padding */
-    }
+
+  .w3-table-all tr td, .w3-table-all tr th {
+      padding: 4px; /* Adjust the value to reduce or increase the padding */
+  }
 </style>
-
-<!-- Navbar (sit on top) -->
-<div class="w3-top">
-  <div class="w3-bar" id="myNavbar">
-    <a class="w3-bar-item w3-button w3-hover-black w3-hide-medium w3-hide-large w3-right" href="javascript:void(0);" onclick="toggleFunction()" title="Toggle Navigation Menu">
-      <i class="fa fa-bars"></i>
-    </a>
-    <a href="#home" class="w3-bar-item w3-button"><i class="fa fa-home"></i> Hjem</a>
-    <a href="#standings" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-table" aria-hidden="true"></i> Tabellen</a>
-    <a href="#entries" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-futbol-o" aria-hidden="true"></i> Guttas Tips</a>
-    <a href="#results" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-trophy"></i> Resultater </a>
-  </div>
-
-  <!-- Navbar on small screens -->
-  <div id="navDemo" class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium">
-    <a href="#home" class="w3-bar-item w3-button" onclick="toggleFunction()"> Hjem</a>
-    <a href="#entries" class="w3-bar-item w3-button" onclick="toggleFunction()"> Guttas Tips</a>
-    <a href="#results" class="w3-bar-item w3-button" onclick="toggleFunction()"> Resultater</a>
-  </div>
-</div>
+<div style="padding-top: 120px;">
 
 <!-- First Parallax Image with Logo Text -->
 <div class="bgimg-1 w3-display-container w3-opacity-min" id="home">
@@ -130,7 +88,7 @@ content="Fifagutta tipper OBOS (igjen)!">
 
 <!-- Container (About Section) -->
 <div class="w3-content w3-container w3-padding-64" id="about" style="max-width: 800px; margin: auto;">
-  <div class="w3-center w3-xxlarge">Fifagutta tipper tabellen</div>
+  <!-- <div class="w3-center w3-xxlarge">Fifagutta tipper tabellen</div> -->
   <p class="w3-justify w3-text-grey w3-large" style="text-align: center;"><em>
     Vi er her igjen!
     <br>
@@ -399,16 +357,9 @@ content="Fifagutta tipper OBOS (igjen)!">
 </div>
 
 
-<!-- Footer -->
-<footer class="w3-center w3-black w3-padding-64 w3-opacity w3-hover-opacity-on">
-  <a href="#home" class="w3-button w3-light-grey"><i class="fa fa-arrow-up w3-margin-right"></i>Til toppen</a>
-  <div class="w3-xlarge w3-section">
-    <i class="fa fa-messenger w3-hover-opacity"></i>
-  </div>
-  <p>Dette her er balleball <br> laget av Schrødingers Støvel 2024 </p>
-</footer>
+{% endblock %}
 
-
+{% block scripts %}
 
 <script>
 // Modal Image Gallery
@@ -442,5 +393,4 @@ function toggleFunction() {
 
 
 </script>
-</body>
-</html>
+{% endblock %}

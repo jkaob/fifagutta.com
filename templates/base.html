@@ -16,10 +16,22 @@
     /* Common CSS for parallax, etc.—include only what you need */
     .scrollable-table { overflow-x: auto; }
     /* Navbar */
-    .w3-bar { display: flex; justify-content: center; background-color: #f0f0f0; }
-    .w3-bar .tablink { font-weight: bold; margin: 0 10px; }
+    .w3-bar {
+      display: flex;
+      justify-content: center;
+      background-color: #00538a;
+      color: white;
+    }
+    .w3-bar .tablink {
+      font-weight: bold;
+      margin: 0 10px;
+      color: white;
+    }
     /* Table padding */
     .w3-table-all tr td, .w3-table-all tr th { padding: 4px; }
+    body {
+      background-color: #E1F1F7; /* light blue */
+    }
     {% block extra_css %}{% endblock %}
   </style>
   {% block head %}{% endblock %}
@@ -28,8 +40,17 @@
   <!-- Navbar (common to all pages) -->
   <div class="w3-top">
     <div class="w3-bar" id="myNavbar">
-      <a href="/" class="w3-bar-item w3-button"><i class="fa fa-home"></i> Hjem2</a>
-      <a href="#home" class="w3-bar-item w3-button"><i class="fa fa-home"></i> Hjem</a>
+      <a href="/" class="w3-bar-item w3-button"><i class="fa fa-home"></i> Hjem</a>
+      <a href="/#standings" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-table" aria-hidden="true"></i> Tabellen</a>
+      <a href="/#entries" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-futbol-o" aria-hidden="true"></i> Guttas Tips</a>
+      <a href="/#results" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-trophy"></i> Resultater </a>
+      <a href="/24" class="w3-bar-item w3-button"><i class="fa fa-trophy"></i> 2024</a>
+    </div>
+    <!-- Navbar on small screens -->
+    <div id="navDemo" class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium">
+      <a href="/" class="w3-bar-item w3-button" onclick="toggleFunction()"> Hjem</a>
+      <a href="/#entries" class="w3-bar-item w3-button" onclick="toggleFunction()"> Guttas Tips</a>
+      <a href="/#results" class="w3-bar-item w3-button" onclick="toggleFunction()"> Resultater</a>
       <a href="/24" class="w3-bar-item w3-button"><i class="fa fa-trophy"></i> 2024</a>
     </div>
   </div>
