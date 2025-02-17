@@ -11,7 +11,7 @@ class TippeData25(TippeData):
             Team('Stabæk', 'STB'),
             Team('Aalesund', 'AFK'),
             Team('Egersund', 'EGE'),
-            Team('Hødd', 'HDD'),
+            Team('Hødd', 'HØD'),
             Team('Kongsvinger', 'KIL'),
             Team('Lillestrøm', 'LSK'),
             Team('Lyn', 'LYN'),
@@ -45,7 +45,7 @@ def main():
     else:
         print("\nFETCHING STANDINGS AND UPDATING CSV\n")
 
-        action_update_csv(backup_only=False)
+        ball.action_update_csv(backup_only=False)
 
 
     print("\n  # Update points of contestants")

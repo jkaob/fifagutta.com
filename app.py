@@ -22,7 +22,7 @@ def index():
         contestants_json=contestants_json
     )
 
-@app.route('/24')
+@app.route('/2024')
 def last_year():
     # This route serves last year's minimal results using lastyear.html
     balleball24 = TippeData24()
