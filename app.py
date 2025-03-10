@@ -41,40 +41,6 @@ def last_year():
 
 
 
-#
-# #ball = TippeDataBase()
-# @app.route('/')
-# def index():
-# 	balleball25 = TippeData25()
-# 	balleball25.update_contestants()
-# 	contestants = balleball25.get_sorted_contestants()
-# 	contestants_json = [contestant.to_dict() for contestant in contestants]
-# 	names = balleball25.get_sorted_names()
-# 	standings = balleball25.standings
-# 	return render_template(
-# 		'index.html',
-# 		standings=standings,
-# 		names=names,
-# 		contestants=contestants,
-# 		contestants_json=contestants_json
-# 	)
-#
-# @app.route('/2024')
-# def index24():
-# 	balleball24 = TippeData24()
-# 	balleball24.update_contestants(fetch=Falses)
-# 	contestants = balleball24.get_sorted_contestants()
-# 	contestants_json = [contestant.to_dict() for contestant in contestants]
-# 	names = balleball24.get_sorted_names()
-# 	standings = balleball24.standings
-# 	return render_template(
-# 		'r-24.html',
-# 		standings=standings,
-# 		names=names,
-# 		contestants=contestants,
-# 		contestants_json=contestants_json
-# 	)
-#
 
 @app.route('/2023')
 def hjelp():
