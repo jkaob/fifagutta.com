@@ -1,5 +1,5 @@
 ENTRIES = {
-    "Al Sæd": {
+    "Morten Gamst Pedorsen": {
         "prediction" : [
             'Aalesund',
             'Egersund',
@@ -19,7 +19,7 @@ ENTRIES = {
             'Åsane',
             ],
         "avatar": "static/avatar/mr.jpg",  # Example path to avatar image
-        "short": "MrM"  # Short form or abbreviation
+        "short": "MGP"  # Short form or abbreviation
     },
     "Bob Bradleyan": {
         "prediction" : [
@@ -87,7 +87,7 @@ ENTRIES = {
         "avatar": "path/to/zahaavi/avatar.png",
         "short": "ZaH"
     },
-    "Schrødingers Støvel": {
+    "FOMOfappis": {
         "prediction" : [
             'Aalesund',
             'Egersund',
@@ -107,7 +107,7 @@ ENTRIES = {
             'Åsane',
             ],
         "avatar": "path/to/schrodinger/avatar.png",
-        "short": "S.S"
+        "short": "FF"
     },
     "Joaqin Krave": {
         "prediction" : [
@@ -131,7 +131,7 @@ ENTRIES = {
         "avatar": "path/to/joaqin/avatar.png",
         "short": "J.K"
     },
-    "Facebook-bruker": {
+    "Jakob F.D": {
         "prediction" : [
             'Aalesund',
             'Egersund',
@@ -151,7 +151,7 @@ ENTRIES = {
             'Åsane',
             ],
         "avatar": "path/to/facebookbruker/avatar.png",
-        "short": "F-B"
+        "short": "JFD"
     },
     "ingo=goat": {
         "prediction" : [
@@ -196,5 +196,27 @@ ENTRIES = {
             ],
         "avatar": "path/to/herman/avatar.png",
         "short": "H.H"
+    },
+    "OA": {
+        "prediction" : [
+            'Aalesund',
+            'Egersund',
+            'Hødd',
+            'Kongsvinger',
+            'Lillestrøm',
+            'Lyn',
+            'Mjøndalen',
+            'Moss',
+            'Odd',
+            'Ranheim',
+            'Raufoss',
+            'Skeid',
+            'Sogndal',
+            'Stabæk',
+            'Start',
+            'Åsane',
+            ],
+        "avatar": "path/to/oscar/avatar.png",
+        "short": "OA"
     }
 }
