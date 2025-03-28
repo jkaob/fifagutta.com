@@ -1,27 +1,27 @@
 ENTRIES = {
     "Morten Gamst Pedorsen": {
         "prediction" : [
-            'Lillestrøm',
             'Stabæk',
+            'Lillestrøm',
             'Aalesund',
-            'Lyn',
-            'Start',
-            'Odd',
-            'Sogndal',
             'Kongsvinger',
-            'Hødd',
+            'Odd',
+            'Start',
+            'Lyn',
             'Moss',
+            'Sogndal',
             'Egersund',
-            'Ranheim',
             'Åsane',
+            'Ranheim',
             'Skeid',
+            'Hødd',
             'Raufoss',
             'Mjøndalen',
         ],
         "avatar": "static/avatar/mr.jpg",  # Example path to avatar image
         "short": "MGP"  # Short form or abbreviation
     },
-    "Miljøfyrtårnet": {
+    "Bob Bradleyan": {
         "prediction" : [
             'Stabæk',
             'Lillestrøm',
@@ -41,26 +41,26 @@ ENTRIES = {
             'Mjøndalen',
         ],
         "avatar": "static/avatar/adrian.jpg",  # Example path to avatar image
-        "short": "MF"  # Short form or abbreviation
+        "short": "Bob"  # Short form or abbreviation
     },
     "Myra Craig": {
         "prediction" : [
-            'Aalesund',
-            'Egersund',
-            'Hødd',
-            'Kongsvinger',
             'Lillestrøm',
-            'Lyn',
-            'Mjøndalen',
-            'Moss',
+            'Aalesund',
             'Odd',
-            'Ranheim',
-            'Raufoss',
-            'Skeid',
-            'Sogndal',
+            'Kongsvinger',
             'Stabæk',
+            'Moss',
+            'Lyn',
             'Start',
+            'Ranheim',
+            'Sogndal',
+            'Egersund',
+            'Raufoss',
             'Åsane',
+            'Mjøndalen',
+            'Skeid',
+            'Hødd',
             ],
         "avatar": "path/to/myra_craig/avatar.png",  # Example path to avatar image
         "short": "Myr"  # Short form or abbreviation
@@ -87,7 +87,7 @@ ENTRIES = {
         "avatar": "path/to/zahaavi/avatar.png",
         "short": "ZaH"
     },
-    "FOMOfappis": {
+    "Schrødingers fap": {
         "prediction" : [
             'Stabæk',
             'Lillestrøm',
@@ -95,8 +95,8 @@ ENTRIES = {
             'Aalesund',
             'Kongsvinger',
             'Moss',
-            'Lyn',
             'Ranheim',
+            'Lyn',
             'Sogndal',
             'Skeid',
             'Egersund',
@@ -131,7 +131,7 @@ ENTRIES = {
         "avatar": "path/to/joaqin/avatar.png",
         "short": "DRC"
     },
-    "Jakob F.D": {
+    "Fossland": {
         "prediction" : [
             'Odd',
             'Stabæk',
@@ -150,8 +150,8 @@ ENTRIES = {
             'Aalesund',
             'Egersund',
             ],
-        "avatar": "path/to/facebookbruker/avatar.png",
-        "short": "JFD"
+        "avatar": "path/to/jakob/avatar.png",
+        "short": "Fos"
     },
     "Ingo=GOAT": {
         "prediction" : [
@@ -175,27 +175,27 @@ ENTRIES = {
         "avatar": "path/to/ingo/avatar.png",
         "short": "i=G"
     },
-    "Herminatoren": {
+    "Onkel Boston": {
         "prediction" : [
-            'Aalesund',
-            'Egersund',
-            'Hødd',
-            'Kongsvinger',
-            'Lillestrøm',
-            'Lyn',
-            'Mjøndalen',
-            'Moss',
-            'Odd',
-            'Ranheim',
-            'Raufoss',
-            'Skeid',
-            'Sogndal',
             'Stabæk',
+            'Lillestrøm',
+            'Aalesund',
+            'Kongsvinger',
+            'Odd',
+            'Moss',
+            'Lyn',
+            'Sogndal',
             'Start',
+            'Egersund',
+            'Mjøndalen',
+            'Ranheim',
+            'Skeid',
+            'Hødd',
+            'Raufoss',
             'Åsane',
             ],
         "avatar": "path/to/herman/avatar.png",
-        "short": "Hr."
+        "short": "Unc"
     },
     "TøyenHolding": {
         "prediction" : [
