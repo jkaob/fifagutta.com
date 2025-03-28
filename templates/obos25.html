@@ -25,7 +25,7 @@
 
   /* Third image (Contact) */
   .bgimg-3 {
-    background-image: url("/static/drillo2.jpg");
+    background-image: url("/static/jorgen.jpg");
     min-height: 400px;
   }
 
@@ -87,7 +87,7 @@
 
 
 <!-- Container (About Section) -->
-<div class="w3-content w3-container w3-padding-64" id="about" style="max-width: 800px; margin: auto;">
+<div class="w3-content w3-container w3-padding-32" id="about" style="max-width: 600px; margin: auto;">
   <!-- <div class="w3-center w3-xxlarge">Fifagutta tipper tabellen</div> -->
   <p class="w3-justify w3-text-grey w3-large" style="text-align: center;"><em>
     Vi er her igjen!
@@ -105,9 +105,8 @@
 
 
 <!-- Container (Email Section) -->
-<div class="w3-content w3-container w3-padding-64" id="email">
+<!-- <div class="w3-content w3-container w3-padding-64" id="email">
   <h3 class="w3-center w3-xxlarge">SEND INN DITT TIPS!</h3>
-  <!-- <p class="w3-center"><em>Send inn direkte via epost ved å bruke boksen under!</em></p> -->
     <div class="w3-col m8 w3-panel" style="background-color: #6d8ea0; color: white; float: none; margin: 0 auto; display: block;">
       <div class="w3-large w3-margin-bottom w3-margin-top w3-center" >
         <i class="fa fa-envelope fa-fw w3-hover-text-black w3-xlarge w3-margin-right"></i> tips@fifagutta.no<br>
@@ -119,7 +118,7 @@
         Husk å inkludere inn ønsket visningsnavn!
       </p>
     </div>
-</div>
+</div> -->
 
 <!-- Second Parallax Image with Logo Text -->
 <div class="bgimg-2 w3-display-container w3-opacity-min">
@@ -129,10 +128,12 @@
 
 
 <!-- Table with entries -->
-<div class="w3-content w3-container w3-padding-32" id="standings">
+<div class="w3-content w3-container w3-padding-4" id="standings">
   <div class="w3-row w3-center w3-padding-16"><br>
 
-      <div class="w3-xlarge w3-text-black w3-padding-16">Oppdatert Tabell</div>
+      <div class="w3-xlarge w3-text-black w3-padding-16">
+        Oppdatert Tabell <sup><a href="#footnote1" style="text-decoration: none; font-size: 0.6em;">†</a></sup>
+      </div>
 
       <table class="w3-table-all">
           <tr class="w3-black">
@@ -234,7 +235,7 @@
         <tr>
           <td style="font-weight: bold">{{ loop.index }}</td>
           <td>{{ team.name_full }}</td>
-          <td style="font-weight: bold; color: {% if contestant.data['delta'][loop.index-1] == 0 %}green{% elif contestant.data['delta'][loop.index-1] > 9 %}red{% endif %}">
+          <td style="font-weight: bold; color: {% if contestant.data['delta'][loop.index-1] == 0 %}green{% elif contestant.data['delta'][loop.index-1] > 9 %}darkred{% endif %}; {% if contestant.data['delta'][loop.index-1] == 0 %}text-decoration: underline;{% endif %}">
             {{ contestant.data['delta'][loop.index-1] }}
           </td>
         </tr>
@@ -336,7 +337,21 @@
   const historyLength = contestants[0].data.points_history.length; // Length of the first contestant's points_history
 
   const labels = contestants.map(contestant => contestant.name);  // Use contestant names as labels
-  const colors = ["plum", "cornflowerblue", "olive", "lightseagreen", "lightblue", "darkslateblue", "lightcoral", "peru", "palegreen"];
+  const colors = [
+    "plum", 
+    "cornflowerblue", 
+    "olive", 
+    "lightseagreen", 
+    "lightblue", 
+    "darkslateblue", 
+    "lightcoral", 
+    "peru", 
+    "palegreen",
+    // "lightpink", 
+    "peachpuff", 
+    "lightgoldenrodyellow"
+    // "lavender", 
+  ];
   const xValues = Array.from({length: historyLength}, (_, index) => index + 1);
 
   new Chart("historyChart", {
@@ -368,6 +383,10 @@
   });
 </script>
 
+<p id="footnote1" class="w3-small w3-text-grey">
+  <sup>†</sup>Tabellen oppdateres hver kveld kl 21:00
+</p>
+
 <!-- Third Parallax Image with Portfolio Text -->
 <div class="bgimg-3 w3-display-container w3-opacity-min">
   <div class="w3-display-middle">
@@ -393,9 +412,9 @@ window.onscroll = function() {myFunction()};
 function myFunction() {
     var navbar = document.getElementById("myNavbar");
     if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
-        navbar.className = "w3-bar" + " w3-card" + " w3-animate-top" + " w3-white";
+        navbar.className = "w3-bar" + " w3-card" + " w3-animate-top" + " w3-navy";
     } else {
-        navbar.className = navbar.className.replace(" w3-card w3-animate-top w3-white", "");
+        navbar.className = navbar.className.replace(" w3-card w3-animate-top w3-navy", "");
     }
 }
 
