@@ -31,11 +31,12 @@ class TippeData25(TippeData):
         super().__init__(year, entries, teams, debug)
 
     @staticmethod
-    def action_update_csv(year, dir_prefix=None, backup_only=True):
+    def action_update_csv(dir_prefix=None, backup_only=True):
         if (dir_prefix is None):
             dir_prefix = os.getcwd()
 
-        ball = TippeData25(year)
+        ball = TippeData25()
+        year = ball.year
 
         now = datetime.datetime.now()
 
