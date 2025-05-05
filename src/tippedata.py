@@ -1,9 +1,8 @@
 
 import shutil
-
-
-from common import Scraper, Contestant, Team
-from reader import CsvReader
+from .common import Contestant, Team
+from .scraper import Scraper
+from .reader import CsvReader
 
 
 #  can we combine this with derived class  ?

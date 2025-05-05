@@ -2,7 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 import common
-from common import Team, CsvReader, Scraper, TippeDataBase, Contestant
+from common import Team, CsvReader, TippeDataBase, Contestant
+from scraper import Scraper
 
 N_TEAMS = 16
 

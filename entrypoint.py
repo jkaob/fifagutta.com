@@ -1,4 +1,4 @@
-from  ball25 import TippeData25
+from  src.ball25 import TippeData25
 import os
 
 YEAR=2025
