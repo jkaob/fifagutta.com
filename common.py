@@ -93,18 +93,19 @@ class Scraper():
                 name = team_element.string # team name
 
                 td_elements = row.find_all("td") # get number data
-                n_exp = 11
-                assert len(td_elements) == n_exp, f"Expected {n_exp} elements, found  {len(td_elements)}"
+
+                assert (len(td_elements) == 11 or len(td_elements) == 10), f"Expected 10 or 11 elements, found  {len(td_elements)}"
+                
+                j = 0 if (len(td_elements) == 10) else 1 # offset for whenever they decide to change the table format 
+                
                 pos = int(td_elements[0].get_text())
                 n_played = int(td_elements[2].get_text())
-                goal_diff = int(td_elements[-3].get_text())
-                n_points = int(td_elements[-2].get_text())
+                goal_diff = int(td_elements[-(2+j)].get_text())
+                n_points = int(td_elements[-(1+j)].get_text())
                 # Append team status to current standings
                 team = [pos, name, n_played, goal_diff, n_points]
                 standings.append(team)
         return standings
-
-
 
 
 
