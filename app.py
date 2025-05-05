@@ -1,4 +1,4 @@
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify, session
 from src.ball24 import TippeData24
 from src.ball25 import TippeData25
@@ -8,9 +8,9 @@ import json
 
 app = Flask(__name__)
 
-load_dotenv() # Load environment variables from .env file
-app.secret_key = os.getenv('SECRET_KEY')
-VALID_PASSWORDS = json.loads(os.getenv('PASSWORDS_JSON'))
+# load_dotenv() # Load environment variables from .env file
+app.secret_key = os.getenv('FIFAGUTTA_SECRET_KEY')
+VALID_PASSWORDS = json.loads(os.getenv('FIFAGUTTA_PASSWORDS_JSON'))
 
 
 @app.route('/')
