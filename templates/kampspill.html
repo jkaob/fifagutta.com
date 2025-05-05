@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+  #bets.locked {
+    pointer-events: none;      /* disables clicks inside */
+    opacity: 0.4;              /* makes it visually greyed out */
+  }
+</style>
+
+
+
+<!-- Login box -->
+<div class="w3-content w3-container w3-padding-64">
+
+  <div id="login">
+
+    
+    <label for="passwordInput">Skriv inn kodeord:</label>
+    <input type="password" id="passwordInput" class="w3-input w3-border" style="max-width:300px;">
+    <button class="w3-button w3-black w3-margin-top" onclick="checkLogin()">Logg inn</button>
+  </div>
+  
+  <div id="loginMessage" class="w3-panel w3-green w3-margin-top" style="display:none;">
+    Velkommen, <span id="usernameDisplay"></span>!
+  </div>
+</div>
+
+
+<div class="w3-content w3-container w3-padding-64 locked" id="bets">
+  <div class="w3-xlarge w3-center w3-blue w3-padding-10">Neste kamper</div>
+
+  {% for match in next_matches %}
+    <div class="w3-card w3-padding w3-margin-bottom w3-light-grey w3-center">
+      <div class="w3-large">
+        Runde {{ match.round_number }}: {{ match.home_team }} vs {{ match.away_team }}
+      </div>
+      <div class="w3-small">
+        {{ match.date_time }}
+      </div>
+
+      <div style="margin-top:10px;">
+        <label for="home_{{ loop.index }}">H:</label>
+        <input type="number" id="home_{{ loop.index }}" min="0" value="0" style="width: 50px;">
+
+        <label for="away_{{ loop.index }}">B:</label>
+        <input type="number" id="away_{{ loop.index }}" min="0" value="0" style="width: 50px;">
+
+        <span id="result_{{ loop.index }}" class="w3-tag w3-blue w3-margin-left">U</span>
+        
+        <button class="w3-button w3-black w3-margin-left" onclick="placeBet({{ loop.index }})">
+          Plasser spill
+        </button>
+
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<script>
+  // attach event listeners for result
+  {% for match in next_matches %}
+    const homeInput{{ loop.index }} = document.getElementById('home_{{ loop.index }}');
+    const awayInput{{ loop.index }} = document.getElementById('away_{{ loop.index }}');
+    const resultTag{{ loop.index }} = document.getElementById('result_{{ loop.index }}');
+
+    function updateResult{{ loop.index }}() {
+      const homeGoals = parseInt(homeInput{{ loop.index }}.value);
+      const awayGoals = parseInt(awayInput{{ loop.index }}.value);
+      let result = '-';
+      if (!isNaN(homeGoals) && !isNaN(awayGoals)) {
+        if (homeGoals > awayGoals) result = 'H';
+        else if (homeGoals < awayGoals) result = 'B';
+        else result = 'U';
+      }
+      resultTag{{ loop.index }}.textContent = result;
+    }
+
+    homeInput{{ loop.index }}.addEventListener('input', updateResult{{ loop.index }});
+    awayInput{{ loop.index }}.addEventListener('input', updateResult{{ loop.index }});
+  {% endfor %}
+
+  function placeBet(index) {
+    const home = document.getElementById('home_' + index).value;
+    const away = document.getElementById('away_' + index).value;
+    const result = document.getElementById('result_' + index).textContent;
+    alert(`Spill plassert: ${home}-${away} (${result})`);
+    // You can replace alert() with an AJAX call or form submit
+  }
+</script>
+{% endblock %}
+
+
+
+
+
+
+{% block scripts %}
+
+<!-- check Login  -->
+<script>
+  function checkLogin() {
+    const pw = document.getElementById('passwordInput').value;
+  
+    fetch('/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pw })
+    })
+    .then(response => {
+      if (!response.ok) throw new Error('Feil passord');
+      return response.json();
+    })
+    .then(data => {
+      document.getElementById('login').style.display = 'none';
+      document.getElementById('loginMessage').style.display = 'block';
+      document.getElementById('usernameDisplay').textContent = data.username;
+      document.getElementById('bets').classList.remove('locked');
+    })
+    .catch(err => {
+      alert(err.message);
+    });
+  }
+  </script>
+
+{% endblock %}
