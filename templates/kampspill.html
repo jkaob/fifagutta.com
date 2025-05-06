@@ -48,18 +48,22 @@
       </div>
 
       <div style="margin-top:10px;">
-        <label for="home_{{ loop.index }}">H:</label>
-        <input type="number" id="home_{{ loop.index }}" min="0" value="0" style="width: 50px;">
+        <form method="POST" action="{{ url_for('bets.place_bet') }}" style="margin-top:10px; display:inline-block;">
+          <!-- hidden field carries the match ID -->
+          <input type="hidden" name="match_id" value="{{ match.id }}">
 
-        <label for="away_{{ loop.index }}">B:</label>
-        <input type="number" id="away_{{ loop.index }}" min="0" value="0" style="width: 50px;">
+          <label for="home_{{ loop.index }}">H:</label>
+          <input type="number" name="home" id="home_{{ loop.index }}" min="0" value="0" style="width:50px;">
 
-        <span id="result_{{ loop.index }}" class="w3-tag w3-blue w3-margin-left">U</span>
-        
-        <button class="w3-button w3-black w3-margin-left" onclick="placeBet({{ loop.index }})">
-          Plasser spill
-        </button>
+          <label for="away_{{ loop.index }}">B:</label>
+          <input type="number" name="away" id="away_{{ loop.index }}" min="0" value="0" style="width:50px;">
 
+          <span id="result_{{ loop.index }}" class="w3-tag w3-blue w3-margin-left">U</span>
+          
+          <button type="submit" class="w3-button w3-black w3-margin-left">
+            Plasser spill
+          </button>
+        </form>
       </div>
     </div>
   {% endfor %}

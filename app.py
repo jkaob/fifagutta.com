@@ -1,17 +1,27 @@
 # from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify, session
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from src.ball24 import TippeData24
 from src.ball25 import TippeData25
 from src.kampspill import Kampspill
+from src.db import init_db
+from src.models import Player, Match, Bet
+from src.routes import bets_bp, matches_bp
 import os
 import json
 
 app = Flask(__name__)
 
-# load_dotenv() # Load environment variables from .env file
+# set up database
+init_db(app)
+
+app.register_blueprint(bets_bp)
+app.register_blueprint(matches_bp)
+
+# Load environment variables
 app.secret_key = os.getenv('FIFAGUTTA_SECRET_KEY')
 VALID_PASSWORDS = json.loads(os.getenv('FIFAGUTTA_PASSWORDS_JSON'))
-
 
 @app.route('/')
 def index():

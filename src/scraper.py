@@ -43,11 +43,9 @@ class Scraper():
 
 
 class ScheduleScraper():
-    def __init__(self, year) -> None:
-        self.year = year
+    def __init__(self) -> None:
         self.url_schedule = 'https://www.obos-ligaen.no/terminliste'
         self.url_results = 'https://www.obos-ligaen.no/resultater'
-        self.csv = f'data/{year}-matches.csv'
 
 
     # get all elements that are scheduled to be played in the next 1-n days
