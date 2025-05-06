@@ -1,4 +1,5 @@
 # from dotenv import load_dotenv
+import pymysql
 from flask import Flask, render_template, request, jsonify, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -10,6 +11,7 @@ from src.models import Player, Match, Bet
 from src.routes import bets_bp, matches_bp
 import os
 import json
+pymysql.install_as_MySQLdb()
 
 app = Flask(__name__)
 
