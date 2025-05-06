@@ -8,22 +8,23 @@ from src.ball25 import TippeData25
 from src.kampspill import Kampspill
 from src.db import init_db
 from src.models import Player, Match, Bet
-from src.routes import bets_bp, matches_bp
+from src.routes import bets_bp, matches_bp, auth_bp
 import os
 import json
 pymysql.install_as_MySQLdb()
 
 app = Flask(__name__)
 
-# set up database
-init_db(app)
 
-app.register_blueprint(bets_bp)
-app.register_blueprint(matches_bp)
 
 # Load environment variables
 app.secret_key = os.getenv('FIFAGUTTA_SECRET_KEY')
-VALID_PASSWORDS = json.loads(os.getenv('FIFAGUTTA_PASSWORDS_JSON'))
+
+# set up database and register blueprints
+init_db(app)
+app.register_blueprint(bets_bp)
+app.register_blueprint(matches_bp)
+app.register_blueprint(auth_bp)
 
 @app.route('/')
 def index():
@@ -67,16 +68,6 @@ def match_bets():
 		'kampspill.html',
 		next_matches=next_matches)
 
-
-@app.route('/login', methods=['POST'])
-def login():
-    pw = request.json.get('password')
-    username = VALID_PASSWORDS.get(pw)
-    if username:
-        session['username'] = username
-        return jsonify({'success': True, 'username': username})
-    else:
-        return jsonify({'success': False}), 401
 
 
 

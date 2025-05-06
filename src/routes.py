@@ -1,10 +1,81 @@
-
+import os
+import json
 from flask import Blueprint, request, session, jsonify, render_template
 from .kampspill import Kampspill
 from datetime import datetime
 from .models import Match, Bet, Player
 from sqlalchemy.exc import IntegrityError
 from .db      import db
+
+
+# Login route
+VALID_PASSWORDS = json.loads(os.getenv('FIFAGUTTA_PASSWORDS_JSON'))
+auth_bp = Blueprint('auth', __name__)
+@auth_bp.route('/login', methods=['POST'])
+def login():
+    data = request.get_json() or {}
+    pw   = data.get('password', '')
+    username = VALID_PASSWORDS.get(pw)
+    if not username:
+        return jsonify({'success': False}), 401
+    
+    # lookup or create the Player record
+    player = Player.query.filter_by(username=username).first()
+    if not player:
+        player = Player(username=username,
+                        password_hash='')  # or store the pw-hash if you like
+        db.session.add(player)
+        db.session.commit()
+        print("Add player ID ", player.id)
+
+    # store in session
+    session['user_id']   = player.id
+    session['username']  = player.username
+
+    return jsonify({'success': True, 'username': player.username, 'user_id': player.id})
+    
+
+# Bets route
+bets_bp = Blueprint('bets', __name__)
+@bets_bp.route('/place_bet', methods=['POST'])
+def place_bet():
+    # assume user is logged in and "user_id" is in session
+    player_id = session.get('user_id')
+    if not player_id:
+        return jsonify({'error': 'not logged in'}), 401
+
+    match_id   = request.form['match_id']
+    goals_home = int(request.form['home'])
+    goals_away = int(request.form['away'])
+
+    # upsert: either create new Bet or overwrite existing
+    bet = Bet.query.filter_by(player_id=player_id, match_id=match_id).first()
+    if not bet:
+        bet = Bet(player_id=player_id, match_id=match_id)
+        db.session.add(bet)
+    bet.goals_home = goals_home
+    bet.goals_away = goals_away
+    db.session.commit()
+
+    return jsonify({'success': True})
+
+
+# Match storage Routes
+matches_bp = Blueprint('matches', __name__)
+@matches_bp.route('/matches')
+def show_match_bets():
+    kampspill = Kampspill(2025)
+    raw = kampspill.get_next_matches(7)
+    matches = ensure_matches_in_db(raw)
+    return render_template('kampspill.html', next_matches=matches)
+
+
+
+
+
+########################################
+######      Helper functions      ######
+########################################
 
 def ensure_matches_in_db(next_matches):
     """
@@ -48,38 +119,3 @@ def ensure_matches_in_db(next_matches):
                 ).first()
         db_matches.append(match_obj)
     return db_matches
-
-
-### ROUTES
-bets_bp = Blueprint('bets', __name__)
-
-@bets_bp.route('/place_bet', methods=['POST'])
-def place_bet():
-    # assume user is logged in and "user_id" is in session
-    player_id = session.get('user_id')
-    if not player_id:
-        return jsonify({'error': 'not logged in'}), 401
-
-    match_id   = request.form['match_id']
-    goals_home = int(request.form['home'])
-    goals_away = int(request.form['away'])
-
-    # upsert: either create new Bet or overwrite existing
-    bet = Bet.query.filter_by(player_id=player_id, match_id=match_id).first()
-    if not bet:
-        bet = Bet(player_id=player_id, match_id=match_id)
-        db.session.add(bet)
-    bet.goals_home = goals_home
-    bet.goals_away = goals_away
-    db.session.commit()
-
-    return jsonify({'success': True})
-
-
-matches_bp = Blueprint('matches', __name__)
-@matches_bp.route('/matches')
-def show_match_bets():
-    kampspill = Kampspill(2025)
-    raw = kampspill.get_next_matches(7)
-    matches = ensure_matches_in_db(raw)
-    return render_template('kampspill.html', next_matches=matches)
