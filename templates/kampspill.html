@@ -1,6 +1,39 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+
+<div class="w3-content w3-container w3-padding-64">
+  
+  {% if session.user_id %}
+
+    <div id="loginMessage">
+      <div class="w3-panel w3-center w3-xlarge w3-green w3-margin-top" >
+        Velkommen, {{ session.username }}!
+        <!-- <span id="usernameDisplay"></span>! -->
+      </div>
+      <div class="w3-center w3-medium w3-margin-top w3-text-black">
+        <p>Her kan du tippe resultat på de neste kampene i kokos-ligaen! <br> 
+          Husk å plassere spillene senest dagen før.</p>
+          
+        <p> Man får 1 poeng for å tippe riktig H-U-B, og 1 bonuspoeng for riktig resultat.
+          <br>Tipsene kan ikke endres etter de er plassert.</p> 
+      </div>
+    </div>
+
+  <!-- Login box -->
+  {% else %}
+    <div id="login" class="w3-card w3-padding w3-margin-top w3-pale-green w3-center">    
+      <label for="passwordInput">Skriv inn ditt <b>kodeord</b> for å kunne plassere spill:</label>
+      <input type="password" id="passwordInput" class="w3-input w3-border w3-margin-top" style="max-width:300px; margin: auto;">
+      <button class="w3-button w3-black w3-margin-top" 
+              onclick="attemptLogin(document.getElementById('passwordInput').value)">Logg inn
+      </button>
+    </div>
+  {% endif %}
+</div>
+
+
 <style>
   #bets.locked {
     pointer-events: none;      /* disables clicks inside */
@@ -8,62 +41,60 @@
   }
 </style>
 
-
-
-<!-- Login box -->
-<div class="w3-content w3-container w3-padding-64">
-  <div id="login" class="w3-card w3-padding w3-margin-top w3-pale-green w3-center">    
-    <label for="passwordInput">Skriv inn ditt <b>kodeord</b> for å kunne plassere spill:</label>
-    <input type="password" id="passwordInput" class="w3-input w3-border w3-margin-top" style="max-width:300px; margin: auto;">
-    <button class="w3-button w3-black w3-margin-top" onclick="checkLogin()">Logg inn</button>
-  </div>
-  
-  <div id="loginMessage" style="display:none;">
-
-    <div class="w3-panel w3-center w3-xlarge w3-green w3-margin-top" >
-      Velkommen, <span id="usernameDisplay"></span>!
-    </div>
-    <div class="w3-center w3-medium w3-margin-top w3-text-black">
-      <p>Her kan du tippe resultat på de neste kampene i kokos-ligaen! <br> 
-        Husk å plassere spillene senest dagen før.</p>
-        
-      <p> Man får 1 poeng for å tippe riktig H-U-B, og 1 bonuspoeng for riktig resultat.
-        <br>Tipsene kan ikke endres etter de er plassert.</p> 
-
-    </div>
-  </div>
-</div>
-
-
-<div class="w3-content w3-container w3-padding-32 locked" id="bets">
+<div class="w3-content w3-container w3-padding-32 {% if not session.user_id %}locked{% endif %}" id="bets">
   <div class="w3-xlarge w3-center w3-blue w3-padding-10">Neste kamper</div>
 
   {% for match in next_matches %}
     <div class="w3-card w3-padding w3-margin-bottom w3-light-grey w3-center">
       <div class="w3-large">
-        Runde {{ match.round_number }}:&nbsp;&nbsp;&nbsp;&nbsp; <b>{{ match.home_team }}</b> vs <b>{{ match.away_team }}</b>
+        Runde {{ match.round_number }}:&nbsp;&nbsp;&nbsp;&nbsp; <b> {{ match.home_team }}</b> vs <b>{{ match.away_team }}</b>
       </div>
-      <div class="w3-small">
-        {{ match.date_time }}
+      <div class="w3-small"> 
+        {{ match.play_date.strftime('%d.%m.%Y') }} &nbsp;&nbsp; {{ match.play_date.strftime('%H:%M') }} 
       </div>
 
       <div style="margin-top:10px;">
-        <form method="POST" action="{{ url_for('bets.place_bet') }}" style="margin-top:10px; display:inline-block;">
-          <!-- hidden field carries the match ID -->
-          <input type="hidden" name="match_id" value="{{ match.id }}">
 
-          <label for="home_{{ loop.index }}">H:</label>
-          <input type="number" name="home" id="home_{{ loop.index }}" min="0" value="0" style="width:50px;">
+        {% if match.id in user_bets %}
+          {# show their existing bet #}
+          <div>
+            <span class="w3-tag w3-blue">
+              {{ user_bets[match.id].goals_home }} - {{ user_bets[match.id].goals_away }}
+              
+            </span>
+            <span class="w3-tag w3-blue w3-margin-left">
+              {{ 
+                'H' if user_bets[match.id].goals_home > user_bets[match.id].goals_away 
+                else 'B' if user_bets[match.id].goals_home < user_bets[match.id].goals_away 
+                else 'U' 
+              }}
+            </span>
+          </div>
+        
+        {% else %}
 
-          <label for="away_{{ loop.index }}">B:</label>
-          <input type="number" name="away" id="away_{{ loop.index }}" min="0" value="0" style="width:50px;">
+          <form method="POST" action="{{ url_for('bets.place_bet') }}" style="display:inline-block;"
+            onsubmit="event.preventDefault(); placeBet(
+              {{ match.id }}, 
+              Number(document.getElementById('home_{{ loop.index }}').value),
+              Number(document.getElementById('away_{{ loop.index }}').value)
+            )"
+            style="display:inline-block;">
+            <!-- hidden field carries the match ID -->
+            <input type="hidden" name="match_id" value="{{ match.id }}">
 
-          <span id="result_{{ loop.index }}" class="w3-tag w3-blue w3-margin-left">U</span>
-          
-          <button type="submit" class="w3-button w3-black w3-margin-left">
-            Plasser spill
-          </button>
-        </form>
+            <label for="home_{{ loop.index }}">H:</label>
+            <input type="number" name="home" id="home_{{ loop.index }}" min="0" value="0" style="width:50px;">
+
+            <label for="away_{{ loop.index }}">B:</label>
+            <input type="number" name="away" id="away_{{ loop.index }}" min="0" value="0" style="width:50px;">
+
+            <span id="result_{{ loop.index }}" class="w3-tag w3-grey w3-margin-left">U</span>
+            
+            <button type="submit" class="w3-button w3-black w3-margin-left"> Plasser spill </button>
+          </form>
+
+        {% endif %}
       </div>
     </div>
   {% endfor %}
@@ -93,14 +124,6 @@
     homeInput{{ loop.index }}.addEventListener('input', updateResult{{ loop.index }});
     awayInput{{ loop.index }}.addEventListener('input', updateResult{{ loop.index }});
   {% endfor %}
-
-  function placeBet(index) {
-    const home = document.getElementById('home_' + index).value;
-    const away = document.getElementById('away_' + index).value;
-    const result = document.getElementById('result_' + index).textContent;
-    alert(`Spill plassert: ${home}-${away} (${result})`);
-    // You can replace alert() with an AJAX call or form submit
-  }
 </script>
 {% endblock %}
 
@@ -113,27 +136,68 @@
 
 <!-- check Login  -->
 <script>
-  function checkLogin() {
-    const pw = document.getElementById('passwordInput').value;
-  
+
+  function attemptLogin(password) {
     fetch('/login', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: pw })
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ password: password })
     })
     .then(response => {
-      if (!response.ok) throw new Error('Feil passord');
-      return response.json();
-    })
-    .then(data => {
-      document.getElementById('login').style.display = 'none';
-      document.getElementById('loginMessage').style.display = 'block';
-      document.getElementById('usernameDisplay').textContent = data.username;
-      document.getElementById('bets').classList.remove('locked');
-    })
-    .catch(err => {
-      alert(err.message);
+      if (response.ok) {
+        // Login successful – reload the page to update UI
+        window.location.reload();
+      } else {
+        // Login failed – handle errors (e.g., show a message)
+        alert('Login failed');
+      }
     });
+  }
+
+  // function checkLogin() {
+  //   const pw = document.getElementById('passwordInput').value;
+  
+  //   fetch('/login', {
+  //     method: 'POST',
+  //     headers: { 'Content-Type': 'application/json' },
+  //     body: JSON.stringify({ password: pw })
+  //   })
+  //   .then(response => {
+  //     if (!response.ok) throw new Error('Feil passord');
+  //     return response.json();
+  //   })
+  //   .then(data => {
+  //     document.getElementById('login').style.display = 'none';
+  //     document.getElementById('loginMessage').style.display = 'block';
+  //     document.getElementById('usernameDisplay').textContent = data.username;
+  //     document.getElementById('bets').classList.remove('locked');
+  //   })
+  //   .catch(err => {
+  //     alert(err.message);
+  //   });
+  // }
+</script>
+
+
+<!--  Place bet on a single match -->
+<script>
+  async function placeBet(matchId, homeGoals, awayGoals) {
+    const resp = await fetch("/place_bet", {
+      method: "POST",
+      headers: { "Content-Type":"application/json" },
+      body: JSON.stringify({
+        match_id: matchId,
+        home:     homeGoals,
+        away:     awayGoals
+      })
+    });
+    const data = await resp.json();
+    if (!data.success) {
+      return alert("Error: " + data.error);
+    } else {
+      window.location.reload();
+    }
+    // maybe highlight the “Plasser spill” button as disabled now…
   }
   </script>
 

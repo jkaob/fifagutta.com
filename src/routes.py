@@ -4,7 +4,7 @@ from flask import Blueprint, request, session, jsonify, render_template
 from .kampspill import Kampspill
 from datetime import datetime
 from .models import Match, Bet, Player
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from .db      import db
 
 
@@ -39,35 +39,79 @@ def login():
 bets_bp = Blueprint('bets', __name__)
 @bets_bp.route('/place_bet', methods=['POST'])
 def place_bet():
-    # assume user is logged in and "user_id" is in session
+    # 1) check login
     player_id = session.get('user_id')
     if not player_id:
-        return jsonify({'error': 'not logged in'}), 401
+        return jsonify({ 'success': False, 'error': 'not_logged_in' }), 401
+    
+    # 2) parse JSON body
+    data = request.get_json() or {}
+    match_id   = data.get('match_id')
+    goals_home = data.get('home')
+    goals_away = data.get('away')
 
-    match_id   = request.form['match_id']
-    goals_home = int(request.form['home'])
-    goals_away = int(request.form['away'])
+    # 3) validate inputs
+    if match_id is None or goals_home is None or goals_away is None:
+        return jsonify({ 'success': False, 'error': 'missing_fields' }), 400
+    try:
+        match_id   = int(match_id)
+        goals_home = int(goals_home)
+        goals_away = int(goals_away)
+    except ValueError:
+        return jsonify({ 'success': False, 'error': 'invalid_values' }), 400
 
     # upsert: either create new Bet or overwrite existing
-    bet = Bet.query.filter_by(player_id=player_id, match_id=match_id).first()
-    if not bet:
-        bet = Bet(player_id=player_id, match_id=match_id)
-        db.session.add(bet)
-    bet.goals_home = goals_home
-    bet.goals_away = goals_away
-    db.session.commit()
+    try:
+        bet = Bet.query.filter_by(player_id=player_id, match_id=match_id).first()
+        if not bet:
+            bet = Bet(
+              player_id=player_id, match_id=match_id, goals_home=goals_home, goals_away=goals_away)
+            db.session.add(bet)
+        else:
+            print(f"bet already existing (ID {bet.id}:  {bet.goals_home} - {bet.goals_away})")
+            pass
+        db.session.commit()
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({ 'success': False, 'error': 'db_error', 'details': str(e) }), 500
 
-    return jsonify({'success': True})
+
+    return jsonify({
+      'success':    True,
+      'bet': {
+        'id':         bet.id,
+        'player_id':  bet.player_id,
+        'match_id':   bet.match_id,
+        'goals_home': bet.goals_home,
+        'goals_away': bet.goals_away
+      }
+    }), 200
 
 
 # Match storage Routes
 matches_bp = Blueprint('matches', __name__)
 @matches_bp.route('/matches')
 def show_match_bets():
+    user_id = session.get('user_id') # try to get user_id from session
+    print("user_id", user_id)
+
+    # get nect matches via scraper, add to database if not existing
     kampspill = Kampspill(2025)
     raw = kampspill.get_next_matches(7)
-    matches = ensure_matches_in_db(raw)
-    return render_template('kampspill.html', next_matches=matches)
+    next_matches = ensure_matches_in_db(raw)
+
+
+    # 2) load this user’s bets into a dict { match_id: Bet }
+    user_bets = {}
+    if user_id:
+        for bet in Bet.query.filter_by(player_id=user_id).all():
+            user_bets[bet.match_id] = bet
+
+    return render_template(
+        'kampspill.html',
+        next_matches=next_matches,
+        user_bets=user_bets
+    )
 
 
 
