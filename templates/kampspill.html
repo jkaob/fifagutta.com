@@ -102,29 +102,6 @@
 
 
 
-<script>
-  // attach event listeners for result
-  {% for match in next_matches %}
-    const homeInput{{ loop.index }} = document.getElementById('home_{{ loop.index }}');
-    const awayInput{{ loop.index }} = document.getElementById('away_{{ loop.index }}');
-    const resultTag{{ loop.index }} = document.getElementById('result_{{ loop.index }}');
-
-    function updateResult{{ loop.index }}() {
-      const homeGoals = parseInt(homeInput{{ loop.index }}.value);
-      const awayGoals = parseInt(awayInput{{ loop.index }}.value);
-      let result = '-';
-      if (!isNaN(homeGoals) && !isNaN(awayGoals)) {
-        if (homeGoals > awayGoals) result = 'H';
-        else if (homeGoals < awayGoals) result = 'B';
-        else result = 'U';
-      }
-      resultTag{{ loop.index }}.textContent = result;
-    }
-
-    homeInput{{ loop.index }}.addEventListener('input', updateResult{{ loop.index }});
-    awayInput{{ loop.index }}.addEventListener('input', updateResult{{ loop.index }});
-  {% endfor %}
-</script>
 {% endblock %}
 
 
@@ -154,28 +131,6 @@
     });
   }
 
-  // function checkLogin() {
-  //   const pw = document.getElementById('passwordInput').value;
-  
-  //   fetch('/login', {
-  //     method: 'POST',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: JSON.stringify({ password: pw })
-  //   })
-  //   .then(response => {
-  //     if (!response.ok) throw new Error('Feil passord');
-  //     return response.json();
-  //   })
-  //   .then(data => {
-  //     document.getElementById('login').style.display = 'none';
-  //     document.getElementById('loginMessage').style.display = 'block';
-  //     document.getElementById('usernameDisplay').textContent = data.username;
-  //     document.getElementById('bets').classList.remove('locked');
-  //   })
-  //   .catch(err => {
-  //     alert(err.message);
-  //   });
-  // }
 </script>
 
 
@@ -199,6 +154,31 @@
     }
     // maybe highlight the “Plasser spill” button as disabled now…
   }
-  </script>
+</script>
+
+
+<script>
+  // attach event listeners for result
+  {% for match in next_matches %}
+    const homeInput{{ loop.index }} = document.getElementById('home_{{ loop.index }}');
+    const awayInput{{ loop.index }} = document.getElementById('away_{{ loop.index }}');
+    const resultTag{{ loop.index }} = document.getElementById('result_{{ loop.index }}');
+
+    function updateResult{{ loop.index }}() {
+      const homeGoals = parseInt(homeInput{{ loop.index }}.value);
+      const awayGoals = parseInt(awayInput{{ loop.index }}.value);
+      let result = '-';
+      if (!isNaN(homeGoals) && !isNaN(awayGoals)) {
+        if (homeGoals > awayGoals) result = 'H';
+        else if (homeGoals < awayGoals) result = 'B';
+        else result = 'U';
+      }
+      resultTag{{ loop.index }}.textContent = result;
+    }
+
+    homeInput{{ loop.index }}.addEventListener('input', updateResult{{ loop.index }});
+    awayInput{{ loop.index }}.addEventListener('input', updateResult{{ loop.index }});
+  {% endfor %}
+</script>
 
 {% endblock %}

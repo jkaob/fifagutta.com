@@ -13,6 +13,7 @@ VALID_PASSWORDS = json.loads(os.getenv('FIFAGUTTA_PASSWORDS_JSON'))
 auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/login', methods=['POST'])
 def login():
+    print("attempting login")
     data = request.get_json() or {}
     pw   = data.get('password', '')
     username = VALID_PASSWORDS.get(pw)

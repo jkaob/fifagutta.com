@@ -36,27 +36,20 @@
   </style>
   {% block head %}{% endblock %}
 </head>
+
 <body>
-  <!-- Navbar (common to all pages) -->
+
+  <!--  Navbar  -->
   <div class="w3-top">
-    <div class="w3-bar" id="myNavbar">
+    <!-- For large screens -->
+    <div class="w3-bar" id="navBarFull">
       <a href="/" class="w3-bar-item w3-button"><i class="fa fa-home"></i> Hjem</a>
-      <a href="/#entries" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-table" aria-hidden="true"></i> Guttas Tips </a>
-      <a href="/#results" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-line-chart"></i> Resultater </a>
+      <a href="/#entries" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-table"></i> Guttas Tips</a>
+      <a href="/#results" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-line-chart"></i> Resultater</a>
       <a href="/2024" class="w3-bar-item w3-button"><i class="fa fa-trophy"></i> 2024</a>
-      <a href="/matches" class="w3-bar-item w3-button w3-hide-small" style="background-color: #30c49f;">
-        <i class="fa fa-futbol-o" aria-hidden="true"></i> <b>Kampspill</b>
+      <a href="/matches" class="w3-bar-item w3-button" style="background-color: #30c49f;">
+        <i class="fa fa-futbol-o"></i> <b>Kampspill</b>
       </a>
-    </div>
-    <!-- Navbar on small screens -->
-    <div id="navDemo" class="w3-bar-block w3-navy w3-hide w3-hide-large w3-hide-medium">
-      <a href="/" class="w3-bar-item w3-button" onclick="toggleFunction()"> Hjem</a>
-      <a href="/#entries" class="w3-bar-item w3-button" onclick="toggleFunction()"><i class="fa fa-table" aria-hidden="true"></i> Guttas Tips</a>
-      <a href="/#results" class="w3-bar-item w3-button" onclick="toggleFunction()"> Resultater</a>
-      <a href="/matches" class="w3-bar-item w3-button w3-hide-small onclick="toggleFunction()" style="background-color: #30c49f;">
-        <i class="fa fa-futbol-o" aria-hidden="true"></i> <b>Kampspill</b>
-      </a>
-      <a href="/2024" class="w3-bar-item w3-button"><i class="fa fa-trophy"></i> 2024</a>
     </div>
   </div>
 
@@ -74,16 +67,6 @@
   </footer>
 
   <!-- Common JS functions -->
-  <script>
-    function toggleFunction() {
-      var x = document.getElementById("navDemo");
-      if (x.className.indexOf("w3-show") == -1) {
-        x.className += " w3-show";
-      } else {
-        x.className = x.className.replace(" w3-show", "");
-      }
-    }
-  </script>
-  {% block scripts %}{% endblock %}
+  {% block scripts %}{% endblock %} 
 </body>
 </html>
