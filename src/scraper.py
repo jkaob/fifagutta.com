@@ -49,9 +49,10 @@ class ScheduleScraper():
 
 
     # get all elements that are scheduled to be played in the next 1-n days
-    def get_next_match_elements(self, n_days=7):
-        today = datetime.today().date()
-        in_n_days = today + timedelta(days=n_days)
+    def get_next_match_elements(self, n_days=7, n_min_hours=1):
+        now = datetime.now()
+        in_n_hours = now + timedelta(hours=n_min_hours)
+        in_n_days = datetime.today() + timedelta(days=n_days)
 
         r = requests.get(self.url_schedule)
         soup = BeautifulSoup(r.content, 'html.parser', from_encoding='utf-8')
@@ -76,26 +77,22 @@ class ScheduleScraper():
             date_str = date_span.text.strip().replace('.', '').strip()
             time_str = time_span.text.strip()
             try:
-                match_date = datetime.strptime(date_str, '%d%m%Y').date()
+                match_datetime = datetime.strptime(f"{date_str} {time_str}", '%d%m%Y %H:%M')
             except ValueError:
-                print(f"Error parsing date: {date_str}")
+                print(f"Error parsing datetime: {date_str} {time_str}")
                 continue
 
-            if today < match_date <= in_n_days:
-                # extract home/away teams
+            if in_n_hours < match_datetime <= in_n_days:
                 teams_text = teams_td.get_text(separator=' ').strip()
                 home_team = teams_text.split('-')[0].strip()
                 away_team_span = teams_td.find('span', class_='schedule__team--opponent')
                 away_team = away_team_span.text.strip() if away_team_span else "?"
 
-                # extract round number
                 round_number_span = round_td.find('span')
                 round_number = round_number_span.text.strip() if round_number_span else "?"
 
-                # combine date and time
-                datetime_str = f"{match_date.strftime('%d.%m.%Y')} {time_str}"
+                datetime_str = match_datetime.strftime('%d.%m.%Y %H:%M')
 
-                # append as dict
                 next_matches.append({
                     'home_team': home_team,
                     'away_team': away_team,
@@ -103,7 +100,7 @@ class ScheduleScraper():
                     'round_number': round_number
                 })
 
-            elif match_date > in_n_days:
+            elif match_datetime > in_n_days:
                 # stop looping once we’re past range
                 break
 
