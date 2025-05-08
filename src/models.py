@@ -4,6 +4,7 @@ class Player(db.Model):
     __tablename__ = 'players'
     id            = db.Column(db.Integer, primary_key=True)
     username      = db.Column(db.String(50), unique=True, nullable=False)
+    username_short = db.Column(db.String(10), unique=True, nullable=True)
     password_hash = db.Column(db.String(128), nullable=True)
 
 
@@ -15,11 +16,13 @@ class Match(db.Model):
     away_team    = db.Column(db.String(50), nullable=False)
     play_date    = db.Column(db.DateTime, nullable=False)
     round_number = db.Column(db.Integer, nullable=False)
+    home_goals   = db.Column(db.Integer, nullable=True)
+    away_goals   = db.Column(db.Integer, nullable=True)
 
     # never let me insert the same home+away+date twice.
     __table_args__ = (
       db.UniqueConstraint(
-        'home_team', 'away_team', 'play_date', name='uix_home_away_date'),
+        'home_team', 'away_team', name='uix_home_away'),
     )
 
 

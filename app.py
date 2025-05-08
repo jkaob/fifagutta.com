@@ -60,17 +60,6 @@ def last_year():
         contestants_json=contestants_json
     )
 
-@app.route('/matches')
-def match_bets():
-	kampspill = Kampspill(2025)
-	next_matches = kampspill.get_next_matches(7)
-	return render_template(
-		'kampspill.html',
-		next_matches=next_matches)
-
-
-
-
 
 @app.route('/2023')
 def hjelp():
