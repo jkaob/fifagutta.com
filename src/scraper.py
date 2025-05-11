@@ -49,9 +49,9 @@ class ScheduleScraper():
 
 
     # get all elements that are scheduled to be played in the next 1-n days
-    def get_next_match_elements(self, n_days=7, n_min_hours=1, verbose=False):
+    def get_next_match_elements(self, n_days=7, n_min_hours=0.25, verbose=False):
         now = datetime.now()
-        in_n_hours = now + timedelta(hours=n_min_hours)
+        in_n_hours = now + timedelta(minutes=n_min_hours*60)
         in_n_days = datetime.today() + timedelta(days=n_days)
 
         r = requests.get(self.url_schedule)
@@ -60,11 +60,20 @@ class ScheduleScraper():
         schedule_tab = soup.find('table', class_="schedule__table")
         
         for row in schedule_tab.find_all('tr'):
-            
-            date_td = row.find('td', class_='schedule__match__item--date')
-            teams_td = row.find('td', class_='schedule__match__item--teams')
-            round_td = row.find('td', class_='schedule__match__item--round')
-            if not date_td or not teams_td or not round_td:
+
+            # check for the upcoming header match
+            round_number = None
+            if row.get('class') and 'schedule__match--upcoming' in row.get('class', []):
+                date_td = row.find('td', class_='schedule__match__item--date')
+                teams_td = row.find('td', class_='schedule__match__item--teams')
+                round_span = date_td.find_all('span')[-1]
+                round_number = round_span.text.strip().lstrip('#')
+
+            else:
+                date_td = row.find('td', class_='schedule__match__item--date')
+                teams_td = row.find('td', class_='schedule__match__item--teams')
+                round_td = row.find('td', class_='schedule__match__item--round')
+            if not date_td or not teams_td or not (round_td or round_number):
                 continue
 
             # get date string
@@ -82,15 +91,15 @@ class ScheduleScraper():
                 print(f"Error parsing datetime: {date_str} {time_str}")
                 continue
 
-            if in_n_hours < match_datetime <= in_n_days:
+            if in_n_hours <= match_datetime <= in_n_days:
                 teams_text = teams_td.get_text(separator=' ').strip()
                 home_team = teams_text.split('-')[0].strip()
                 away_team_span = teams_td.find('span', class_='schedule__team--opponent')
                 away_team = away_team_span.text.strip() if away_team_span else "?"
 
-                round_number_span = round_td.find('span')
-                round_number = round_number_span.text.strip() if round_number_span else "?"
-
+                if not round_number:
+                    round_number_span = round_td.find('span')
+                    round_number = round_number_span.text.strip() if round_number_span else "?"
                 datetime_str = match_datetime.strftime('%d.%m.%Y %H:%M')
 
                 next_matches.append({
@@ -112,7 +121,7 @@ class ScheduleScraper():
         return next_matches
                 
     def print_next_matches(self, n_days=7):
-        next_matches = self.get_next_match_elements(n_days)
+        next_matches = self.get_next_match_elements(n_days, 0.25)
         for match in next_matches:
             print(f"{match['home_team']} vs {match['away_team']} on {match['date_time']} (Round: {match['round_number']})")
             
