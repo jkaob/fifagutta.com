@@ -60,11 +60,20 @@ class ScheduleScraper():
         schedule_tab = soup.find('table', class_="schedule__table")
         
         for row in schedule_tab.find_all('tr'):
-            
-            date_td = row.find('td', class_='schedule__match__item--date')
-            teams_td = row.find('td', class_='schedule__match__item--teams')
-            round_td = row.find('td', class_='schedule__match__item--round')
-            if not date_td or not teams_td or not round_td:
+
+            # check for the upcoming header match
+            round_number = None
+            if row.get('class') and 'schedule__match--upcoming' in row.get('class', []):
+                date_td = row.find('td', class_='schedule__match__item--date')
+                teams_td = row.find('td', class_='schedule__match__item--teams')
+                round_span = date_td.find_all('span')[-1]
+                round_number = round_span.text.strip().lstrip('#')
+
+            else:
+                date_td = row.find('td', class_='schedule__match__item--date')
+                teams_td = row.find('td', class_='schedule__match__item--teams')
+                round_td = row.find('td', class_='schedule__match__item--round')
+            if not date_td or not teams_td or not (round_td or round_number):
                 continue
 
             # get date string
@@ -88,9 +97,9 @@ class ScheduleScraper():
                 away_team_span = teams_td.find('span', class_='schedule__team--opponent')
                 away_team = away_team_span.text.strip() if away_team_span else "?"
 
-                round_number_span = round_td.find('span')
-                round_number = round_number_span.text.strip() if round_number_span else "?"
-
+                if not round_number:
+                    round_number_span = round_td.find('span')
+                    round_number = round_number_span.text.strip() if round_number_span else "?"
                 datetime_str = match_datetime.strftime('%d.%m.%Y %H:%M')
 
                 next_matches.append({
