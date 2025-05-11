@@ -2,7 +2,8 @@ name: update-schedule
 
 on:
   schedule:
-    - cron: 0 19 * * *
+    - cron: '0 9 * * *'
+    - cron: '0 17 * * *'
   workflow_dispatch:
 
 jobs:
@@ -26,7 +27,12 @@ jobs:
 
       - name: Update Schedule 
         run: |
-          python entrypoint.py csv
+          python entrypoint.py 
+        env:
+          FIFAGUTTA_SECRET_KEY: ${{ secrets.FIFAGUTTA_SECRET_KEY }}
+          FIFAGUTTA_PASSWORDS_JSON: ${{ secrets.FIFAGUTTA_PASSWORDS_JSON }}
+          FIFAGUTTA_UNAME_SHORT_JSON: ${{ secrets.FIFAGUTTA_UNAME_SHORT_JSON }}
+          FIFAGUTTA_DATABASE_URL: ${{ secrets.FIFAGUTTA_DATABASE_URL }}
 
       - name: Commit and push if there are changes
         run: |
