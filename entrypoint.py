@@ -1,6 +1,9 @@
-from  src.ball25 import TippeData25
 import os
 import sys
+from  src.ball25 import TippeData25
+from src.routes import ensure_matches_in_db, ensure_past_matches_in_db
+from src.kampspill import Kampspill
+
 
 YEAR=2025
 
