@@ -3,7 +3,7 @@ name: update-schedule
 on:
   schedule:
     - cron: '0 9 * * *'
-    - cron: '0 17 * * *'
+    - cron: '0 21 * * *'
   workflow_dispatch:
 
 jobs:
@@ -33,15 +33,3 @@ jobs:
           FIFAGUTTA_PASSWORDS_JSON: ${{ secrets.FIFAGUTTA_PASSWORDS_JSON }}
           FIFAGUTTA_UNAME_SHORT_JSON: ${{ secrets.FIFAGUTTA_UNAME_SHORT_JSON }}
           FIFAGUTTA_DATABASE_URL: ${{ secrets.FIFAGUTTA_DATABASE_URL }}
-
-      - name: Commit and push if there are changes
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add data/2025.csv
-          git add data/backup/*
-          git pull origin main
-          git commit -m 'Updated data with latest standings' || echo 'No changes to commit'
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
