@@ -25,7 +25,7 @@ def init_db(app):
 ### CRUD functions
 from .models import Player, Bet, Match 
 from .scraper import ScheduleScraper
-
+from sqlalchemy.exc import IntegrityError
 
 
 def get_all_matches():
@@ -73,6 +73,18 @@ def filter_next_matches(all_matches, n_max_days=7, n_min_hours=0.25):
                if (m.play_date >= now + timedelta(hours=n_min_hours)) and
                (m.play_date <= now + timedelta(days=n_max_days)) ]
     return sorted(matches, key=lambda x: x.play_date)
+
+def print_matches(matches):
+    """
+    Prints a list of matches in a readable format.
+    """
+    for m in matches:
+        print(f"{m.round_number} : {m.home_team} vs {m.away_team} ({m.play_date})")
+        if m.home_goals is not None and m.away_goals is not None:
+            print(f"  Result: {m.home_goals}:{m.away_goals}")
+        else:
+            print("  No result yet")
+    print("")
 
 def get_user_bets(user_id):
     user_bets = {}

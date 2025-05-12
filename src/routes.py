@@ -2,10 +2,8 @@ import os
 import json
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from flask import Blueprint, request, session, jsonify, render_template
-from datetime import datetime
 from .db      import *
 from .models import Player, Bet, Match
-from .scraper import ScheduleScraper
 
 
 # Login route
@@ -117,6 +115,16 @@ def show_match_bets():
     past_matches = filter_past_matches(all_matches)
     next_matches = filter_next_matches(all_matches)
 
+    print_matches(past_matches)
+    from collections import defaultdict
+    def group_matches_by_round(matches):
+        grouped = defaultdict(list)
+        for match in matches:
+            grouped[match.round_number].append(match)
+        return dict(grouped)
+    past_matches_grouped = group_matches_by_round(past_matches)
+
+
     # 2) load this user’s bets into a dict { match_id: Bet }
     user_bets = get_user_bets(user_id)
 
@@ -129,15 +137,18 @@ def show_match_bets():
     return render_template(
         'kampspill.html',
         next_matches=next_matches,
-        past_matches=past_matches,
+        past_matches=past_matches_grouped,
         user_bets=user_bets,
         bets_by_match=all_bets,
         player_scores=player_scores,
     )
 
+
 @matches_bp.route('/update-db', methods=['POST'])
 def update_database():
-    # This gets the latest matches from the scraper and updates the database if needed
+    """
+    Gets the latest matches from the scraper and updates the database if needed
+    """
     add_matches_to_db(7, 0.25, False)
 
 

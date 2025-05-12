@@ -166,66 +166,90 @@
 <div class="w3-content w3-container w3-padding-64" id="past_matches">
   <div class="w3-xlarge w3-center w3-light-blue w3-padding-10">Tidligere kamper</div>
 
-  {% for match in past_matches %}
-    <div class="w3-card w3-padding w3-margin-bottom w3-light-grey w3-center"> 
-
-      <div class="w3-large match-row">
-        <span class="match-info">
-          #{{ match.round_number }}:&nbsp;&nbsp; <b> {{ match.home_team }}</b> vs <b>{{ match.away_team }}</b>
-        </span>
-        <span class="match-right">
-          <span class="w3-tag w3-black w3-margin-left w3-medium">
-            {{ match.home_goals }} - {{ match.away_goals }}
-          </span>
-          {% set result_letter = 
-            'H' if match.home_goals > match.away_goals 
-            else 'B' if match.home_goals < match.away_goals 
-            else 'U' 
-          %}        
-          <span class="w3-tag w3-margin-left w3-medium
-            {% if result_letter == 'H' %} w3-blue
-            {% elif result_letter == 'B' %} w3-black
-            {% else %} w3-grey {% endif %}">
-            {{ result_letter }}
-          </span>
-        </span>
-      </div>
-
-      <div class="w3-small w3-hide-small"> 
-        {{ match.play_date.strftime('%d.%m.%Y') }} &nbsp;&nbsp; {{ match.play_date.strftime('%H:%M') }} 
-      </div>
-
-      <div id="player-bets" style="margin-top:10px;">
-        {% for bet in bets_by_match.get(match.id, []) %}
-          {% set is_exact = bet.goals_home == match.home_goals and bet.goals_away == match.away_goals %}
-          {% set is_correct = bet.goals_home > bet.goals_away and match.home_goals > match.away_goals or
-                              bet.goals_home < bet.goals_away and match.home_goals < match.away_goals or
-                              bet.goals_home == bet.goals_away and match.home_goals == match.away_goals %}
-          
-          {# Determine color based on correctness #}
-          {% set color = 'w3-green' if is_exact 
-                        else 'w3-khaki' if is_correct 
-                        else 'w3-grey' %}
-          <span 
-            class="w3-tag w3-medium {{ color }}" 
-            style="cursor:pointer; margin-left:4px; margin-right:4px" 
-            onclick="
-              if (this.textContent === '{{ bet.username_short }}') {
-                this.textContent = '{{ bet.goals_home }} - {{ bet.goals_away }}';
-              } else {
-                this.textContent = '{{ bet.username_short }}';
-              }">
-            {{ bet.username_short }}
-          </span>
-        {% endfor %}
-      </div>
-
+  {% for round_number, matches in past_matches.items() %}
+    <div class="w3-card w3-margin-top w3-margin-bottom">
+      <button class="w3-button w3-block w3-left-align w3-light-grey"
+              onclick="toggle_visibility('round_{{ round_number }}')">
+        Runde {{ round_number }}
+      </button>
     </div>
+    <div id="round_{{ round_number }}" class="w3-hide w3-container w3-padding">
+      {% for match in matches %}
+  
+        <div class="w3-card w3-padding w3-margin-bottom w3-light-grey w3-center"> 
 
+          <div class="w3-large match-row">
+            <span class="match-info">
+              #{{ round_number }}:&nbsp;&nbsp; <b> {{ match.home_team }}</b> vs <b>{{ match.away_team }}</b>
+            </span>
+            <span class="match-right">
+              <span class="w3-tag w3-black w3-margin-left w3-medium">
+                {{ match.home_goals }} - {{ match.away_goals }}
+              </span>
+              {% set result_letter = 
+                'H' if match.home_goals > match.away_goals 
+                else 'B' if match.home_goals < match.away_goals 
+                else 'U' 
+              %}        
+              <span class="w3-tag w3-margin-left w3-medium
+                {% if result_letter == 'H' %} w3-blue
+                {% elif result_letter == 'B' %} w3-black
+                {% else %} w3-grey {% endif %}">
+                {{ result_letter }}
+              </span>
+            </span>
+          </div>
+
+          <div class="w3-small w3-hide-small"> 
+            {{ match.play_date.strftime('%d.%m.%Y') }} &nbsp;&nbsp; {{ match.play_date.strftime('%H:%M') }} 
+          </div>
+
+          <div id="player-bets" style="margin-top:10px;">
+            {% for bet in bets_by_match.get(match.id, []) %}
+              {% set is_exact = bet.goals_home == match.home_goals and bet.goals_away == match.away_goals %}
+              {% set is_correct = bet.goals_home > bet.goals_away and match.home_goals > match.away_goals or
+                                  bet.goals_home < bet.goals_away and match.home_goals < match.away_goals or
+                                  bet.goals_home == bet.goals_away and match.home_goals == match.away_goals %}
+              <span 
+                class="w3-tag w3-medium" 
+                style="
+                  cursor:pointer;
+                  margin-left:4px;
+                  margin-right:4px;
+                  background-color:
+                    {% if is_exact %}#009b1a
+                    {% elif is_correct %}#70b890
+                    {% else %}#afafaf
+                    {% endif %};
+                onclick="
+                  if (this.textContent === '{{ bet.username_short }}') {
+                    this.textContent = '{{ bet.goals_home }} - {{ bet.goals_away }}';
+                  } else {
+                    this.textContent = '{{ bet.username_short }}';
+                  }">
+                {{ bet.username_short }}
+              </span>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
   {% endfor %}
 
 </div>
 
+<script>
+  function toggle_visibility(id) {
+    var el = document.getElementById(id);
+    if (el.classList.contains("w3-show")) {
+      el.classList.remove("w3-show");
+      el.classList.add("w3-hide");
+    } else {
+      el.classList.remove("w3-hide");
+      el.classList.add("w3-show");
+    }
+  }
+</script>
 
 {% endblock %}
 
