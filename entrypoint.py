@@ -1,12 +1,13 @@
 import os
 import sys
-from  src.ball25 import TippeData25
-from src.routes import ensure_matches_in_db, ensure_past_matches_in_db
-from src.kampspill import Kampspill
+from src.ball25 import TippeData25
+from src.db import add_matches_to_db
 
 
 YEAR=2025
-
+N_MIN_HOURS=0.25
+N_MAX_DAYS=7
+VERBOSE=False
 
 if __name__ == "__main__":
 
@@ -17,4 +18,4 @@ if __name__ == "__main__":
 
     else: 
         print("updating match schedule")
-        # other stuff
+        add_matches_to_db(N_MAX_DAYS, N_MIN_HOURS, VERBOSE)
