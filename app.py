@@ -5,9 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from src.ball24 import TippeData24
 from src.ball25 import TippeData25
-from src.kampspill import Kampspill
 from src.db import init_db
-from src.models import Player, Match, Bet
 from src.routes import bets_bp, matches_bp, auth_bp
 import os
 import json

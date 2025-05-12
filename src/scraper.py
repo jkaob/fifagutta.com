@@ -52,7 +52,10 @@ class ScheduleScraper():
     def get_next_match_elements(self, n_days=7, n_min_hours=0.25, verbose=False):
         now = datetime.now()
         in_n_hours = now + timedelta(minutes=n_min_hours*60)
-        in_n_days = datetime.today() + timedelta(days=n_days)
+        in_n_days = datetime.combine(
+            datetime.today() + timedelta(days=n_days), datetime.max.time())
+        if verbose:
+            print(f"Getting matches between {in_n_hours} and {in_n_days}")
 
         r = requests.get(self.url_schedule)
         soup = BeautifulSoup(r.content, 'html.parser', from_encoding='utf-8')

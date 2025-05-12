@@ -38,3 +38,5 @@ class Bet(db.Model):
     __table_args__ = (
       db.UniqueConstraint('player_id', 'match_id', name='uix_player_match'),
     )
+
+
