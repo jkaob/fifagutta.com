@@ -2,6 +2,7 @@ import os
 import sys
 from src.ball25 import TippeData25
 from src.db import add_matches_to_db
+from app import app
 
 
 YEAR=2025
@@ -18,4 +19,6 @@ if __name__ == "__main__":
 
     else: 
         print("updating match schedule")
-        add_matches_to_db(N_MAX_DAYS, N_MIN_HOURS, VERBOSE)
+        with app.app_context():
+            add_matches_to_db(N_MAX_DAYS, N_MIN_HOURS, VERBOSE)
+        
