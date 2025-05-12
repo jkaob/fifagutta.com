@@ -232,7 +232,7 @@ def ensure_past_matches_in_db(past_matches):
         else:
             # update results if they are not set
             if (match_obj.home_goals is None and match_obj.away_goals is None):
-                print("Updating match ID", match_obj.id)
+                print("Updating match ID goals", match_obj.id)
             match_obj.home_goals = m['home_goals']
             match_obj.away_goals = m['away_goals']
 
