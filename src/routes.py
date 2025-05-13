@@ -115,7 +115,7 @@ def show_match_bets():
     past_matches = filter_past_matches(all_matches)
     next_matches = filter_next_matches(all_matches)
 
-    print_matches(past_matches)
+    # print_matches(past_matches)
     from collections import defaultdict
     def group_matches_by_round(matches):
         grouped = defaultdict(list)
