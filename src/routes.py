@@ -83,8 +83,9 @@ def place_bet():
               player_id=player_id, match_id=match_id, goals_home=goals_home, goals_away=goals_away)
             db.session.add(bet)
         else:
-            print(f"bet already existing (ID {bet.id}:  {bet.goals_home} - {bet.goals_away})")
-            pass
+            bet.goals_home = goals_home
+            bet.goals_away = goals_away
+            print(f"Updated bet (ID {bet.id}:  {bet.goals_home} - {bet.goals_away})")
         db.session.commit()
     except SQLAlchemyError as e:
         db.session.rollback()
