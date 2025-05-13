@@ -2,6 +2,7 @@ import os
 import json
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from flask import Blueprint, request, session, jsonify, render_template
+from flask import redirect, url_for
 from .db      import *
 from .models import Player, Bet, Match
 
@@ -150,6 +151,9 @@ def update_database():
     Gets the latest matches from the scraper and updates the database if needed
     """
     add_matches_to_db(7, 0.25, False)
+    return redirect(url_for('matches.show_match_bets'))  # replace with your actual route name
+
+
 
 
 
