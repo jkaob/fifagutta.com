@@ -1,13 +1,12 @@
 # fifagutta.no
 
-Fifagutta tipper obos 2024
+Fifagutta tipper obos 
 
 Nettsiden finner du på https://fifagutta.no
 
-## todo
+---
 
-### stats
+##### todo
 
-- hvilket lag har skuffet / imponert mest 
+- hvilket lag har skuffet / imponert mest
 - hvilket lag som ble tippet mest likt / forskjellig
-- gjennomsnittstabellen aka samlet fifagutta tips

@@ -1,5 +1,6 @@
 import csv
-from common import Scraper, Team, Contestant
+from .common import Team, Contestant
+from .scraper import Scraper
 import os
 
 class CsvReader():

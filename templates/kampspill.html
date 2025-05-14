@@ -1,0 +1,384 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<div class="w3-content w3-container w3-padding-64">
+  
+  {% if session.user_id %}
+
+    <div id="loginMessage">
+      <div class="w3-panel w3-center w3-xlarge w3-green w3-margin-top" >
+        Velkommen, {{ session.username }}!
+        <!-- <span id="usernameDisplay"></span>! -->
+      </div>
+      <div class="w3-center w3-medium w3-margin-top w3-text-black">
+        <p>Her kan du tippe resultat på de neste kampene i kokos-ligaen! <br> </p>
+          
+        <p> Man får <b>1 poeng</b> for å tippe riktig H-U-B, og <b>1 bonuspoeng</b> for riktig resultat. 
+          <br> Tipsene låses <b>15 minutter</b> før kampstart! </p>
+        <p class="w3-large"><i class="fa fa-futbol-o"></i></p>
+      </div>
+    </div>
+
+  <!-- Login box -->
+  {% else %}
+    <div id="login" class="w3-card w3-padding w3-margin-top w3-pale-green w3-center">    
+      <label for="passwordInput">Skriv inn ditt <b>kodeord</b> for å kunne plassere spill:</label>
+      <input type="password" id="passwordInput" class="w3-input w3-border w3-margin-top" style="max-width:300px; margin: auto;">
+      <button class="w3-button w3-black w3-margin-top" 
+              onclick="attemptLogin(document.getElementById('passwordInput').value)">Logg inn
+      </button>
+    </div>
+  {% endif %}
+</div>
+
+
+<style>
+  #bets.locked {
+    pointer-events: none;      /* disables clicks inside */
+    opacity: 0.4;              /* makes it visually greyed out */
+  }
+</style>
+
+<div class="w3-content w3-container w3-padding-32 {% if not session.user_id %}locked{% endif %}" id="bets">
+  <div class="w3-xlarge w3-center w3-blue w3-padding-10">Neste kamper</div>
+
+  {% if next_matches %}
+    {% for match in next_matches %}
+
+      <div id="bet_card_{{ match.id }}">
+        <div class="w3-card w3-padding w3-margin-bottom w3-light-grey w3-center">
+          <div class="w3-large">
+            Runde {{ match.round_number }}:&nbsp;&nbsp;&nbsp;&nbsp;
+            <b>{{ match.home_team }}</b> vs <b>{{ match.away_team }}</b>
+          </div>
+          <div class="w3-small">
+            {{ match.play_date.strftime('%d.%m.%Y') }} &nbsp;&nbsp;
+            {{ match.play_date.strftime('%H:%M') }}
+          </div>
+      
+          <div style="margin-top:10px;">
+            {% if match.id in user_bets %}
+            <div id="display_bet_{{ match.id }}" style="position: relative; display: flex; align-items: center; ">
+              <!-- Centered bet display -->
+              <div style="position: absolute; left: 50%; transform: translateX(-50%); text-align: center; pointer-events: none;">
+                <span class="w3-tag w3-light-blue">
+                  {{ user_bets[match.id].goals_home }} - {{ user_bets[match.id].goals_away }}
+                </span>
+                {% set result_letter =
+                  'H' if user_bets[match.id].goals_home > user_bets[match.id].goals_away
+                  else 'B' if user_bets[match.id].goals_home < user_bets[match.id].goals_away
+                  else 'U' %}
+                <span class="w3-tag w3-margin-left
+                            {% if result_letter == 'H' %} w3-blue
+                            {% elif result_letter == 'B' %} w3-black
+                            {% else %} w3-grey {% endif %}">
+                  {{ result_letter }}
+                </span>
+              </div>
+            
+              <!-- Button on far right -->
+              <button class="w3-button w3-small w3-border w3-round" style="margin-left: auto; z-index: 1;"
+                      onclick="toggle_bet_form({{ match.id }})">
+                Endre
+              </button>
+            </div>
+            
+            {% endif %}
+      
+            <!-- Form (shown if no bet or editing) -->
+            <div id="edit_bet_{{ match.id }}" {% if match.id in user_bets %}style="display: none;"{% endif %}>
+              <form method="POST" action="{{ url_for('bets.place_bet') }}"
+                    onsubmit="event.preventDefault(); placeBet(
+                      {{ match.id }},
+                      Number(document.getElementById('home_{{ loop.index }}').value),
+                      Number(document.getElementById('away_{{ loop.index }}').value)
+                    )">
+                <input type="hidden" name="match_id" value="{{ match.id }}">
+      
+                <label for="home_{{ loop.index }}">H:</label>
+                <input type="number" name="home" id="home_{{ loop.index }}" min="0" value="0" style="width:50px;">
+      
+                <label for="away_{{ loop.index }}">B:</label>
+                <input type="number" name="away" id="away_{{ loop.index }}" min="0" value="0" style="width:50px;">
+      
+                <span id="result_{{ loop.index }}" class="w3-tag w3-grey w3-margin-left">U</span>
+      
+                <button type="submit" class="w3-button w3-round w3-margin-left" style="background-color: #65c46a;">
+                  Plasser <span class="w3-hide-small">spill</span>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    
+    {% endfor %} 
+  {% else %}
+    <div class="w3-card w3-padding w3-margin-bottom w3-light-grey w3-center">
+      <div class="w3-large">Ingen kamper de neste 7 dagene</div>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+  function toggle_bet_form(match_id) {
+    document.getElementById('display_bet_' + match_id).style.display = 'none';
+    document.getElementById('edit_bet_' + match_id).style.display = 'block';
+  }
+</script>
+
+<!-- Update H-U-B on user input change -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const totalMatches = {{ next_matches | length }};
+
+    for (let i = 1; i <= totalMatches; i++) {
+      const homeInput = document.getElementById('home_' + i);
+      const awayInput = document.getElementById('away_' + i);
+      const resultTag = document.getElementById('result_' + i);
+
+      if (!homeInput || !awayInput || !resultTag) continue;
+
+      function updateResult() {
+        const homeGoals = parseInt(homeInput.value);
+        const awayGoals = parseInt(awayInput.value);
+        let result = '-';
+        if (!isNaN(homeGoals) && !isNaN(awayGoals)) {
+          if (homeGoals > awayGoals) result = 'H';
+          else if (homeGoals < awayGoals) result = 'B';
+          else result = 'U';
+        }
+        resultTag.textContent = result;
+        // optionally update the color too
+        resultTag.className = 'w3-tag w3-margin-left ' + (
+          result === 'H' ? 'w3-blue' :
+          result === 'B' ? 'w3-black' :
+          result === 'U' ? 'w3-grey' : 'w3-light-grey'
+        );
+      }
+
+      homeInput.addEventListener('input', updateResult);
+      awayInput.addEventListener('input', updateResult);
+    }
+  });
+</script>
+
+<!--  Poengoversikt -->
+<div class="w3-content w3-container w3-padding-16 w3-center" id="scoreboard">
+  <div class="w3-xlarge w3-green w3-padding-10">Tippekongen</div>
+  <div class="scrollable-table">
+    <table class="w3-table-all w3-centered">
+      <tr class="w3-darkblue">
+        <th style="color: black"></th>
+        <th style="color: black">Spiller</th>
+        <th style="color: black">Poeng</th>
+        <th style="color: black">H-U-B</th>
+        <th style="color: black"><i class="fa fa-bullseye"></i></th>
+      </tr>
+      {% for player in player_scores %}
+      <tr>
+        <td style="font-weight: bold; color: grey">{{ loop.index }}</td>
+        <td style="font-weight: bold">{{ player.username }}</td>
+        <td>{{ player.score }}</td>
+        <td>{{ player.n_correct }}</td>
+        <td>{{ player.n_exact }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+
+<style>
+  .match-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 18px;         /* large screens = default */
+    text-align: left;
+    flex-wrap: wrap;
+  }
+
+  .match-info {
+    flex: 1;
+    min-width: 0;            /* allow shrinking */
+    font-size: 18px;
+  }
+
+  .match-right {
+    display: flex;
+    flex-shrink: 0;
+    gap: 8px;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  @media (max-width: 600px) {
+    .match-row {
+      font-size: 14px;
+    }
+    .match-info {
+      font-size: 14px;
+    }
+    .match-right {
+      font-size: 14px;
+    }
+  }
+</style>
+
+<div class="w3-content w3-container w3-padding-32" id="past_matches">
+
+  <div style="text-align: right;">
+    <form method="POST" action="{{ url_for('matches.update_database') }}" style="display: inline-block;">
+      <button type="submit" class="w3-button w3-border w3-small w3-round" style="background-color: #bef0ff">
+        <i class="fa fa-refresh" aria-hidden="true"></i> Oppdater
+      </button>
+    </form>
+  </div>
+
+  <div class="w3-xlarge w3-center w3-light-blue w3-padding-10">Tidligere kamper</div>
+
+
+  {% for round_number, matches in past_matches.items() %}
+    <div class="w3-card">
+      <button class="w3-button w3-block w3-left-align w3-light-grey"
+              onclick="toggle_visibility_past_round('round_{{ round_number }}')">
+        Runde {{ round_number }}
+      </button>
+    </div>
+    <div id="round_{{ round_number }}" class="w3-hide w3-container w3-padding">
+      {% for match in matches %}
+  
+        <div class="w3-card w3-padding w3-margin-bottom w3-light-grey w3-center"> 
+
+          <div class="w3-large match-row">
+            <span class="match-info">
+              <b>{{ match.home_team }}</b> vs <b>{{ match.away_team }}</b>
+            </span>
+            <span class="w3-small w3-hide-small"> 
+              {{ match.play_date.strftime('%d.%m.%Y') }} &nbsp;&nbsp; {{ match.play_date.strftime('%H:%M') }} 
+            </span>
+            <span class="match-right">
+              <span class="w3-tag w3-black w3-margin-left w3-medium">
+                {{ match.home_goals }} - {{ match.away_goals }}
+              </span>
+              {% set result_letter = 
+                'H' if match.home_goals > match.away_goals 
+                else 'B' if match.home_goals < match.away_goals 
+                else 'U' 
+              %}        
+              <span class="w3-tag w3-margin-left w3-medium
+                {% if result_letter == 'H' %} w3-blue
+                {% elif result_letter == 'B' %} w3-black
+                {% else %} w3-grey {% endif %}">
+                {{ result_letter }}
+              </span>
+            </span>
+          </div>
+
+          <div id="player-bets" style="margin-top:10px;">
+            {% for bet in bets_by_match.get(match.id, []) %}
+              {% set is_exact = bet.goals_home == match.home_goals and bet.goals_away == match.away_goals %}
+              {% set is_correct = bet.goals_home > bet.goals_away and match.home_goals > match.away_goals or
+                                  bet.goals_home < bet.goals_away and match.home_goals < match.away_goals or
+                                  bet.goals_home == bet.goals_away and match.home_goals == match.away_goals %}
+              <span 
+                class="w3-tag w3-medium w3-round" 
+                style="
+                  cursor:pointer;
+                  margin-left:2px;
+                  margin-right:2px;
+                  background-color:
+                    {% if is_exact %}#009b1a
+                    {% elif is_correct %}#70b890
+                    {% else %}#afafaf
+                    {% endif %};"
+                onclick="
+                  if (this.textContent === '{{ bet.username_short }}') {
+                    this.textContent = '{{ bet.goals_home }} - {{ bet.goals_away }}';
+                  } else {
+                    this.textContent = '{{ bet.username_short }}';
+                  }">
+                {{ bet.username_short }}
+              </span>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+
+</div>
+
+
+{% endblock %}
+
+
+
+
+{% block scripts %}
+
+<!-- check Login  -->
+<script>
+
+  function attemptLogin(password) {
+    fetch('/login', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ password: password })
+    })
+    .then(response => {
+      if (response.ok) {
+        // Login successful – reload the page to update UI
+        window.location.reload();
+      } else {
+        // Login failed – handle errors (e.g., show a message)
+        alert('Login failed');
+      }
+    });
+  }
+
+</script>
+
+
+<script>
+  function toggle_visibility_past_round(id) {
+    var el = document.getElementById(id);
+    if (el.classList.contains("w3-show")) {
+      el.classList.remove("w3-show");
+      el.classList.add("w3-hide");
+    } else {
+      el.classList.remove("w3-hide");
+      el.classList.add("w3-show");
+    }
+  }
+</script>
+
+
+<!--  Place bet on a single match -->
+<script>
+  async function placeBet(matchId, homeGoals, awayGoals) {
+    const resp = await fetch("/place_bet", {
+      method: "POST",
+      headers: { "Content-Type":"application/json" },
+      body: JSON.stringify({
+        match_id: matchId,
+        home:     homeGoals,
+        away:     awayGoals
+      })
+    });
+    const data = await resp.json();
+    if (!data.success) {
+      return alert("Error: " + data.error);
+    } else {
+      window.location.reload();
+    }
+    // maybe highlight the “Plasser spill” button as disabled now…
+  }
+</script>
+
+
+
+{% endblock %}

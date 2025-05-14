@@ -1,5 +1,4 @@
 import csv
-from bs4 import BeautifulSoup
 import requests
 
 class Team:
@@ -68,44 +67,6 @@ class Contestant:
             # Include other necessary attributes
         }
 
-
-
-class Scraper():
-    def __init__(self, year) -> None:
-        self.year = year
-        self.url = 'https://www.obos-ligaen.no/resultater'
-        self.csv = f'data/{year}.csv'
-
-    def get_team_history(self, team : Team):
-        pass
-
-    def get_standings(self):
-        r = requests.get(self.url)
-        soup = BeautifulSoup(r.content, 'html.parser', from_encoding='utf-8')
-        league_table = soup.find('table', class_="table--persist-area table table--league-obos")
-        standings = []
-        for tbody in league_table.find_all("tbody"):
-            # ea row has all info we need
-            # iterate over each team
-            for row in tbody.find_all("tr", class_="table__row"):
-                team_element = row.find("span", class_="table__typo--full")
-                assert team_element is not None, "Expected to find team"
-                name = team_element.string # team name
-
-                td_elements = row.find_all("td") # get number data
-
-                assert (len(td_elements) == 11 or len(td_elements) == 10), f"Expected 10 or 11 elements, found  {len(td_elements)}"
-                
-                j = 0 if (len(td_elements) == 10) else 1 # offset for whenever they decide to change the table format 
-                
-                pos = int(td_elements[0].get_text())
-                n_played = int(td_elements[2].get_text())
-                goal_diff = int(td_elements[-(2+j)].get_text())
-                n_points = int(td_elements[-(1+j)].get_text())
-                # Append team status to current standings
-                team = [pos, name, n_played, goal_diff, n_points]
-                standings.append(team)
-        return standings
 
 
 

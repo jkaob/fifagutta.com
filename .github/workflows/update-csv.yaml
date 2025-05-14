@@ -24,10 +24,9 @@ jobs:
           pip install -r requirements.txt
 
 
-
       - name: Update CSV and write to backup file
         run: |
-          python entrypoint.py
+          python entrypoint.py csv
 
       - name: Commit and push if there are changes
         run: |

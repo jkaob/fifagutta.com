@@ -1,6 +1,6 @@
 import data.tips24
-from tippedata import TippeData
-from common import Team
+from .tippedata import TippeData
+from .common import Team
 
 
 class TippeData24(TippeData):
