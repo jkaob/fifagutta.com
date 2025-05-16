@@ -42,6 +42,19 @@
 </style>
 
 <div class="w3-content w3-container w3-padding-32 {% if not session.user_id %}locked{% endif %}" id="bets">
+  
+  <div style="text-align: right;">
+    <form method="GET" action="{{ url_for('matches.display_matches_html') }}" style="display: inline-block;">
+      <label for="n_future_days">Vis neste: </label>
+      <select name="n_future_days" onchange="this.form.submit()" class="w3-select w3-border w3-round w3-small" 
+              style="background-color: #bef0ff; width: auto; display: inline-block;">
+        <option value="7" {% if n_future_days == 7 %}selected{% endif %}>7 dager</option>
+        <option value="14" {% if n_future_days == 14 %}selected{% endif %}>14 dager</option>
+        <option value="30" {% if n_future_days == 30 %}selected{% endif %}>30 dager</option>
+      </select>
+    </form>
+  </div>
+
   <div class="w3-xlarge w3-center w3-blue w3-padding-10">Neste kamper</div>
 
   {% if next_matches %}
@@ -98,14 +111,16 @@
                 <input type="hidden" name="match_id" value="{{ match.id }}">
       
                 <label for="home_{{ loop.index }}">H:</label>
-                <input type="number" name="home" id="home_{{ loop.index }}" min="0" value="0" style="width:50px;">
+                <input type="number" name="home" id="home_{{ loop.index }}" min="0" value="0" 
+                       class="home-input" data-match-id="{{ match.id }}" style="width:50px;">
       
                 <label for="away_{{ loop.index }}">B:</label>
-                <input type="number" name="away" id="away_{{ loop.index }}" min="0" value="0" style="width:50px;">
+                <input type="number" name="away" id="away_{{ loop.index }}" min="0" value="0" 
+                       class="away-input" data-match-id="{{ match.id }}" style="width:50px;">
       
                 <span id="result_{{ loop.index }}" class="w3-tag w3-grey w3-margin-left">U</span>
       
-                <button type="submit" class="w3-button w3-round w3-margin-left" style="background-color: #65c46a;">
+                <button type="submit" class="w3-button w3-round w3-margin-left" style="background-color: #76bd7a;">
                   Plasser <span class="w3-hide-small">spill</span>
                 </button>
               </form>
@@ -116,9 +131,25 @@
 
     
     {% endfor %} 
+
+    <div class="w3-center">
+
+      <form id="place_all_form" method="POST" action="{{ url_for('bets.place_all_bets') }}">
+        {% for match in next_matches %}
+          <input type="hidden" name="match_ids" value="{{ match.id }}">
+          {% endfor %}
+          
+          <input type="hidden" name="bets_json" id="bets_json">
+          <button type="submit" class="w3-button w3-round w3-margin-left" style="background-color: #65c46a;"
+          onclick="prepareAllBets()">
+          Plasser alle spill
+        </button>
+      </form>
+    </div>
+
   {% else %}
     <div class="w3-card w3-padding w3-margin-bottom w3-light-grey w3-center">
-      <div class="w3-large">Ingen kamper de neste 7 dagene</div>
+      <div class="w3-large">Ingen kamper de neste {{ n_future_days }} dagene</div>
     </div>
   {% endif %}
 </div>
@@ -164,6 +195,28 @@
       awayInput.addEventListener('input', updateResult);
     }
   });
+</script>
+
+<!--  function to prepare all bets for submission -->
+<script>
+function prepareAllBets() {
+  const matchIds = [...document.querySelectorAll('input[name="match_ids"]')].map(i => i.value);
+  const bets = {};
+
+  matchIds.forEach(id => {
+    const homeInput = document.querySelector(`.home-input[data-match-id="${id}"]`);
+    const awayInput = document.querySelector(`.away-input[data-match-id="${id}"]`);
+    if (homeInput && awayInput) {
+      const home = Number(homeInput.value);
+      const away = Number(awayInput.value);
+      if (!isNaN(home) && !isNaN(away)) {
+        bets[id] = { home, away };
+      }
+    }
+  });
+
+  document.getElementById('bets_json').value = JSON.stringify(bets);
+}
 </script>
 
 <!--  Poengoversikt -->
@@ -231,7 +284,7 @@
 <div class="w3-content w3-container w3-padding-32" id="past_matches">
 
   <div style="text-align: right;">
-    <form method="POST" action="{{ url_for('matches.update_database') }}" style="display: inline-block;">
+    <form method="POST" action="{{ url_for('matches.update_database', n_future_days=n_future_days) }}" style="display: inline-block;">
       <button type="submit" class="w3-button w3-border w3-small w3-round" style="background-color: #bef0ff">
         <i class="fa fa-refresh" aria-hidden="true"></i> Oppdater
       </button>
