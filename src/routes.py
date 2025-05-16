@@ -54,9 +54,10 @@ def login():
 bets_bp = Blueprint('bets', __name__)
 @bets_bp.route('/place_bet', methods=['POST'])
 def place_bet():
+    print("running place_bet")
     # 1) check login
-    player_id = session.get('user_id')
-    if not player_id:
+    user_id = session.get('user_id')
+    if not user_id:
         return jsonify({ 'success': False, 'error': 'not_logged_in' }), 401
     
     # 2) parse JSON body
@@ -77,16 +78,7 @@ def place_bet():
 
     # upsert: either create new Bet or overwrite existing
     try:
-        bet = Bet.query.filter_by(player_id=player_id, match_id=match_id).first()
-        if not bet:
-            bet = Bet(
-              player_id=player_id, match_id=match_id, goals_home=goals_home, goals_away=goals_away)
-            db.session.add(bet)
-        else:
-            bet.goals_home = goals_home
-            bet.goals_away = goals_away
-            print(f"Updated bet (ID {bet.id}:  {bet.goals_home} - {bet.goals_away})")
-        db.session.commit()
+        bet = add_bet_to_db(db, user_id, match_id, goals_home, goals_away)
     except SQLAlchemyError as e:
         db.session.rollback()
         return jsonify({ 'success': False, 'error': 'db_error', 'details': str(e) }), 500
@@ -103,19 +95,45 @@ def place_bet():
       }
     }), 200
 
+@bets_bp.route('/place_all_bets', methods=['POST'])
+def place_all_bets():
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('auth.login'))
+
+    bets_data = request.form.get('bets_json')
+    if not bets_data:
+        return redirect(url_for('matches.show_match_bets'))
+
+    bets = json.loads(bets_data)
+
+    for match_id_str, bet in bets.items():
+        match_id = int(match_id_str)
+        goals_home = bet.get("home")
+        goals_away = bet.get("away")
+
+        if goals_home is not None and goals_away is not None:
+            add_bet_to_db(db, user_id, match_id, goals_home, goals_away)
+
+    return redirect(url_for('matches.show_match_bets'))
+
 
 # Match storage Routes
 matches_bp = Blueprint('matches', __name__)
 @matches_bp.route('/matches')
-def show_match_bets():
+def display_matches_html():
     user_id = session.get('user_id') # try to get user_id from session
     print("user_id", user_id)
 
     # 1) get matches from database
     all_matches = get_all_matches()
 
+    n_future_days = request.args.get('n_future_days', default=12, type=int)
+
+    print("n_future_days", n_future_days)
+
     past_matches = filter_past_matches(all_matches)
-    next_matches = filter_next_matches(all_matches)
+    next_matches = filter_next_matches(all_matches, n_max_days=n_future_days)
 
     # print_matches(past_matches)
     from collections import defaultdict
@@ -143,6 +161,7 @@ def show_match_bets():
         user_bets=user_bets,
         bets_by_match=all_bets,
         player_scores=player_scores,
+        n_future_days=n_future_days
     )
 
 
@@ -151,8 +170,11 @@ def update_database():
     """
     Gets the latest matches from the scraper and updates the database if needed
     """
-    add_matches_to_db(7, 0.25, False)
-    return redirect(url_for('matches.show_match_bets'))  # replace with your actual route name
+
+    n_future_days = request.args.get('n_future_days', default=7, type=int)
+    print("update-db/n_future_days", n_future_days)
+    add_matches_to_db(n_future_days, 0.25, False)
+    return redirect(url_for('matches.display_matches_html', n_future_days=n_future_days))  # replace with your actual route name
 
 
 
