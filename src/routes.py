@@ -6,6 +6,8 @@ from flask import redirect, url_for
 from .db      import *
 from .models import Player, Bet, Match
 
+DEFAULT_N_DAYS = 7
+
 
 # Login route
 VALID_PASSWORDS = json.loads(os.getenv('FIFAGUTTA_PASSWORDS_JSON'))
@@ -102,8 +104,10 @@ def place_all_bets():
         return redirect(url_for('auth.login'))
 
     bets_data = request.form.get('bets_json')
+    n_future_days = request.form.get('n_future_days', default=DEFAULT_N_DAYS, type=int)
+    
     if not bets_data:
-        return redirect(url_for('matches.show_match_bets'))
+        return redirect(url_for('matches.display_matches_html', n_future_days=n_future_days))
 
     bets = json.loads(bets_data)
 
@@ -115,7 +119,7 @@ def place_all_bets():
         if goals_home is not None and goals_away is not None:
             add_bet_to_db(db, user_id, match_id, goals_home, goals_away)
 
-    return redirect(url_for('matches.show_match_bets'))
+    return redirect(url_for('matches.display_matches_html', n_future_days=n_future_days))
 
 
 # Match storage Routes
@@ -128,7 +132,7 @@ def display_matches_html():
     # 1) get matches from database
     all_matches = get_all_matches()
 
-    n_future_days = request.args.get('n_future_days', default=12, type=int)
+    n_future_days = request.args.get('n_future_days', default=DEFAULT_N_DAYS, type=int)
 
     print("n_future_days", n_future_days)
 
@@ -171,7 +175,7 @@ def update_database():
     Gets the latest matches from the scraper and updates the database if needed
     """
 
-    n_future_days = request.args.get('n_future_days', default=7, type=int)
+    n_future_days = request.args.get('n_future_days', default=DEFAULT_N_DAYS, type=int)
     print("update-db/n_future_days", n_future_days)
     add_matches_to_db(n_future_days, 0.25, False)
     return redirect(url_for('matches.display_matches_html', n_future_days=n_future_days))  # replace with your actual route name

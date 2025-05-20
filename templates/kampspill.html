@@ -137,11 +137,12 @@
       <form id="place_all_form" method="POST" action="{{ url_for('bets.place_all_bets') }}">
         {% for match in next_matches %}
           <input type="hidden" name="match_ids" value="{{ match.id }}">
-          {% endfor %}
+        {% endfor %}
           
-          <input type="hidden" name="bets_json" id="bets_json">
-          <button type="submit" class="w3-button w3-round w3-margin-left" style="background-color: #65c46a;"
-          onclick="prepareAllBets()">
+        <input type="hidden" name="bets_json" id="bets_json">
+        <input type="hidden" name="n_future_days" value="{{ n_future_days }}">
+        <button type="submit" class="w3-button w3-round w3-margin-left" style="background-color: #65c46a;"
+                onclick="prepareAllBets()">
           Plasser alle spill
         </button>
       </form>
@@ -200,17 +201,20 @@
 <!--  function to prepare all bets for submission -->
 <script>
 function prepareAllBets() {
-  const matchIds = [...document.querySelectorAll('input[name="match_ids"]')].map(i => i.value);
   const bets = {};
 
-  matchIds.forEach(id => {
-    const homeInput = document.querySelector(`.home-input[data-match-id="${id}"]`);
-    const awayInput = document.querySelector(`.away-input[data-match-id="${id}"]`);
-    if (homeInput && awayInput) {
+  document.querySelectorAll('.home-input').forEach(homeInput => {
+    const matchId = homeInput.dataset.matchId;
+    const awayInput = document.querySelector(`.away-input[data-match-id="${matchId}"]`);
+    const editDiv = document.getElementById(`edit_bet_${matchId}`);
+
+    // Only include bets where the edit form is visible (i.e., unlocked)
+    if (editDiv && editDiv.style.display !== 'none') {
       const home = Number(homeInput.value);
       const away = Number(awayInput.value);
+
       if (!isNaN(home) && !isNaN(away)) {
-        bets[id] = { home, away };
+        bets[matchId] = { home, away };
       }
     }
   });
