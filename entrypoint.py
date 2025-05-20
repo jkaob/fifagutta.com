@@ -7,7 +7,7 @@ from app import app
 
 YEAR=2025
 N_MIN_HOURS=0.25
-N_MAX_DAYS=7
+N_MAX_DAYS=31
 VERBOSE=False
 
 if __name__ == "__main__":

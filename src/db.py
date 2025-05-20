@@ -28,6 +28,20 @@ from .scraper import ScheduleScraper
 from sqlalchemy.exc import IntegrityError
 
 
+def add_bet_to_db(db, user_id, match_id, goals_home, goals_away):
+    bet = Bet.query.filter_by(player_id=user_id, match_id=match_id).first()
+    if not bet:
+        bet = Bet(
+            player_id=user_id, match_id=match_id, goals_home=goals_home, goals_away=goals_away)
+        db.session.add(bet)
+        print(f"Added bet (ID {bet.id}:  {bet.goals_home} - {bet.goals_away})")
+    else:
+        bet.goals_home = goals_home
+        bet.goals_away = goals_away
+        print(f"Updated bet (ID {bet.id}:  {bet.goals_home} - {bet.goals_away})")
+    db.session.commit()
+    return bet
+
 def get_all_matches():
     all_matches = Match.query.all()
     return all_matches
@@ -62,7 +76,7 @@ def all_past_matches_have_results(all_matches):
         filter_past_matches(all_matches, filter_results=False)
 
 
-def filter_next_matches(all_matches, n_max_days=7, n_min_hours=0.25):
+def filter_next_matches(all_matches, n_max_days, n_min_hours=0.25):
     """
     Returns a list of matches that are in the future, and at least n_min_hours away.
     """
