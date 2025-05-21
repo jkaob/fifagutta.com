@@ -89,6 +89,7 @@ class TippeDataBase:
             contestant.data['corrects'][team_ind] = (points == 0)
             total_points += points
         contestant.data['points'] = total_points # store total points
+        contestant.data['n_corrects'] = sum(contestant.data['corrects'])
         return total_points
 
 
@@ -102,7 +103,10 @@ class TippeDataBase:
 
 
     def get_sorted_contestants(self):
-        sorted_contestants = sorted(self.contestants, key=lambda contestant: contestant.data['points'])
+        sorted_contestants = sorted(
+            self.contestants, 
+            key=lambda x: (x.data['points'], -x.data['n_corrects']))
+        
         return sorted_contestants
 
     def get_sorted_names(self):

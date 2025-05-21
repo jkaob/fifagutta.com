@@ -37,7 +37,8 @@ class Contestant:
             #'short' : [],
             'delta' : [],  # for each team, how many penalty points
             'points_history' : [],  #how many points contestant had after each game played
-            'corrects' : []  # bool : True if prediction is correct
+            'corrects' : [],  # bool : True if prediction is correct
+            'n_corrects' : 0 # number of correct predictions
         }
         self.short = name_short
         self.avatar = ""  # path to avatar #TODO
