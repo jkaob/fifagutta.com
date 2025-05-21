@@ -4,8 +4,8 @@ Stabæk,2,4,1,4
 Stabæk,3,4,-2,9
 Stabæk,4,4,-4,11
 Stabæk,5,7,-3,10
-Stabæk,6,8,-3,12
-Stabæk,7,11,1,-
+Stabæk,6,8,-3,-
+Stabæk,7,-,-,-
 Stabæk,8,-,-,-
 Stabæk,9,-,-,-
 Stabæk,10,-,-,-
@@ -34,7 +34,7 @@ Aalesund,2,4,1,5
 Aalesund,3,5,1,7
 Aalesund,4,6,1,6
 Aalesund,5,9,3,4
-Aalesund,6,12,5,3
+Aalesund,6,-,-,-
 Aalesund,7,-,-,-
 Aalesund,8,-,-,-
 Aalesund,9,-,-,-
@@ -64,8 +64,8 @@ Hødd,2,1,-2,12
 Hødd,3,4,-1,8
 Hødd,4,4,-2,10
 Hødd,5,7,-1,8
-Hødd,6,10,0,7
-Hødd,7,10,-2,-
+Hødd,6,10,0,-
+Hødd,7,-,-,-
 Hødd,8,-,-,-
 Hødd,9,-,-,-
 Hødd,10,-,-,-
@@ -94,7 +94,7 @@ Egersund,2,6,3,1
 Egersund,3,9,4,1
 Egersund,4,12,5,1
 Egersund,5,13,5,2
-Egersund,6,13,4,2
+Egersund,6,-,-,-
 Egersund,7,-,-,-
 Egersund,8,-,-,-
 Egersund,9,-,-,-
@@ -124,8 +124,8 @@ Kongsvinger,2,4,2,3
 Kongsvinger,3,7,8,2
 Kongsvinger,4,10,11,2
 Kongsvinger,5,10,10,3
-Kongsvinger,6,10,8,4
-Kongsvinger,7,10,6,-
+Kongsvinger,6,10,8,-
+Kongsvinger,7,-,-,-
 Kongsvinger,8,-,-,-
 Kongsvinger,9,-,-,-
 Kongsvinger,10,-,-,-
@@ -154,8 +154,8 @@ Lillestrøm,2,4,1,6
 Lillestrøm,3,7,4,3
 Lillestrøm,4,10,5,3
 Lillestrøm,5,13,8,1
-Lillestrøm,6,14,8,1
-Lillestrøm,7,17,10,-
+Lillestrøm,6,14,8,-
+Lillestrøm,7,-,-,-
 Lillestrøm,8,-,-,-
 Lillestrøm,9,-,-,-
 Lillestrøm,10,-,-,-
@@ -184,8 +184,8 @@ Lyn,2,3,2,8
 Lyn,3,3,1,10
 Lyn,4,3,0,12
 Lyn,5,3,-1,14
-Lyn,6,3,-3,14
-Lyn,7,4,-3,-
+Lyn,6,3,-3,-
+Lyn,7,-,-,-
 Lyn,8,-,-,-
 Lyn,9,-,-,-
 Lyn,10,-,-,-
@@ -214,8 +214,8 @@ Mjøndalen,2,1,-1,11
 Mjøndalen,3,2,-1,13
 Mjøndalen,4,2,-2,14
 Mjøndalen,5,2,-3,15
-Mjøndalen,6,2,-6,15
-Mjøndalen,7,2,-10,-
+Mjøndalen,6,2,-6,-
+Mjøndalen,7,-,-,-
 Mjøndalen,8,-,-,-
 Mjøndalen,9,-,-,-
 Mjøndalen,10,-,-,-
@@ -244,8 +244,8 @@ Moss,2,3,1,9
 Moss,3,3,-5,12
 Moss,4,6,-3,9
 Moss,5,6,-6,12
-Moss,6,9,-4,10
-Moss,7,9,-6,-
+Moss,6,9,-4,-
+Moss,7,-,-,-
 Moss,8,-,-,-
 Moss,9,-,-,-
 Moss,10,-,-,-
@@ -274,7 +274,7 @@ Ranheim,2,0,-5,16
 Ranheim,3,0,-6,16
 Ranheim,4,3,-5,13
 Ranheim,5,6,-4,11
-Ranheim,6,9,-1,9
+Ranheim,6,9,-1,-
 Ranheim,7,10,-1,-
 Ranheim,8,-,-,-
 Ranheim,9,-,-,-
@@ -304,7 +304,7 @@ Raufoss,2,4,1,7
 Raufoss,3,7,2,4
 Raufoss,4,7,1,5
 Raufoss,5,7,-1,9
-Raufoss,6,8,-1,11
+Raufoss,6,8,-1,-
 Raufoss,7,9,-1,-
 Raufoss,8,-,-,-
 Raufoss,9,-,-,-
@@ -334,8 +334,8 @@ Skeid,2,0,-3,15
 Skeid,3,0,-4,15
 Skeid,4,0,-7,16
 Skeid,5,0,-8,16
-Skeid,6,1,-8,16
-Skeid,7,2,-8,-
+Skeid,6,1,-8,-
+Skeid,7,-,-,-
 Skeid,8,-,-,-
 Skeid,9,-,-,-
 Skeid,10,-,-,-
@@ -364,8 +364,8 @@ Sogndal,2,0,-2,14
 Sogndal,3,3,-1,11
 Sogndal,4,6,0,8
 Sogndal,5,9,1,6
-Sogndal,6,9,0,8
-Sogndal,7,12,2,-
+Sogndal,6,9,0,-
+Sogndal,7,-,-,-
 Sogndal,8,-,-,-
 Sogndal,9,-,-,-
 Sogndal,10,-,-,-
@@ -394,8 +394,8 @@ Start,2,6,3,2
 Start,3,6,2,5
 Start,4,9,3,4
 Start,5,9,2,5
-Start,6,10,2,6
-Start,7,13,3,-
+Start,6,10,2,-
+Start,7,-,-,-
 Start,8,-,-,-
 Start,9,-,-,-
 Start,10,-,-,-
@@ -424,8 +424,8 @@ Odd,2,3,0,10
 Odd,3,6,1,6
 Odd,4,6,0,7
 Odd,5,7,0,7
-Odd,6,10,2,5
-Odd,7,13,4,-
+Odd,6,10,2,-
+Odd,7,-,-,-
 Odd,8,-,-,-
 Odd,9,-,-,-
 Odd,10,-,-,-
@@ -454,8 +454,8 @@ Odd,30,-,-,-
 Åsane,3,1,-3,14
 Åsane,4,2,-3,15
 Åsane,5,5,-2,13
-Åsane,6,6,-2,13
-Åsane,7,6,-4,-
+Åsane,6,6,-2,-
+Åsane,7,-,-,-
 Åsane,8,-,-,-
 Åsane,9,-,-,-
 Åsane,10,-,-,-
