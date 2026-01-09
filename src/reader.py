@@ -160,3 +160,28 @@ class CsvReader():
             writer.writerows(updated_rows)
         print(f"->wrote pos at round {round_number} for {team_name}\n")
         return True
+
+
+
+class CsvKampspill():
+    def __init__(self, filename: str):
+        self.csv = filename
+
+        if not os.path.exists(filename):
+            raise FileNotFoundError(f"The file {filename} does not exist.")
+        
+    def get_results(self):
+        results = []
+        with open(self.csv, 'r', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            next(reader)  # Skip header row
+            for row in reader:
+                results.append({
+                    "player": row["player"],
+                    "n_played": int(row["n_played"]),
+                    "points": int(row["points"]),
+                    "hub": int(row["hub"]),
+                    "corrects": int(row["corrects"]),
+                    "pos": int(row["pos"]) if row.get("pos") else 99,
+                })
+        return results

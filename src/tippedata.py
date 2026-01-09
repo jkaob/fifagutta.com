@@ -40,7 +40,8 @@ class TippeDataBase:
         for team in self.teams:
             if team.name == team_name \
                 or team.name.split(' ')[0] == team_name.split(' ')[0] \
-                or team.name.split(' ')[0] == team_name:
+                or team.name.split(' ')[0] == team_name \
+                or team.name.split(' ')[0][:-1] == team_name:
                     return team
         print(f"could not find team {team_name}!")
         return None
@@ -372,6 +373,13 @@ class TippeData(TippeDataBase):
         # Assuming CSV file has been updated
         self.compute_contestant_points_timeseries(input_fname=input_fname)
         print(f"computed contestants' points history")
+
+    # (Preseason) Only for standings preview 
+    def update_standings_only(self, fetch=True):
+        if (fetch):
+            self.fetch_standings() # get latest standings online
+        else:
+            self.get_latest_standings_from_csv()
 
 
 

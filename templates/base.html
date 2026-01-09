@@ -65,9 +65,20 @@
       <i class="fa fa-arrow-up w3-margin-right"></i>Til toppen
     </a>
     <p>Dette her er balleball <br> laget av Schrødingers Støvel 2026</p>
+
+    
+    {% if session.get("user_id") %}
+    <form method="post" action="/logout" style="display:inline;">
+      <button type="submit" class="w3-button w3-red w3-margin-top">
+        Logg ut
+      </button>
+    </form>
+    {% endif %}
+    
   </footer>
 
   <!-- Common JS functions -->
-  {% block scripts %}{% endblock %} 
+  {% block scripts %}
+  {% endblock %} 
 </body>
 </html>

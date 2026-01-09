@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+#podium-bars {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  margin-top: 0px;
+}
+
+.podium-bar {
+  width: 30%;
+  position: relative;
+  text-align: center;
+  border: 2px solid #ccc;
+}
+
+.podium-bar.first {
+  height: 170px;
+  background-color: #FFD700; /* Gold for 1st */
+}
+
+.podium-bar.second {
+  height: 110px;
+  background-color: silver; /* Silver for 2nd */
+}
+
+.podium-bar.third {
+  height: 80px;
+  background-color: #cd7f32; /* Bronze for 3rd */
+}
+.podium-number {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 48px;
+  color: white;
+  font-weight: bold;
+}
+.podium-name {
+  position: absolute;
+  top: -30px;
+  width: 100%;
+  color: black;
+  font-weight: bold;
+}
+</style>
+<!-- <body class="w3-light-blue">#E1F1F7 -->
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+<script>
+  window.onload = function() {
+    confetti({
+      particle_count: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+  };
+</script>
+
+  <div id="home" style="margin: 10px 0;">
+    <img src="/static/w25.jpg" alt="Obos-kongen 2025" style="width:90%; max-width:1200px; display:block; margin:auto;">
+  </div>
+
+  <!-- Winners Podium -->
+  <div class="w3-container w3-padding-64" id="podium">
+    <!-- <div class="w3-xxlarge w3-gold w3-padding-10">ÅRETS TIPS 2025</div> -->
+    <!-- <div class="w3-xxlarge w3-padding-10" style="background-color: #FFD700; text-align: center; color: black;">ÅRETS TIPS 2025</div> -->
+    <div id="podium-bars">
+      <div class="podium-bar second">
+        <div class="podium-number">2</div>
+        <div class="podium-name">{{ contestants[1].name }}</div>
+      </div>
+      <div class="podium-bar first">
+        <div class="podium-number">1</div>
+        <div class="podium-name">{{ contestants[0].name }}</div>
+      </div>
+      <div class="podium-bar third">
+        <div class="podium-number">3</div>
+        <div class="podium-name">{{ contestants[2].name }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table showing all bets next to each other -->
+  <div class="w3-content w3-container w3-padding-16" id="compact-entries">
+    <div class="w3-row w3-center w3-padding-16">
+      <div class="w3-xxlarge w3-blue w3-padding-10">TIPS 2025</div>
+        <div class="scrollable-table"> <!-- Wrapper for scrollable table -->
+        <table class="w3-table-all w3-centered">
+          <tr class="w3-darkblue">
+            <th style="color: black"></th>
+            {% for contestant in contestants %}
+            <th style="color: black">
+              {% if contestant.short == "AVG" %}
+                <i class="fa fa-futbol-o"></i>
+              {% else %}
+                {{ contestant.short }}
+              {% endif %}
+            </th>
+            {% endfor %}
+          </tr>
+          {% for i in range(1, 17) %} 
+          <tr>
+            <td style="font-weight: bold">{{ i }}</td>
+            {% for contestant in contestants %}
+            <td style="{{ 'color: green; font-weight: bold;' if contestant.data['corrects'][i-1] else '' }}">{{ contestant.data['prediction'][i-1].short }}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+          <!-- Add a new row for the total number of 'True's in 'corrects' -->
+          <tr class="w3-darkblue">
+            <th style="color: black;">&#x2714;</th> <!-- Checkmark emoji -->
+            {% for contestant in contestants %}
+            <th style="color: cadetblue"> <!-- Set text color to grey -->
+              {{ contestant.data['corrects'] | select('equalto', true) | list | length }}
+            </th>
+            {% endfor %}
+          </tr>
+          <!-- Display total points-->
+          <tr class="w3-darkblue">
+            <th style="color: black; font-weight: bold">P</th>
+            {% for contestant in contestants %}
+            <th style="color: grey"> <!-- Set text color to grey -->
+              {{ contestant.data['points'] }}
+            </th>
+            {% endfor %}
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Final Results Table -->
+  <!-- <div class="w3-content w3-container w3-padding-64" id="results">
+    <h2 class="w3-center">Final Results</h2>
+    <div class="scrollable-table">
+      <table class="w3-table-all">
+        <tr class="w3-black">
+          <th style="width: 70px">Plassering</th>
+          <th>Lag</th>
+          <th style="width: 60px">S</th>
+          <th style="width: 60px">+/-</th>
+          <th style="width: 60px">P</th>
+        </tr>
+        {% for team in standings %}
+        <tr>
+          <td style="font-weight: bold">{{ team[0] }}</td>
+          <td>{{ team[1] }}</td>
+          <td>{{ team[2] }}</td>
+          <td>{{ team[3] }}</td>
+          <td>{{ team[4] }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div> -->
+
+  <!-- History Graph Section -->
+  <div class="w3-content w3-container w3-padding-64" id="history">
+    <h2 class="w3-center">Poengutvikling 2025</h2>
+    <div class="chart-container" style="margin:auto; max-width:1200px; height:500px;">
+      <canvas id="historyChart" style="width:100%; height:100%;"></canvas>
+    </div>
+  </div>
+
+
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const contestants = JSON.parse('{{ contestants_json|tojson }}');
+  const historyLength = contestants[0].data.points_history.length;
+  const labels = Array.from({length: historyLength}, (_, i) => i + 1);
+  const colors = ["plum", "cornflowerblue", "olive", "lightseagreen", "lightblue", "darkslateblue", "lightcoral", "peru", "palegreen"];
+
+  new Chart("historyChart", {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: contestants.map((contestant, index) => ({
+        data: contestant.data.points_history,
+        label: contestant.name,
+        borderColor: colors[index % colors.length],
+        fill: false
+      }))
+    },
+    options: {
+      legend: { display: true },
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          display: true,
+          title: { display: true, text: 'Antall kamper spilt' }
+        }
+      }
+    }
+  });
+</script>
+{% endblock %}

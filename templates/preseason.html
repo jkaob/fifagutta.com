@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<style>
+
+  /* Create a Parallax Effect */
+  .bgimg-1, .bgimg-2, .bgimg-3 {
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+
+  .bgimg-1 {
+    background-image: url('/static/2008.jpg');
+    min-height: 100%;
+  }
+
+  .w3-wide {letter-spacing: 8px;}
+  .w3-hover-opacity {cursor: pointer;}
+
+  /* Turn off parallax scrolling for tablets and phones */
+  @media only screen and (max-device-width: 1200px) {
+    .bgimg-1, .bgimg-2, .bgimg-3 {
+      background-attachment: scroll;
+      min-height: 400px;
+    }
+  }
+  @media (min-width: 801px) {
+  #chart-container {
+    height: 600px; /* Set height to 600px for screens wider than 700px */
+  }
+ }
+ /* Make table scrollable on small screens */
+ @media (max-width: 800px) {
+    .scrollable-table {
+      overflow-x: auto; /* Enable horizontal scrolling */
+    }
+  }
+
+  @media (max-width: 800px) {
+    h1 {
+      white-space: pre-line; /* Use pre-line to preserve line breaks */
+    },
+    #chart-container {
+    height: 400px; /* Set height to 400px for screens 700px or narrower */
+    }
+  }
+  /* Add custom styles for tabs */
+  .tab {
+      display: none;
+  }
+  .tabcontent {
+      padding: 20px;
+      display: none;
+  }
+  .active {
+      display: block;
+  }
+
+  .w3-table-all tr td, .w3-table-all tr th {
+      padding: 4px; /* Adjust the value to reduce or increase the padding */
+  }
+</style>
+<div style="padding-top: 120px;">
+
+<!-- First Parallax Image with Logo Text -->
+<div class="bgimg-1 w3-display-container w3-opacity-min" id="home">
+
+  <div class="w3-display-middle " style="white-space:nowrap;">
+      <h1 style="text-align:center; color:black;  text-shadow: 0 0 20px white, 0 0 30px white, 0 0 40px white; padding: 5px;">FIFAGUTTAS<br>TIPPEKONKURANSE</h1>
+  </div>
+</div>
+
+
+<!-- Container (About Section) -->
+<div class="w3-content w3-container w3-padding-32" id="about" style="max-width: 600px; margin: auto;">
+  <!-- <div class="w3-center w3-xxlarge">Fifagutta tipper tabellen</div> -->
+  <p class="w3-justify w3-text-grey w3-large" style="text-align: center;"><em>
+    Hvem skulle trodd? Vi er i OBOS for tredje sesong på rad! 
+    <br>
+    Tiden er moden for å vise deres ekspertise. Hvem rykker opp? Hvem rykker ned?
+    <br><br>
+    ZaHaavi tok seieren i 2025 med tidenes beste tabelltips, men nytt Blaatt år, nye muligheter!
+    Hvem tror DU kommer seg opp av gjørma i år?
+  </em></p>
+  <p class="w3-justify w3-text-grey w3-large" style="text-align: center;">
+    <b>Regler:</b> Man får ett poeng for hver plass et lag er feil plassert, for hvert lag. Den med minst poeng vinner.
+  </p>
+</div>
+
+<!-- Container (Login) -->
+<div class="w3-content w3-container w3-padding-64">
+  
+  {% if session.user_id %}
+    {% set user = session %}  {# for convenience #}
+
+    <div id="loginMessage">
+      <div class="w3-panel w3-center w3-xlarge w3-green w3-margin-top" >
+        Velkommen, {{ session.screen_name }}!
+      </div>
+
+      <!-- User details not set / To be updated-->
+      {% if not user.username %}  
+      <div class="w3-center w3-medium w3-margin-top w3-text-black">
+        <p class="w3-large"> <em>Vennligst fyll inn dine detaljer:</em></p>
+          <p class="w3-medium"> 
+            <label for="fullName">Visningsnavn</label>
+            <input type="text" id="fullName" class="w3-input w3-border w3-margin-bottom"
+            minlength="3" required>
+            
+            <label for="shortName">Forkortelse (max 3 tegn)</label>
+            <input type="text" id="shortName" class="w3-input w3-border w3-margin-bottom" 
+            maxlength="3" minlength="2" required>
+            
+            <label for="email">Epostadresse <em>(for oppdateringer - valgfritt)</em></label>
+            <input type="email" id="email" class="w3-input w3-border w3-margin-bottom">
+          
+            <button class="w3-button w3-black" onclick="submitUserDetails()">Send</button>
+          </p>
+      </div>
+
+      <!-- User details already set -->
+      {% else %} 
+      <div id="profileInfo" class="w3-card w3-padding w3-margin-top w3-light-grey w3-center">
+        <p><b>Visningsnavn:</b> {{ user.username }}</p>
+        <p><b>Forkortelse:</b> {{ user.username_short }}</p>
+        <p><b>Epost:</b> {{ user.email or '-' }}</p>
+
+        <button class="w3-button w3-blue w3-margin-top" onclick="toggleEditProfile()">
+          Endre detaljer
+        </button>
+        
+        <button class="w3-button w3-green w3-margin-top" onclick="toggleRanking()">
+          Se / endre ditt tabelltips
+        </button>
+
+        <!-- Team Ranking Section -->
+        <div id="rankingContainer" class="w3-card w3-padding w3-margin-top w3-light-grey" style="display:none;">
+          <h3>Ditt tabelltips</h3>
+          <ul id="rankingList" class="w3-ul">
+            <!-- JS will populate this list -->
+          </ul>
+        </div>
+
+        <!-- Edit Profile Section -->
+        <div id="editProfile" class="w3-container w3-medium w3-margin-top" style="display:none;">
+          <label for="fullName">Visningsnavn</label>
+          <input type="text" id="fullName" class="w3-input w3-border w3-margin-bottom">
+          
+          <label for="shortName">Forkortelse (max 3 tegn)</label>
+          <input type="text" id="shortName" class="w3-input w3-border w3-margin-bottom" maxlength="3">
+          
+          <label for="email">Epostadresse <em>(for oppdateringer - valgfritt)</em></label>
+          <input type="email" id="email" class="w3-input w3-border w3-margin-bottom">
+        
+          <button class="w3-button w3-black" onclick="submitUserDetails()">Send</button>
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+
+  <!-- Login box -->
+  {% else %}
+    <div id="login" class="w3-card w3-padding w3-margin-top w3-pale-green w3-center">    
+      <label for="passwordInput">Skriv inn ditt <b>kodeord</b> for å se/endre ditt tabelltips:</label>
+      <input type="password" id="passwordInput" class="w3-input w3-border w3-margin-top" style="max-width:300px; margin: auto;">
+      <button class="w3-button w3-black w3-margin-top" 
+              onclick="attemptLogin(document.getElementById('passwordInput').value)">Logg inn
+      </button>
+    </div>
+  {% endif %}
+</div>
+
+<!-- Table with entries -->
+<div class="w3-content w3-container w3-padding-4" id="standings">
+  <div class="w3-row w3-center w3-padding-16"><br>
+
+      <div class="w3-xlarge w3-text-black w3-padding-16">
+        Oppdatert Tabell <sup><a href="#footnote1" style="text-decoration: none; font-size: 0.6em;">†</a></sup>
+      </div>
+
+      <table class="w3-table-all">
+          <tr class="w3-black">
+              <th style="width: 70px">Plassering</th>
+              <th>Lag</th>
+              <th style="width: 60px"> S </th>
+              <th style="width: 60px"> +/- </th>
+              <th style="width: 60px"> P </th>
+              <!-- Add more columns as needed -->
+          </tr>
+              {% for team in standings %}
+          <tr>
+              <td style="font-weight: bold">{{ team[0] }}</td>
+              <td>{{ team[1] }}</td>
+              <td>{{ team[2] }}</td>
+              <td>{{ team[3] }}</td>
+              <td>{{ team[4] }}</td>
+              </td>
+          </tr>
+          {% endfor %}
+
+      </table>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+
+  // Attempt login with provided password
+  function attemptLogin(password) {
+    fetch('/login', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ password: password })
+    })
+    .then(response => {
+      if (response.ok) {
+        // Login successful – reload the page to update UI
+        window.location.reload();
+      } else {
+        // Login failed – handle errors (e.g., show a message)
+        alert('Login failed');
+      }
+    });
+  }
+
+  // Submit user details to backend
+  function submitUserDetails() {
+    const fullName = document.getElementById('fullName').value;
+    const shortName = document.getElementById('shortName').value;
+    const email = document.getElementById('email').value;
+    if (fullName.length < 3 || shortName.length < 2) {
+        alert("Visningsnavn og forkortelse må ha minst 3 og 2 tegn.");
+        return;
+    }
+
+    fetch('/update_user_details', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        username: fullName,
+        username_short: shortName,
+        email: email
+      })
+    })
+    .then(response => {
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        alert('Failed to update details');
+      }
+    });
+  }
+  
+  // Show/hide edit profile section
+  function toggleEditProfile() {
+    const editProfileDiv = document.getElementById('editProfile');
+    editProfileDiv.style.display = editProfileDiv.style.display === "none" ? "block" : "none";
+  }
+
+  // Show ranking container and hide profile info
+  function toggleRanking() {
+  document.getElementById("profileInfo").style.display = "none";
+  const container = document.getElementById("rankingContainer");
+  container.style.display = "block";
+
+  fetch("/get_tabelltips")
+    .then(r => r.json())
+    .then(data => {
+      console.log("Fetched data:", data); // log the parsed JSON
+      const list = document.getElementById("rankingList");
+      list.innerHTML = "";
+      data.forEach((item, index) => {
+        const li = document.createElement("li");
+        li.className = "w3-padding w3-margin-bottom";
+        li.textContent = item.team;
+        list.appendChild(li);
+      });
+    })
+    .catch(err => console.error(err));
+  }
+
+  // Move team up
+  function moveUp(index) {
+    const list = document.getElementById("rankingList");
+    if (index === 0) return;
+    const item = list.children[index];
+    list.insertBefore(item, list.children[index - 1]);
+  }
+
+  // Move team down
+  function moveDown(index) {
+    const list = document.getElementById("rankingList");
+    if (index === list.children.length - 1) return;
+    const item = list.children[index];
+    list.insertBefore(list.children[index + 1], item);
+  }
+
+  // Submit new order to backend
+  function submitTeamRanking() {
+    const order = Array.from(document.getElementById("rankingList").children).map(li => li.textContent.trim());
+    fetch("/update_ranking", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ order: order })
+    })
+    .then(r => r.json())
+    .then(data => {
+        alert("Tabelltips lagret!");
+        location.reload();
+    });
+  }
+
+</script>
+
+{% endblock %}
