@@ -145,14 +145,14 @@
             <div class="w3-text-grey w3-small w3-margin-top">
               <em>Husk å vippse 50,- til fomoFAPPIS!<br>Tipsene låses <b>torsdag 2. april </b> </em>
             </div>
+            
+            <button class="w3-button w3-green w3-margin-top"
+              id="saveBetsButton"
+              onclick="saveBets()"
+              style="display:none; margin-left:auto; margin-right:auto;">
+              Lagre endringer <i class="fa fa-paper-plane"></i>
+            </button>  
         </div>
-        
-        <button class="w3-button w3-green w3-margin-top"
-                id="saveBetsButton"
-                onclick="saveBets()"
-                style="display:none; margin-left:auto; margin-right:auto;">
-          Lagre endringer <i class="fa fa-paper-plane"></i>
-        </button>
 
         <!-- Edit Profile Section -->
         <div id="editProfile" class="w3-container w3-medium w3-margin-top" style="display:none;">
@@ -271,9 +271,9 @@
   // Show/hide edit profile section
   function toggleEditProfile() {
     document.getElementById("rankingContainer").style.display = "none"; // Hide ranking container
+    document.getElementById("saveBetsButton").style.display = "none"; // hide Save bets button
     const editBtn = document.getElementById("editProfileButton"); // disable edit profile button
     const rankingBtn = document.getElementById("toggleRankingButton"); // enable ranking button
-    document.getElementById("saveBetsButton").style.display = "none"; // hide Save bets button
     setButtonState(editBtn, false);
     setButtonState(rankingBtn, true, "w3-green");
     const editProfileDiv = document.getElementById('editProfile');
@@ -283,7 +283,7 @@
   // Show ranking container and hide profile info
   function toggleRanking() {
     document.getElementById("editProfile").style.display = "none";
-    const container = document.getElementById("rankingContainer");
+    const container = document.getElementById("rankingContainer"); // show ranking container
     container.style.display = "block";
     const editBtn = document.getElementById("editProfileButton"); // enable edit profile button
     const rankingBtn = document.getElementById("toggleRankingButton"); // disable ranking button
