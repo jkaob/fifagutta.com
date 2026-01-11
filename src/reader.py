@@ -173,15 +173,15 @@ class CsvKampspill():
     def get_results(self):
         results = []
         with open(self.csv, 'r', encoding='utf-8') as f:
-            reader = csv.reader(f)
-            next(reader)  # Skip header row
+            reader = csv.DictReader(f)
             for row in reader:
                 results.append({
-                    "player": row["player"],
+                    "username": row["player"],
                     "n_played": int(row["n_played"]),
                     "points": int(row["points"]),
                     "hub": int(row["hub"]),
                     "corrects": int(row["corrects"]),
                     "pos": int(row["pos"]) if row.get("pos") else 99,
+                    "avg_points": float(row["points"]) / float(row["n_played"]) if int(row["n_played"]) > 0 else 0.0
                 })
         return results

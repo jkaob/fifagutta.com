@@ -44,13 +44,17 @@
     <!-- For large screens -->
     <div class="w3-bar" id="navBarFull">
       <a href="/" class="w3-bar-item w3-button"><i class="fa fa-home"></i> Hjem</a>
-      <a href="/#entries" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-table"></i> Guttas Tips</a>
-      <a href="/#results" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-line-chart"></i> Resultater</a>
+      {% if not g_PRESEASON %}
+        <a href="/#entries" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-table"></i> Guttas Tips</a>
+        <a href="/#results" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-line-chart"></i> Resultater</a>
+      {% endif %}
       <a href="/2024" class="w3-bar-item w3-button"><i class="fa fa-trophy"></i> 2024</a>
       <a href="/2025" class="w3-bar-item w3-button"><i class="fa fa-trophy"></i> 2025</a>
+      {% if not g_PRESEASON %}
       <a href="/matches" class="w3-bar-item w3-button" style="background-color: #30c49f;">
         <i class="fa fa-futbol-o"></i> <b>Kampspill</b>
       </a>
+      {% endif %}
     </div>
   </div>
 

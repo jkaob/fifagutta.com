@@ -15,9 +15,10 @@ from flask_migrate import Migrate
 from src.ball24 import TippeData24
 from src.ball25 import TippeData25
 from src.ball26 import TippeData26
+from src.reader import CsvKampspill
 from src.db import init_db
 from src.routes import bets_bp, matches_bp, auth_bp, register_bp
-import json
+import src.app_globals
 pymysql.install_as_MySQLdb()
 
 app = Flask(__name__)
@@ -34,32 +35,35 @@ app.register_blueprint(register_bp)
 app.register_blueprint(bets_bp)
 app.register_blueprint(matches_bp)
 
-@app.route('/')
-def index():
-    balleball26 = TippeData26()
-    balleball26.update_standings_only(fetch=True)
-    return render_template(
-        'preseason.html',
-        standings=balleball26.standings
-    )
+app.jinja_env.globals["g_PRESEASON"] = src.app_globals.PRESEASON
 
-'''
-@app.route('/')
-def index():
-    balleball26 = TippeData26()
-    balleball26.update_contestants()
-    contestants = balleball26.get_sorted_contestants()
-    contestants_json = [contestant.to_dict() for contestant in contestants]
-    names = balleball26.get_sorted_names()
-    standings = balleball26.standings
-    return render_template(
-        'obos26.html',
-        standings=standings,
-        names=names,
-        contestants=contestants,
-        contestants_json=contestants_json
-    )
-'''
+# PRESEASON
+if src.app_globals.PRESEASON:
+    @app.route('/')
+    def index():
+        balleball26 = TippeData26()
+        balleball26.update_standings_only(fetch=True)
+        return render_template(
+            'preseason.html',
+            standings=balleball26.standings
+        )
+else:
+    @app.route('/')
+    def index():
+        balleball26 = TippeData26()
+        balleball26.update_contestants()
+        contestants = balleball26.get_sorted_contestants()
+        contestants_json = [contestant.to_dict() for contestant in contestants]
+        names = balleball26.get_sorted_names()
+        standings = balleball26.standings
+        return render_template(
+            'obos26.html',
+            standings=standings,
+            names=names,
+            contestants=contestants,
+            contestants_json=contestants_json
+        )
+
 
 @app.route('/2025')
 def r25():
@@ -70,12 +74,14 @@ def r25():
     contestants_json = [contestant.to_dict() for contestant in contestants]
     names = balleball25.get_sorted_names()
     standings = balleball25.standings
+    kamspill_scores = CsvKampspill(f"data/2025-kampspill.csv").get_results()
     return render_template(
         'r-25.html',
         standings=standings,
         names=names,
         contestants=contestants,
-        contestants_json=contestants_json
+        contestants_json=contestants_json,
+        kampspill_scores=kamspill_scores
     )
 
 @app.route('/2024')

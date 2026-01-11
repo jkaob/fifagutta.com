@@ -2,7 +2,7 @@
 import shutil
 from .common import Contestant, Team
 from .scraper import Scraper
-from .reader import CsvReader
+from .reader import CsvReader, CsvKampspill
 
 
 #  can we combine this with derived class  ?
@@ -62,7 +62,6 @@ class TippeDataBase:
         self.standings_simple = self.reader.get_simple_standings_at_round_number(
             self.reader.get_n_pos_rows_written())
         print("STANDINGS:", self.standings_simple)
-
 
     def compute_points(self, name):
         contestant = self.get_contestant(name)
@@ -143,10 +142,14 @@ class TippeData(TippeDataBase):
         self.year = year
         self.reader = CsvReader(f"data/{self.year}.csv", self.teams, self.debug)
         self.scraper = Scraper(year)
+        self.kamspill_reader = None # CsvKampspill(f"data/{self.year}-kampspill.csv")
 
         entries = entries_dict #data.tips24.ENTRIES # importing from data/  # {Name: List[team_name]}
         self.prepare_contestant_entries(entries)
         self.set_contestant(self.create_average_contestant())
+
+    def get_kamspill_scores(self):
+        return self.kamspill_reader.get_results() if self.kamspill_reader else []
 
     def create_average_contestant(self):
         for team in self.teams:

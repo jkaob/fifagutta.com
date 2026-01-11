@@ -5,6 +5,7 @@ from flask import Blueprint, request, session, jsonify, render_template
 from flask import redirect, url_for
 from .db      import *
 from .models import Player, Bet, Match, Tabelltips26
+from .app_globals import DEFAULT_N_DAYS
 
 PASSWORD_ID = json.loads(os.getenv('FIFAGUTTA_PASSWORDS_ID_JSON'))
 
@@ -96,11 +97,44 @@ def get_tabelltips():
             .filter_by(player_id=user_id)
             .order_by(Tabelltips26.rank.asc())
             .all())
-    print("Fetched tips:", tips)  # prints list of Tabelltips26 objects
 
     return jsonify([{'team': t.team_name, 'rank': t.rank} for t in tips])
 
-DEFAULT_N_DAYS = 7
+
+@register_bp.route('/update_rankings', methods=['POST'])
+def update_rankings():
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({ 'success': False, 'error': 'not_logged_in' }), 401
+
+    data = request.get_json() or {}
+    order = data.get('order', [])
+    
+    if not isinstance(order, list):
+        return jsonify({ 'success': False, 'error': 'invalid_payload' }), 400
+    
+    # Clear old rankings
+    Tabelltips26.query.filter_by(player_id=user_id).update(
+        {Tabelltips26.rank: None},
+        synchronize_session=False
+    )
+    db.session.flush()
+
+    # Update the rankings in the database
+    for rank, team_name in enumerate(order, start=1):
+        tabelltips = Tabelltips26.query.filter_by(player_id=user_id, team_name=team_name).first()
+        if tabelltips:
+            tabelltips.rank = rank
+        else:
+            new_tabelltips = Tabelltips26(player_id=user_id, team_name=team_name, rank=rank)
+            db.session.add(new_tabelltips)
+
+    try:
+        db.session.commit()
+        return jsonify({ 'success': True }), 200
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({ 'success': False, 'error': str(e) }), 500
 
 
 # Login route OLD

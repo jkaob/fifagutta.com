@@ -69,7 +69,7 @@
 <div class="bgimg-1 w3-display-container w3-opacity-min" id="home">
 
   <div class="w3-display-middle " style="white-space:nowrap;">
-      <h1 style="text-align:center; color:black;  text-shadow: 0 0 20px white, 0 0 30px white, 0 0 40px white; padding: 5px;">FIFAGUTTAS<br>TIPPEKONKURANSE</h1>
+    <h1 style="text-align:center; color:black;  text-shadow: 0 0 20px white, 0 0 30px white, 0 0 40px white; padding: 5px;">FIFAGUTTAS<br>TIPPEKONKURANSE</h1>
   </div>
 </div>
 
@@ -91,7 +91,7 @@
 </div>
 
 <!-- Container (Login) -->
-<div class="w3-content w3-container w3-padding-64">
+<div class="w3-content w3-container w3-padding-32">
   
   {% if session.user_id %}
     {% set user = session %}  {# for convenience #}
@@ -128,11 +128,11 @@
         <p><b>Forkortelse:</b> {{ user.username_short }}</p>
         <p><b>Epost:</b> {{ user.email or '-' }}</p>
 
-        <button class="w3-button w3-blue w3-margin-top" onclick="toggleEditProfile()">
+        <button class="w3-button w3-blue w3-margin-top" id="editProfileButton" onclick="toggleEditProfile()">
           Endre detaljer
         </button>
-        
-        <button class="w3-button w3-green w3-margin-top" onclick="toggleRanking()">
+
+        <button class="w3-button w3-green w3-margin-top" id="toggleRankingButton" onclick="toggleRanking()">
           Se / endre ditt tabelltips
         </button>
 
@@ -142,7 +142,17 @@
             <ul id="rankingList" class="w3-ul w3-border">
               <!-- populated by JS -->
             </ul>
+            <div class="w3-text-grey w3-small w3-margin-top">
+              <em>Husk å vippse 50,- til fomoFAPPIS!<br>Tipsene låses <b>torsdag 2. april </b> </em>
+            </div>
         </div>
+        
+        <button class="w3-button w3-green w3-margin-top"
+                id="saveBetsButton"
+                onclick="saveBets()"
+                style="display:none; margin-left:auto; margin-right:auto;">
+          Lagre endringer <i class="fa fa-paper-plane"></i>
+        </button>
 
         <!-- Edit Profile Section -->
         <div id="editProfile" class="w3-container w3-medium w3-margin-top" style="display:none;">
@@ -178,29 +188,29 @@
 <div class="w3-content w3-container w3-padding-4" id="standings">
   <div class="w3-row w3-center w3-padding-16"><br>
 
-      <div class="w3-xlarge w3-text-black w3-padding-16">
-        Oppdatert Tabell <sup><a href="#footnote1" style="text-decoration: none; font-size: 0.6em;">†</a></sup>
-      </div>
+    <div class="w3-xlarge w3-text-black w3-padding-16">
+      Tabell
+    </div>
 
-      <table class="w3-table-all">
-          <tr class="w3-black">
-              <th style="width: 70px">Plassering</th>
-              <th>Lag</th>
-              <th style="width: 60px"> S </th>
-              <th style="width: 60px"> +/- </th>
-              <th style="width: 60px"> P </th>
-              <!-- Add more columns as needed -->
-          </tr>
-              {% for team in standings %}
-          <tr>
-              <td style="font-weight: bold">{{ team[0] }}</td>
-              <td>{{ team[1] }}</td>
-              <td>{{ team[2] }}</td>
-              <td>{{ team[3] }}</td>
-              <td>{{ team[4] }}</td>
-              </td>
-          </tr>
-          {% endfor %}
+    <table class="w3-table-all">
+      <tr class="w3-black">
+        <th style="width: 70px">Plassering</th>
+        <th>Lag</th>
+        <th style="width: 60px"> S </th>
+        <th style="width: 60px"> +/- </th>
+        <th style="width: 60px"> P </th>
+        <!-- Add more columns as needed -->
+      </tr>
+      {% for team in standings %}
+        <tr>
+            <td style="font-weight: bold">{{ team[0] }}</td>
+            <td>{{ team[1] }}</td>
+            <td>{{ team[2] }}</td>
+            <td>{{ team[3] }}</td>
+            <td>{{ team[4] }}</td>
+            </td>
+        </tr>
+        {% endfor %}
 
       </table>
     </div>
@@ -260,7 +270,12 @@
   
   // Show/hide edit profile section
   function toggleEditProfile() {
-    document.getElementById("rankingContainer").style.display = "none";
+    document.getElementById("rankingContainer").style.display = "none"; // Hide ranking container
+    const editBtn = document.getElementById("editProfileButton"); // disable edit profile button
+    const rankingBtn = document.getElementById("toggleRankingButton"); // enable ranking button
+    document.getElementById("saveBetsButton").style.display = "none"; // hide Save bets button
+    setButtonState(editBtn, false);
+    setButtonState(rankingBtn, true, "w3-green");
     const editProfileDiv = document.getElementById('editProfile');
     editProfileDiv.style.display = editProfileDiv.style.display === "none" ? "block" : "none";
   }
@@ -270,7 +285,26 @@
     document.getElementById("editProfile").style.display = "none";
     const container = document.getElementById("rankingContainer");
     container.style.display = "block";
+    const editBtn = document.getElementById("editProfileButton"); // enable edit profile button
+    const rankingBtn = document.getElementById("toggleRankingButton"); // disable ranking button
+    setButtonState(editBtn, true, "w3-blue");
+    setButtonState(rankingBtn, false);
+    getRanking();
+  }
 
+  // Helper to enable / disable buttons
+  function setButtonState(btn, enabled, activeClass) {
+    btn.disabled = !enabled;
+    btn.classList.remove("w3-blue", "w3-green", "w3-grey");
+
+    if (enabled) {
+      btn.classList.add(activeClass);
+    } else {
+      btn.classList.add("w3-grey");
+    }
+  }
+
+  function getRanking() {
     fetch("/get_tabelltips")
     .then(r => r.json())
     .then(data => {
@@ -281,21 +315,21 @@
         const li = document.createElement("li");
         li.className = "w3-padding w3-display-container";
         li.innerHTML = `
-            <span class="rank w3-margin-left w3-display-left" style="font-weight:bold">${item.rank}</span>
-            <span class="team">${item.team}</span>
+          <span class="rank w3-margin-left w3-display-left" style="font-weight:bold">${item.rank}</span>
+          <span class="team">${item.team}</span>
 
-            <div class="w3-display-right">
-              <button class="w3-button w3-small w3-round"
-                      style="background:#30c49f;color:white"
-                      onclick="moveUp(this)">↑</button>
+          <div class="w3-display-right">
+            <button class="w3-button w3-small w3-round"
+                    style="background:#30c49f;color:white"
+                    onclick="moveUp(this)">↑</button>
 
-              <button class="w3-button w3-small w3-round"
-                      style="background:#E77671;color:white"
-                      onclick="moveDown(this)">↓</button>
-            </div>
+            <button class="w3-button w3-small w3-round"
+                    style="background:#E77671;color:white"
+                    onclick="moveDown(this)">↓</button>
+          </div>
           `;
-          list.appendChild(li);
-        });
+        list.appendChild(li);
+      });
     })
     .catch(err => console.error(err));
   }
@@ -320,22 +354,24 @@
     document.querySelectorAll("#rankingList li").forEach((li, i) => {
       li.querySelector(".rank").textContent = i + 1;
     });
+    document.getElementById("saveBetsButton").style.display = "block"; // display Save bets button
   }
 
-  // Submit new order to backend
-  function submitTeamRanking() {
-    const order = Array.from(document.getElementById("rankingTable").children).map(li => li.textContent.trim());
-    fetch("/update_ranking", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ order: order })
+  // Submit updated ranking to backend
+  function saveBets() {
+    const order = Array.from(
+      document.querySelectorAll("#rankingList li .team")
+    ).map(span => span.textContent);
+
+    fetch("/update_rankings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ order })
     })
     .then(r => r.json())
-    .then(data => {
-        alert("Tabelltips lagret!");
-        location.reload();
+    .then(() => {
+      alert("Tabelltips lagret!");
+      location.reload();
     });
   }
 
