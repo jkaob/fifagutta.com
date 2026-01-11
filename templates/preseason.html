@@ -139,9 +139,9 @@
         <!-- Team Ranking Section -->
         <div id="rankingContainer" class="w3-card w3-padding w3-margin-top w3-light-grey" style="display:none;">
           <h3>Ditt tabelltips</h3>
-          <ul id="rankingList" class="w3-ul">
-            <!-- JS will populate this list -->
-          </ul>
+            <ul id="rankingList" class="w3-ul w3-border">
+              <!-- populated by JS -->
+            </ul>
         </div>
 
         <!-- Edit Profile Section -->
@@ -260,51 +260,71 @@
   
   // Show/hide edit profile section
   function toggleEditProfile() {
+    document.getElementById("rankingContainer").style.display = "none";
     const editProfileDiv = document.getElementById('editProfile');
     editProfileDiv.style.display = editProfileDiv.style.display === "none" ? "block" : "none";
   }
 
   // Show ranking container and hide profile info
   function toggleRanking() {
-  document.getElementById("profileInfo").style.display = "none";
-  const container = document.getElementById("rankingContainer");
-  container.style.display = "block";
+    document.getElementById("editProfile").style.display = "none";
+    const container = document.getElementById("rankingContainer");
+    container.style.display = "block";
 
-  fetch("/get_tabelltips")
+    fetch("/get_tabelltips")
     .then(r => r.json())
     .then(data => {
       console.log("Fetched data:", data); // log the parsed JSON
       const list = document.getElementById("rankingList");
       list.innerHTML = "";
-      data.forEach((item, index) => {
+      data.forEach(item => {
         const li = document.createElement("li");
-        li.className = "w3-padding w3-margin-bottom";
-        li.textContent = item.team;
-        list.appendChild(li);
-      });
+        li.className = "w3-padding w3-display-container";
+        li.innerHTML = `
+            <span class="rank w3-margin-left w3-display-left" style="font-weight:bold">${item.rank}</span>
+            <span class="team">${item.team}</span>
+
+            <div class="w3-display-right">
+              <button class="w3-button w3-small w3-round"
+                      style="background:#30c49f;color:white"
+                      onclick="moveUp(this)">↑</button>
+
+              <button class="w3-button w3-small w3-round"
+                      style="background:#E77671;color:white"
+                      onclick="moveDown(this)">↓</button>
+            </div>
+          `;
+          list.appendChild(li);
+        });
     })
     .catch(err => console.error(err));
   }
 
-  // Move team up
-  function moveUp(index) {
-    const list = document.getElementById("rankingList");
-    if (index === 0) return;
-    const item = list.children[index];
-    list.insertBefore(item, list.children[index - 1]);
+  function moveUp(button) {
+    const li = button.closest("li");
+    const prev = li.previousElementSibling;
+    if (!prev) return;
+    li.parentNode.insertBefore(li, prev);
+    updateRanks();
   }
 
-  // Move team down
-  function moveDown(index) {
-    const list = document.getElementById("rankingList");
-    if (index === list.children.length - 1) return;
-    const item = list.children[index];
-    list.insertBefore(list.children[index + 1], item);
+  function moveDown(button) {
+    const li = button.closest("li");
+    const next = li.nextElementSibling;
+    if (!next) return;
+    li.parentNode.insertBefore(next, li);
+    updateRanks();
+  }
+
+  function updateRanks() {
+    document.querySelectorAll("#rankingList li").forEach((li, i) => {
+      li.querySelector(".rank").textContent = i + 1;
+    });
   }
 
   // Submit new order to backend
   function submitTeamRanking() {
-    const order = Array.from(document.getElementById("rankingList").children).map(li => li.textContent.trim());
+    const order = Array.from(document.getElementById("rankingTable").children).map(li => li.textContent.trim());
     fetch("/update_ranking", {
         method: "POST",
         headers: {
