@@ -8,5 +8,4 @@ Nettsiden finner du på https://fifagutta.no
 
 ##### todo
 
-- hvilket lag har skuffet / imponert mest
-- hvilket lag som ble tippet mest likt / forskjellig
+- kampspill: lagre poeng i ny database, ikke regn ut alle kampene hver gang - regn kun ut kamper som har blitt spilt siden sist

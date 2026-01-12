@@ -1,13 +1,20 @@
 from .db import db
 
 class Player(db.Model):
-    __tablename__ = 'players'
-    id            = db.Column(db.Integer, primary_key=True)
-    username      = db.Column(db.String(50), unique=True, nullable=False)
-    username_short = db.Column(db.String(10), unique=True, nullable=True)
-    password_hash = db.Column(db.String(128), nullable=True)
+    __tablename__  = 'players'
+    id             = db.Column(db.Integer, primary_key=True)
+    full_name      = db.Column(db.String(100), nullable=False)
+    password       = db.Column(db.String(20), nullable=False)
+    username       = db.Column(db.String(50), unique=True, nullable=True)
+    username_short = db.Column(db.String(4), unique=True, nullable=True)
+    email          = db.Column(db.String(40), unique=True, nullable=True)
 
-
+class Tabelltips26(db.Model):
+    __tablename__ = 'tabelltips26'
+    id = db.Column(db.Integer, primary_key=True)
+    player_id = db.Column(db.Integer, db.ForeignKey('players.id'), nullable=False)
+    team_name = db.Column(db.String(100), nullable=False)
+    rank = db.Column(db.Integer, nullable=False)
 
 class Match(db.Model):
     __tablename__ = 'matches'

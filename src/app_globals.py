@@ -1,0 +1,2 @@
+PRESEASON = True
+DEFAULT_N_DAYS = 7

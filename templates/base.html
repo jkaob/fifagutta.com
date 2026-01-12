@@ -44,12 +44,17 @@
     <!-- For large screens -->
     <div class="w3-bar" id="navBarFull">
       <a href="/" class="w3-bar-item w3-button"><i class="fa fa-home"></i> Hjem</a>
-      <a href="/#entries" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-table"></i> Guttas Tips</a>
-      <a href="/#results" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-line-chart"></i> Resultater</a>
+      {% if not g_PRESEASON %}
+        <a href="/#entries" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-table"></i> Guttas Tips</a>
+        <a href="/#results" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-line-chart"></i> Resultater</a>
+      {% endif %}
       <a href="/2024" class="w3-bar-item w3-button"><i class="fa fa-trophy"></i> 2024</a>
+      <a href="/2025" class="w3-bar-item w3-button"><i class="fa fa-trophy"></i> 2025</a>
+      {% if not g_PRESEASON %}
       <a href="/matches" class="w3-bar-item w3-button" style="background-color: #30c49f;">
         <i class="fa fa-futbol-o"></i> <b>Kampspill</b>
       </a>
+      {% endif %}
     </div>
   </div>
 
@@ -63,10 +68,21 @@
     <a href="#home" class="w3-button w3-light-grey">
       <i class="fa fa-arrow-up w3-margin-right"></i>Til toppen
     </a>
-    <p>Dette her er balleball <br> laget av Schrødingers Støvel 2025</p>
+    <p>Dette her er balleball <br> laget av Schrødingers Støvel 2026</p>
+
+    
+    {% if session.get("user_id") %}
+    <form method="post" action="/logout" style="display:inline;">
+      <button type="submit" class="w3-button w3-red w3-margin-top">
+        Logg ut
+      </button>
+    </form>
+    {% endif %}
+    
   </footer>
 
   <!-- Common JS functions -->
-  {% block scripts %}{% endblock %} 
+  {% block scripts %}
+  {% endblock %} 
 </body>
 </html>

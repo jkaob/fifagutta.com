@@ -4,17 +4,145 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from flask import Blueprint, request, session, jsonify, render_template
 from flask import redirect, url_for
 from .db      import *
-from .models import Player, Bet, Match
+from .models import Player, Bet, Match, Tabelltips26
+from .app_globals import DEFAULT_N_DAYS
 
-DEFAULT_N_DAYS = 7
+PASSWORD_ID = json.loads(os.getenv('FIFAGUTTA_PASSWORDS_ID_JSON'))
 
-
-# Login route
-VALID_PASSWORDS = json.loads(os.getenv('FIFAGUTTA_PASSWORDS_JSON'))
-UNAME_SHORT = json.loads(os.getenv('FIFAGUTTA_UNAME_SHORT_JSON'))
+# Login / Register name / register bets
 auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/login', methods=['POST'])
 def login():
+    print("attempting login")
+    data = request.get_json() or {}
+    pw = data.get('password', '')
+    user_id = PASSWORD_ID.get(pw)
+    if not user_id:
+        print("invalid password:", pw)
+        return jsonify({'success': False}), 401
+    
+    player = Player.query.filter_by(id=user_id).first()
+    if not player:
+        print("User not found:", user_id)
+        return jsonify({'success': False, 'error': 'user_not_found'}), 404
+    
+    session['user_id'] = player.id
+    session['full_name'] = player.full_name
+    session['username'] = player.username
+    session['username_short'] = player.username_short
+    session['screen_name'] = player.username if player.username else player.full_name
+    session['email'] = player.email
+
+    return jsonify({
+        'success': True, 
+        'user_id': player.id, 
+        'full_name': player.full_name,
+        'username': player.username, 
+        'username_short': player.username_short,
+        'email': player.email}), 200
+
+# Logout route
+@auth_bp.route('/logout', methods=['POST'])
+def logout():
+    session.clear()
+    return redirect(url_for("index"))
+
+
+# Register player and bets
+register_bp = Blueprint('register', __name__)
+@register_bp.route('/update_user_details', methods=['POST'])
+def update_user_details():
+    user_id = session.get('user_id')
+    if not user_id:
+        print("not logged in")
+        return jsonify({ 'success': False, 'error': 'not_logged_in' }), 401
+    
+    player = Player.query.filter_by(id=user_id).first()
+    if not player:
+        print("User not found:", user_id)
+        return jsonify({ 'success': False, 'error': 'user_not_found' }), 404
+
+    data = request.get_json() or {}
+    username = data.get('username')
+    username_short = data.get('username_short')
+    email = data.get('email')
+    
+    # Update player details
+    if len(username) < 3 or len(username_short) < 2:
+        return jsonify({"error": "Invalid input"}), 400
+    player.username = username
+    player.username_short = username_short
+    if email is not None and email:
+        player.email = email
+
+    try:
+        db.session.commit()
+        session['username'] = player.username
+        session['username_short'] = player.username_short
+        session['email'] = player.email
+        return jsonify({ 'success': True }), 200
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({ 'success': False, 'error': str(e) }), 500
+
+@register_bp.route('/get_tabelltips', methods=['GET'])
+def get_tabelltips():
+    user_id = session.get('user_id')
+    player = Player.query.filter_by(id=user_id).first()
+    if not user_id or not player:
+        return jsonify({ 'success': False, 'error': 'not_logged_in' }), 401
+
+    # Fetch the team rankings for the current user
+    tips = (Tabelltips26.query
+            .filter_by(player_id=user_id)
+            .order_by(Tabelltips26.rank.asc())
+            .all())
+
+    return jsonify([{'team': t.team_name, 'rank': t.rank} for t in tips])
+
+
+@register_bp.route('/update_rankings', methods=['POST'])
+def update_rankings():
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({ 'success': False, 'error': 'not_logged_in' }), 401
+
+    data = request.get_json() or {}
+    order = data.get('order', [])
+    
+    if not isinstance(order, list):
+        return jsonify({ 'success': False, 'error': 'invalid_payload' }), 400
+    
+    # Clear old rankings
+    Tabelltips26.query.filter_by(player_id=user_id).update(
+        {Tabelltips26.rank: None},
+        synchronize_session=False
+    )
+    db.session.flush()
+
+    # Update the rankings in the database
+    for rank, team_name in enumerate(order, start=1):
+        tabelltips = Tabelltips26.query.filter_by(player_id=user_id, team_name=team_name).first()
+        if tabelltips:
+            tabelltips.rank = rank
+        else:
+            new_tabelltips = Tabelltips26(player_id=user_id, team_name=team_name, rank=rank)
+            db.session.add(new_tabelltips)
+
+    try:
+        db.session.commit()
+        return jsonify({ 'success': True }), 200
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({ 'success': False, 'error': str(e) }), 500
+
+
+# Login route OLD
+VALID_PASSWORDS = json.loads(os.getenv('FIFAGUTTA_PASSWORDS_JSON'))
+UNAME_SHORT = json.loads(os.getenv('FIFAGUTTA_UNAME_SHORT_JSON'))
+auth_bp2 = Blueprint('auth', __name__)
+@auth_bp2.route('/login2', methods=['POST'])
+def login2():
     print("attempting login")
     data = request.get_json() or {}
     pw   = data.get('password', '')
@@ -53,8 +181,8 @@ def login():
     
 
 # Bets route
-bets_bp = Blueprint('bets', __name__)
-@bets_bp.route('/place_bet', methods=['POST'])
+bets_bp = Blueprint('kamspill', __name__)
+@bets_bp.route('/place_kamspill', methods=['POST'])
 def place_bet():
     print("running place_bet")
     # 1) check login
@@ -97,8 +225,8 @@ def place_bet():
       }
     }), 200
 
-@bets_bp.route('/place_all_bets', methods=['POST'])
-def place_all_bets():
+@bets_bp.route('/place_all_kamspill', methods=['POST'])
+def place_all_kamspill():
     user_id = session.get('user_id')
     if not user_id:
         return redirect(url_for('auth.login'))
