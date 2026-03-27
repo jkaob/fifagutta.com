@@ -1,32 +1,10 @@
-import os
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from datetime import datetime, timedelta
+### CRUD functions for database models, and other helper functions related to the database.
+from db import db
 
-db = SQLAlchemy() # ORM handle
-migrate = Migrate() # ties into Alembic under the hood
-
-DB_URI = os.getenv('FIFAGUTTA_DATABASE_URL')
-
-### INITIALIZATION
-
-def init_db(app):
-    # Binds SQLAlchemy and Flask-Migrate to the Flask app.
-    app.config.setdefault('SQLALCHEMY_DATABASE_URI', DB_URI)
-    app.config.setdefault('SQLALCHEMY_TRACK_MODIFICATIONS', False)
-    db.init_app(app)
-    with app.app_context():
-        db.create_all()   # ← creates all tables defined by your models
-    migrate.init_app(app, db)
-
-
-
-
-### CRUD functions
 from .models import Player, Bet, Match 
-from .scraper import ScheduleScraper
+from ..scraper import ScheduleScraper
 from sqlalchemy.exc import IntegrityError
-
+from datetime import datetime, timedelta
 
 def add_bet_to_db(db, user_id, match_id, goals_home, goals_away):
     bet = Bet.query.filter_by(player_id=user_id, match_id=match_id).first()
@@ -271,4 +249,41 @@ def ensure_past_matches_in_db(past_matches):
         db_matches.append(match_obj)
 
     return db_matches
+
+
+def get_latest_predictions_formatted():
+    """
+    Fetches all players and their latest table tips predictions from the database.
+    Returns a dictionary formatted as:
+    {
+        "player_id": {
+            "name": "Full Name",
+            "short": "Short",
+            "prediction": ["Team1", "Team2", ...]
+        },
+        ...
+    }
+    The prediction list is sorted by rank (1 = highest rank).
+    """
+    from .models import Tabelltips26
+    
+    entries = {}
+    players = Player.query.all()
+    
+    for player in players:
+        # Get all predictions for this player, sorted by rank
+        predictions = Tabelltips26.query.filter_by(player_id=player.id).order_by(Tabelltips26.rank).all()
+        
+        # Extract team names in order
+        team_list = [pred.team_name for pred in predictions]
+        
+        # Build the entry
+        entries[str(player.id)] = {
+            "name": player.full_name,
+            "short": player.username_short or "",
+            "prediction": team_list,
+            "email": player.email or ""
+        }
+    
+    return entries
 

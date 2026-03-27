@@ -1,11 +1,11 @@
 
 import shutil
-from .common import Contestant, Team
-from .scraper import Scraper
-from .reader import CsvReader, CsvKampspill
+from ..common import Contestant, Team
+from ..scraper import Scraper
+from ..reader import CsvReader, CsvKampspill
 
 
-#  can we combine this with derived class  ?
+#  todo -  combine this with derived class
 class TippeDataBase:
 
     def __init__(self, debug=False):

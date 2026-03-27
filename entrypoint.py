@@ -1,11 +1,11 @@
 import os
 import sys
-from src.ball26 import TippeData26
-from src.db import add_matches_to_db
+from src.ball.ball26 import TippeData26
+from src.db.db import add_matches_to_db
 from app import app
 
 
-YEAR=2025
+YEAR=2026
 N_MIN_HOURS=0.25
 N_MAX_DAYS=31
 VERBOSE=False

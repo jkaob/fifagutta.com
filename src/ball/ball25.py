@@ -1,6 +1,5 @@
 import data.tips25
 import os
-import csv
 import datetime
 import shutil
 from .tippedata import TippeData

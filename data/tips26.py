@@ -1,49 +1,51 @@
 ENTRIES = {
-    "Morten Gamst Pedorsen": {
+    "1": {
+        "name": "Jakob Eide Grepperud",
+        "short": "fap",
         "prediction" : [
-            'Bryne',
-            'Egersund',
-            'Haugesund',
-            'Hødd',
-            'Kongsvinger',
-            'Lyn',
-            'Moss',
-            'Odd',
-            'Ranheim',
-            'Raufoss',
-            'Sandnes',
-            'Sogndal',
             'Stabæk',
-            'Strømmen',
+            'Kongsvinger',
             'Strømsgodset',
+            'Egersund',
+            'Bryne',
+            'Haugesund',
+            'Odd',
+            'Lyn',
+            'Sogndal',
+            'Ranheim',
+            'Hødd',
             'Åsane',
-        ],
-        "avatar": "static/avatar/mr.jpg",  # Example path to avatar image
-        "short": "MGP"  # Short form or abbreviation
+            'Sandnes',
+            'Raufoss',
+            'Moss',
+            'Strømmen',
+        ]
     },
-    "Bob Bradleyan": {
+    "2": {
+        "name": "Jørgen Haavi",
+        "short": "ZaH",
         "prediction" : [
+            'Stabæk',
+            'Strømsgodset',
+            'Kongsvinger',
             'Bryne',
+            'Ranheim',
+            'Sogndal',
             'Egersund',
+            'Lyn',
+            'Odd',
+            'Sandnes',
             'Haugesund',
             'Hødd',
-            'Kongsvinger',
-            'Lyn',
             'Moss',
-            'Odd',
-            'Ranheim',
             'Raufoss',
-            'Sandnes',
-            'Sogndal',
-            'Stabæk',
-            'Strømmen',
-            'Strømsgodset',
             'Åsane',
-        ],
-        "avatar": "static/avatar/adrian.jpg",  # Example path to avatar image
-        "short": "Bob"  # Short form or abbreviation
+            'Strømmen',
+        ]
     },
-    "Myra Craig": {
+    "3": {
+        "name": "Joachim Krave",
+        "short": "",
         "prediction" : [
             'Bryne',
             'Egersund',
@@ -61,11 +63,11 @@ ENTRIES = {
             'Strømmen',
             'Strømsgodset',
             'Åsane',
-            ],
-        "avatar": "path/to/myra_craig/avatar.png",  # Example path to avatar image
-        "short": "Myr"  # Short form or abbreviation
+        ]
     },
-    "ZaHaavi": {
+    "4": {
+        "name": "Oscar Aukner",
+        "short": "",
         "prediction" : [
             'Bryne',
             'Egersund',
@@ -83,56 +85,58 @@ ENTRIES = {
             'Strømmen',
             'Strømsgodset',
             'Åsane',
-            ],
-        "avatar": "path/to/zahaavi/avatar.png",
-        "short": "ZaH"
+        ]
     },
-    "Schrødingers fap": {
+    "5": {
+        "name": "Jakob Dietz",
+        "short": "JFD",
         "prediction" : [
-            'Bryne',
-            'Egersund',
-            'Haugesund',
-            'Hødd',
             'Kongsvinger',
-            'Lyn',
-            'Moss',
-            'Odd',
-            'Ranheim',
-            'Raufoss',
-            'Sandnes',
-            'Sogndal',
-            'Stabæk',
             'Strømmen',
-            'Strømsgodset',
+            'Egersund',
+            'Bryne',
+            'Lyn',
+            'Stabæk',
+            'Odd',
+            'Haugesund',
+            'Sogndal',
+            'Moss',
+            'Ranheim',
+            'Sandnes',
             'Åsane',
-            ],
-        "avatar": "path/to/schrodinger/avatar.png",
-        "short": "fap"
+            'Hødd',
+            'Raufoss',
+            'Strømsgodset',
+        ]
     },
-    "Chimzzy": {
+    "6": {
+        "name": "Magnus Kjærnes",
+        "short": "AMK",
         "prediction" : [
+            'Stabæk',
+            'Strømsgodset',
             'Bryne',
+            'Sogndal',
+            'Ranheim',
             'Egersund',
+            'Kongsvinger',
+            'Odd',
+            'Lyn',
+            'Sandnes',
             'Haugesund',
             'Hødd',
-            'Kongsvinger',
-            'Lyn',
-            'Moss',
-            'Odd',
-            'Ranheim',
             'Raufoss',
-            'Sandnes',
-            'Sogndal',
-            'Stabæk',
-            'Strømmen',
-            'Strømsgodset',
+            'Moss',
             'Åsane',
-            ],
-        "avatar": "path/to/joaqin/avatar.png",
-        "short": "DRC"
+            'Strømmen',
+        ]
     },
-    "Fossland": {
+    "7": {
+        "name": "Adrian Hagen Linnerud",
+        "short": "BOB",
         "prediction" : [
+            'Stabæk',
+            'Strømsgodset',
             'Bryne',
             'Egersund',
             'Haugesund',
@@ -143,17 +147,15 @@ ENTRIES = {
             'Odd',
             'Ranheim',
             'Raufoss',
-            'Sandnes',
             'Sogndal',
-            'Stabæk',
+            'Sandnes',
             'Strømmen',
-            'Strømsgodset',
             'Åsane',
-            ],
-        "avatar": "path/to/jakob/avatar.png",
-        "short": "Fos"
+        ]
     },
-    "Ingo=GOAT": {
+    "8": {
+        "name": "Nils Erik Gyland",
+        "short": "MVH",
         "prediction" : [
             'Bryne',
             'Egersund',
@@ -171,11 +173,11 @@ ENTRIES = {
             'Strømmen',
             'Strømsgodset',
             'Åsane',
-            ],
-        "avatar": "path/to/ingo/avatar.png",
-        "short": "i=G"
+        ]
     },
-    "Onkel Boston": {
+    "9": {
+        "name": "Olav Gregersen",
+        "short": "",
         "prediction" : [
             'Bryne',
             'Egersund',
@@ -193,11 +195,11 @@ ENTRIES = {
             'Strømmen',
             'Strømsgodset',
             'Åsane',
-            ],
-        "avatar": "path/to/herman/avatar.png",
-        "short": "Unc"
+        ]
     },
-    "TøyenHolding": {
+    "10": {
+        "name": "Herman Østensen",
+        "short": "",
         "prediction" : [
             'Bryne',
             'Egersund',
@@ -215,8 +217,6 @@ ENTRIES = {
             'Strømmen',
             'Strømsgodset',
             'Åsane',
-            ],
-        "avatar": "path/to/oscar/avatar.png",
-        "short": "T.H"
-    }
+        ]
+    },
 }

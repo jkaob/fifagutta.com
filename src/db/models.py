@@ -1,4 +1,4 @@
-from .db import db
+from db import db
 
 class Player(db.Model):
     __tablename__  = 'players'
@@ -15,6 +15,11 @@ class Tabelltips26(db.Model):
     player_id = db.Column(db.Integer, db.ForeignKey('players.id'), nullable=False)
     team_name = db.Column(db.String(100), nullable=False)
     rank = db.Column(db.Integer, nullable=False)
+
+class Team(db.Model):
+    __tablename__ = 'teams'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), unique=True, nullable=False)
 
 class Match(db.Model):
     __tablename__ = 'matches'
