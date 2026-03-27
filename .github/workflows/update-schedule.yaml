@@ -27,9 +27,8 @@ jobs:
 
       - name: Update Schedule 
         run: |
-          python entrypoint.py 
+          python entrypoint.py kampspill
         env:
           FIFAGUTTA_SECRET_KEY: ${{ secrets.FIFAGUTTA_SECRET_KEY }}
-          FIFAGUTTA_PASSWORDS_JSON: ${{ secrets.FIFAGUTTA_PASSWORDS_JSON }}
-          FIFAGUTTA_UNAME_SHORT_JSON: ${{ secrets.FIFAGUTTA_UNAME_SHORT_JSON }}
           FIFAGUTTA_DATABASE_URL: ${{ secrets.FIFAGUTTA_DATABASE_URL }}
+          FIFAGUTTA_PASSWORDS_ID_JSON: ${{ secrets.FIFAGUTTA_PASSWORDS_ID_JSON }}
