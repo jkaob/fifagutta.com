@@ -11,15 +11,17 @@ class Player(db.Model):
 
 class Tabelltips26(db.Model):
     __tablename__ = 'tabelltips26'
-    id = db.Column(db.Integer, primary_key=True)
+    id        = db.Column(db.Integer, primary_key=True)
     player_id = db.Column(db.Integer, db.ForeignKey('players.id'), nullable=False)
     team_name = db.Column(db.String(100), nullable=False)
-    rank = db.Column(db.Integer, nullable=False)
+    rank      = db.Column(db.Integer, nullable=False)
 
 class Team(db.Model):
     __tablename__ = 'teams'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
+
+
 
 class Match(db.Model):
     __tablename__ = 'matches'
@@ -51,4 +53,10 @@ class Bet(db.Model):
       db.UniqueConstraint('player_id', 'match_id', name='uix_player_match'),
     )
 
-
+class Kampspill26(db.Model):
+    __tablename__ = 'kampspill26'
+    player_id    = db.Column(db.Integer, db.ForeignKey('players.id'), primary_key=True)
+    num_points   = db.Column(db.Integer, nullable=False)
+    num_bets     = db.Column(db.Integer, nullable=False)
+    num_corrects = db.Column(db.Integer, nullable=False)
+    num_hub      = db.Column(db.Integer, nullable=False) 

@@ -28,7 +28,7 @@ def display_matches_html():
     print(f"range: {now} to {end} ({n_future_days} days)")
 
     # DB query should return only next matches in range
-    next_matches = get_upcoming_matches(start=now, end=end, limit=50)
+    next_matches = get_upcoming_matches(start=now, end=end, n_max=50)
 
     # 2) load bets for upcoming matches for this user
     user_bets = get_user_bets_for_matches(user_id=user_id, match_ids = [m.id for m in next_matches])
@@ -44,6 +44,20 @@ def display_matches_html():
         n_future_days=n_future_days
     )
 
+
+@bets_bp.route('/display_past')
+def display_past_matches():
+    past_matches = get_finished_matches()
+    
+    from collections import defaultdict
+    def group_matches_by_round(matches):
+        grouped = defaultdict(list)
+        for match in matches:
+            grouped[match.round_number].append(match)
+        return dict(grouped)
+
+    past_matches_grouped = group_matches_by_round(past_matches)
+    return past_matches_grouped
 
 
 # TODO: Make it all faster
@@ -91,6 +105,8 @@ def display_matches_html_deprecated():
         player_scores=player_scores,
         n_future_days=n_future_days
     )
+
+
 
 
 
