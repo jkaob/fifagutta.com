@@ -35,20 +35,6 @@ class Kampspill26(db.Model):
     num_corrects = db.Column(db.Integer, nullable=False)
     num_hub      = db.Column(db.Integer, nullable=False) 
 
-    
-class Bet(db.Model):
-    __tablename__ = 'bets26'
-    id         = db.Column(db.Integer, primary_key=True)
-    player_id  = db.Column(db.Integer, db.ForeignKey('players.id'), nullable=False)
-    match_id   = db.Column(db.Integer, db.ForeignKey('matches.id'),  nullable=False)
-    goals_home = db.Column(db.Integer, nullable=False)
-    goals_away = db.Column(db.Integer, nullable=False)
-
-    # Prevent the same player from betting twice on one match
-    __table_args__ = (
-      db.UniqueConstraint('player_id', 'match_id', name='uix_player_match'),
-    )
-
 class Match(db.Model):
     __tablename__ = 'matches26'
     id           = db.Column(db.Integer, primary_key=True)
@@ -63,4 +49,18 @@ class Match(db.Model):
     __table_args__ = (
       db.UniqueConstraint(
         'home_team', 'away_team', name='uix_home_away'),
+    )
+
+    
+class Bet(db.Model):
+    __tablename__ = 'bets26'
+    id         = db.Column(db.Integer, primary_key=True)
+    player_id  = db.Column(db.Integer, db.ForeignKey('players.id'), nullable=False)
+    match_id   = db.Column(db.Integer, db.ForeignKey('matches26.id'),  nullable=False)
+    goals_home = db.Column(db.Integer, nullable=False)
+    goals_away = db.Column(db.Integer, nullable=False)
+
+    # Prevent the same player from betting twice on one match
+    __table_args__ = (
+      db.UniqueConstraint('player_id', 'match_id', name='uix_player_match'),
     )

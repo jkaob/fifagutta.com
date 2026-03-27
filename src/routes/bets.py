@@ -1,13 +1,18 @@
 import json
+import traceback
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from datetime import datetime, timedelta, timezone
 from flask import Blueprint, request, session, jsonify, render_template
 from flask import redirect, url_for
-from ..db.db_functions import *
+from ..db import db
+from ..db.models import Bet, Player
 from ..db.db_functions import (
     get_upcoming_matches,
     get_user_bets_for_matches,
-    get_player_scores
+    get_player_scores,
+    get_finished_matches,
+    add_bet_to_db,
+    add_matches_to_db
 )
 
 
@@ -65,12 +70,13 @@ def display_past_matches():
     match_ids = [m.id for m in past_matches]
     all_bets_raw = Bet.query.filter(Bet.match_id.in_(match_ids)).all()
     
+    player = Player.query.get(bet.player_id)
+
     # Format bets for template
     bets_by_match = {}
     for bet in all_bets_raw:
         if bet.match_id not in bets_by_match:
             bets_by_match[bet.match_id] = []
-        player = Player.query.get(bet.player_id)
         bets_by_match[bet.match_id].append({
             'id': bet.id,
             'goals_home': bet.goals_home,
@@ -88,9 +94,9 @@ def display_past_matches():
 
 
 # Bets route
-@bets_bp.route('/place_kampspill', methods=['POST'])
+@bets_bp.route('/place_bet', methods=['POST'])
 def place_bet():
-    print("running place_bet")
+    print("running /place_bet")
     # 1) check login
     user_id = session.get('user_id')
     if not user_id:
@@ -111,24 +117,28 @@ def place_bet():
         goals_away = int(goals_away)
     except ValueError:
         return jsonify({ 'success': False, 'error': 'invalid_values' }), 400
-
-    # upsert: either create new Bet or overwrite existing
+    
+    
     try:
-        bet = add_bet_to_db(db, user_id, match_id, goals_home, goals_away)
+        bet = add_bet_to_db(user_id, match_id, goals_home, goals_away, commit=True)
+        if not bet:
+            raise RuntimeError("add_bet_to_db returned None")
     except SQLAlchemyError as e:
         db.session.rollback()
-        return jsonify({ 'success': False, 'error': 'db_error', 'details': str(e) }), 500
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': 'db_error', 'details': str(e)}), 500
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': 'unhandled', 'details': str(e)}), 500
+
 
 
     return jsonify({
-      'success':    True,
-      'bet': {
-        'id':         bet.id,
-        'player_id':  bet.player_id,
-        'match_id':   bet.match_id,
-        'goals_home': bet.goals_home,
-        'goals_away': bet.goals_away
-      }
+        'success': True,
+        'bet_id': bet.id,
+        'match_id': bet.match_id,
+        'home': bet.goals_home,
+        'away': bet.goals_away
     }), 200
 
 @bets_bp.route('/place_all_bets', methods=['POST'])
@@ -140,7 +150,7 @@ def place_all_bets():
     bets_data = request.form.get('bets_json')
     n_future_days = request.form.get('n_future_days', default=DEFAULT_N_DAYS, type=int)
     if not bets_data:
-        return redirect(url_for('matches.display_matches_html', n_future_days=n_future_days))
+        return redirect(url_for('bets.display_matches_html', n_future_days=n_future_days))
 
     bets = json.loads(bets_data)
 
@@ -155,10 +165,9 @@ def place_all_bets():
         db.session.commit()
     except (ValueError, SQLAlchemyError) as err:
         db.session.rollback()
-        # handle error maybe flash() or error response
-        raise
+        return jsonify({'success': False, 'error': 'db_error', 'details': str(e)}), 500
 
-    return redirect(url_for('matches.display_matches_html', n_future_days=n_future_days))
+    return redirect(url_for('bets.display_matches_html', n_future_days=n_future_days))
 
 
 
@@ -172,5 +181,5 @@ def update_database():
     n_future_days = request.args.get('n_future_days', default=DEFAULT_N_DAYS, type=int)
     print("update-db/n_future_days", n_future_days)
     add_matches_to_db(n_future_days, 0.25, False)
-    return redirect(url_for('matches.display_matches_html', n_future_days=n_future_days))  # replace with your actual route name
+    return redirect(url_for('bets.display_matches_html', n_future_days=n_future_days))  # replace with your actual route name
 

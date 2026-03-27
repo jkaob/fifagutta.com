@@ -176,19 +176,30 @@ class TippeData(TippeDataBase):
         if not self.teams:
             print(f"teams not set! cant set data dict")
             return
-        # entries: {Name: { prediction: [], short: "", avatar : ""} }
-        for name, data in entries.items():
+        
+        # Transform entries to {name: {prediction: [], short: "", avatar: ""}}
+        transformed_entries = {}
+        for player_id, data in entries.items():
+            name = data.get('name') or player_id  # Use 'name' if present, else key
+            transformed_entries[name] = {
+                'prediction': data['prediction'],
+                'short': data['short'],
+                'avatar': data.get('avatar', '')  # Default to empty if not present
+            }
+        
+        # Now process the transformed dict
+        for name, data in transformed_entries.items():
             contestant = Contestant(name, data['short'])
-            contestant.set_avatar(data['avatar'] if 'avatar' in data else None)
+            contestant.set_avatar(data['avatar'])
+            
             prediction = []
-            for team_name in data['prediction']: # add each team in order
+            for team_name in data['prediction']:
                 team = self.get_team(team_name)
                 if not team:
                     print(f"did not find team {team_name}")
                     return
                 prediction.append(team)
             contestant.set_prediction(prediction)
-            # add contestant to list of contestants
             self.set_contestant(contestant)
 
     # update CSV file from current standings for each team not already updated

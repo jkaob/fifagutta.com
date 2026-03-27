@@ -10,20 +10,26 @@ from . import db
 from .models import Player, Bet, Match, Kampspill26
 from ..scraper import ScheduleScraper
 
-def add_bet_to_db(db, user_id, match_id, goals_home, goals_away, commit=True):
+def add_bet_to_db(user_id, match_id, goals_home, goals_away, commit=True):
     bet = Bet.query.filter_by(player_id=user_id, match_id=match_id).first()
     if not bet:
         bet = Bet(
             player_id=user_id, match_id=match_id, goals_home=goals_home, goals_away=goals_away)
         db.session.add(bet)
-        print(f"Added bet (ID {bet.id}:  {bet.goals_home} - {bet.goals_away})")
     else:
         bet.goals_home = goals_home
         bet.goals_away = goals_away
-        print(f"Updated bet (ID {bet.id}:  {bet.goals_home} - {bet.goals_away})")
     
     if commit:
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            raise
+    else:
+        db.session.flush()
+
+    print(f"{'Added' if bet is not None else 'Updated'} bet (ID {bet.id}: {bet.goals_home} - {bet.goals_away})")
     return bet
 
 ### 2026 updated functions:
