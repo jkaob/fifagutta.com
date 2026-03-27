@@ -6,7 +6,7 @@ from typing import List
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timedelta
 
-from db import db
+from . import db
 from .models import Player, Bet, Match, Kampspill26
 from ..scraper import ScheduleScraper
 
@@ -44,9 +44,15 @@ def get_finished_matches():
     """
     Returns a list of past Match objects that have results.
     """
+    from ..app_globals import YEAR
+    year_start = datetime(YEAR, 1, 1)
+    year_end = datetime(YEAR, 12, 31)
+    
     past_matches = Match.query.filter(
         Match.home_goals.isnot(None),
-        Match.away_goals.isnot(None)
+        Match.away_goals.isnot(None),
+        Match.play_date >= year_start,
+        Match.play_date <= year_end
     ).order_by(Match.play_date.desc()).all()
     return past_matches
 
@@ -267,17 +273,7 @@ def ensure_past_matches_in_db(past_matches):
 # Get league predicitons for all players, formatted as a dict { player_id: { name, short, prediction: [team1, team2, ...] } }
 def get_latest_predictions_formatted():
     """
-    Fetches all players and their latest table tips predictions from the database.
-    Returns a dictionary formatted as:
-    {
-        "player_id": {
-            "name": "Full Name",
-            "short": "Short",
-            "prediction": ["Team1", "Team2", ...]
-        },
-        ...
-    }
-    The prediction list is sorted by rank (1 = highest rank).
+    Fetches all players and their latest table tips predictions from the database
     """
     from .models import Tabelltips26
     
@@ -293,7 +289,8 @@ def get_latest_predictions_formatted():
         
         # Build the entry
         entries[str(player.id)] = {
-            "name": player.full_name,
+            "full_name": player.full_name,
+            "name" : player.username,
             "short": player.username_short or "",
             "prediction": team_list,
             "email": player.email or ""

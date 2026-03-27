@@ -2,8 +2,8 @@ import os
 import json
 from flask import Blueprint, request, session, jsonify
 from sqlalchemy.exc import SQLAlchemyError
-from db import db
 
+from src.db import db
 from src.db.models import Player, Tabelltips26
 
 # Register player and bets

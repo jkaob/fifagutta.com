@@ -142,14 +142,13 @@ class TippeData(TippeDataBase):
         self.year = year
         self.reader = CsvReader(f"data/{self.year}.csv", self.teams, self.debug)
         self.scraper = Scraper(year)
-        self.kamspill_reader = None # CsvKampspill(f"data/{self.year}-kampspill.csv")
+        self.kampspill_reader = None # CsvKampspill(f"data/{self.year}-kampspill.csv")
 
-        entries = entries_dict #data.tips24.ENTRIES # importing from data/  # {Name: List[team_name]}
-        self.prepare_contestant_entries(entries)
+        self.prepare_contestant_entries(entries_dict)
         self.set_contestant(self.create_average_contestant())
 
-    def get_kamspill_scores(self):
-        return self.kamspill_reader.get_results() if self.kamspill_reader else []
+    def get_kampspill_scores(self):
+        return self.kampspill_reader.get_results() if self.kampspill_reader else []
 
     def create_average_contestant(self):
         for team in self.teams:
@@ -180,7 +179,7 @@ class TippeData(TippeDataBase):
         # entries: {Name: { prediction: [], short: "", avatar : ""} }
         for name, data in entries.items():
             contestant = Contestant(name, data['short'])
-            contestant.set_avatar(data['avatar'])
+            contestant.set_avatar(data['avatar'] if 'avatar' in data else None)
             prediction = []
             for team_name in data['prediction']: # add each team in order
                 team = self.get_team(team_name)

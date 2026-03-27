@@ -1,11 +1,11 @@
 import data.tips26
-import tippedata
+from .tippedata import TippeData
 from ..common import Team
 import os
 import datetime
 import shutil
 
-class TippeData26(tippedata.TippeData):
+class TippeData26(TippeData):
     def __init__(self, debug=False):
         year = 2026
         entries = data.tips26.ENTRIES

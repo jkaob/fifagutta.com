@@ -71,27 +71,3 @@ class Contestant:
 
 
 
-
-# RANDOM FUNCTIONS
-
-def process_match_result(self, team_name, home_team, away_team, goals_str):
-    assert(team_name in [home_team, away_team]), "Cannot find team name in match"
-    if goals_str == "-":
-        return None  # Match is live or hasn't started yet
-
-    goals = list(map(int, goals_str.split(" - ")))
-    goal_diff = 0
-    result = ""
-    if team_name == home_team:
-        goal_diff = goals[0] - goals[1]
-    elif team_name == away_team:
-        goal_diff = goals[1] - goals[0]
-
-    if goals[0] > goals[1]:
-        result = "W" if team_name == home_team else "L"
-    elif goals[0] == goals[1]:
-        result = "D"
-    elif goals[0] < goals[1]:
-        result = "W" if team_name == away_team else "L"
-
-    return home_team, goals_str, away_team, result, goal_diff

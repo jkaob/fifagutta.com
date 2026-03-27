@@ -68,14 +68,14 @@ def r25():
     contestants_json = [contestant.to_dict() for contestant in contestants]
     names = balleball25.get_sorted_names()
     standings = balleball25.standings
-    kamspill_scores = CsvKampspill(f"data/2025-kampspill.csv").get_results()
+    kampspill_scores = CsvKampspill(f"data/2025-kampspill.csv").get_results()
     return render_template(
         'r-25.html',
         standings=standings,
         names=names,
         contestants=contestants,
         contestants_json=contestants_json,
-        kampspill_scores=kamspill_scores
+        kampspill_scores=kampspill_scores
     )
 
 @app.route('/2024')

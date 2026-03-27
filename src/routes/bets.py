@@ -1,5 +1,6 @@
 import json
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from datetime import datetime, timedelta, timezone
 from flask import Blueprint, request, session, jsonify, render_template
 from flask import redirect, url_for
 from ..db.db_functions import *
@@ -12,9 +13,7 @@ from ..db.db_functions import (
 
 from ..app_globals import DEFAULT_N_DAYS
 
-bets_bp = Blueprint('kamspill', __name__)
-
-
+bets_bp = Blueprint('bets', __name__)
 
 @bets_bp.route('/home')
 def display_matches_html():
@@ -23,9 +22,10 @@ def display_matches_html():
 
     # 1) Fetch next matches
     n_future_days = request.args.get('n_future_days', default=DEFAULT_N_DAYS, type=int)
-    now = datetime.now(datetime.timezone.utc)
+    now = datetime.now(timezone(timedelta(hours=1)))
     end = now + timedelta(days=n_future_days)
     print(f"range: {now} to {end} ({n_future_days} days)")
+    
     next_matches = get_upcoming_matches(start=now, end=end, n_max=50)
 
     # 2) load bets for upcoming matches for this user
@@ -80,7 +80,7 @@ def display_past_matches():
         })
     
     return render_template(
-        'kamspill-past.html',
+        'kampspill-past.html',
         past_matches=past_matches_grouped,
         bets_by_match=bets_by_match
     )
@@ -88,7 +88,7 @@ def display_past_matches():
 
 
 # Bets route
-@bets_bp.route('/place_kamspill', methods=['POST'])
+@bets_bp.route('/place_kampspill', methods=['POST'])
 def place_bet():
     print("running place_bet")
     # 1) check login
@@ -157,14 +157,6 @@ def place_all_bets():
         db.session.rollback()
         # handle error maybe flash() or error response
         raise
-
-    for match_id_str, bet in bets.items():
-        match_id = int(match_id_str)
-        goals_home = bet.get("home")
-        goals_away = bet.get("away")
-
-        if goals_home is not None and goals_away is not None:
-            add_bet_to_db(db, user_id, match_id, goals_home, goals_away)
 
     return redirect(url_for('matches.display_matches_html', n_future_days=n_future_days))
 
