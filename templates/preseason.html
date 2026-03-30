@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
 
+<!-- FlipClock.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/flipclock@^1/dist/FlipClock.umd.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flipclock@^1/dist/FlipClock.css">
 
 <style>
 
@@ -62,10 +65,14 @@
   .w3-table-all tr td, .w3-table-all tr th {
       padding: 4px; /* Adjust the value to reduce or increase the padding */
   }
-</style>
-<div style="padding-top: 120px;">
 
-<!-- First Parallax Image with Logo Text -->
+</style>
+
+
+
+<div style="padding-top: 120px;">
+  
+  <!-- First Parallax Image with Logo Text -->
 <div class="bgimg-1 w3-display-container w3-opacity-min" id="home">
 
   <div class="w3-display-middle " style="white-space:nowrap;">
@@ -88,6 +95,29 @@
   <p class="w3-justify w3-text-grey w3-large" style="text-align: center;">
     <b>Regler:</b> Man får ett poeng for hver plass et lag er feil plassert, for hvert lag. Den med minst poeng vinner.
   </p>
+
+  
+
+    <!-- Countdown timers with FlipClock -->
+    <div class="w3-margin-top w3-padding w3-round" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px;">
+      {% if is_before_deadline %}
+      <p style="margin: 12px 0; font-size: 16px; color: white; text-align: center;">
+        <b>⏱️ Tipsene låses om:</b>
+      </p>
+      <div id="deadlineClockContainer" style="display: flex; justify-content: center; margin-bottom: 20px;">
+        <div class="flip-clock-wrapper" id="deadlineClock"></div>
+      </div>
+      {% endif %}
+
+      <p style="margin: 12px 0; font-size: 16px; color: white; text-align: center;">
+        <b>🏁 Seriestart om:</b>
+      </p>
+      <div id="serieStartClockContainer" style="display: flex; justify-content: center;">
+        <div class="flip-clock-wrapper" id="serieStartClock"></div>
+      </div>
+    </div>
+            
+
 </div>
 
 <!-- Container (Login) -->
@@ -145,13 +175,19 @@
             <div class="w3-text-grey w3-small w3-margin-top">
               <em>Husk å vippse 50,- til fomoFAPPIS!<br>Tipsene låses <b>torsdag 2. april </b> </em>
             </div>
-            
-            <button class="w3-button w3-green w3-margin-top"
-              id="saveBetsButton"
-              onclick="saveBets()"
-              style="display:none; margin-left:auto; margin-right:auto;">
-              Lagre endringer <i class="fa fa-paper-plane"></i>
-            </button>  
+
+            {% if is_before_deadline %}
+            <div>
+              <button class="w3-button w3-green w3-margin-top"
+                id="saveBetsButton"
+                onclick="saveBets()"
+                style="display:none; margin-left:auto; margin-right:auto;">
+                Lagre endringer <i class="fa fa-paper-plane"></i>
+              </button>  
+            {% else %}
+              <p class="w3-text-grey">Tipsene er låst!</p>
+            {% endif %}  
+            </div>
         </div>
 
         <!-- Edit Profile Section -->
@@ -221,6 +257,60 @@
 {% block scripts %}
 
 <script>
+
+  var isBeforeDeadline = {{ is_before_deadline|tojson }};
+
+  
+  
+  // Initialize FlipClock countdowns
+  let deadlineClock, serieStartClock;
+  // Parse ISO timestamps from Flask
+  const serieStartTs = new Date("{{ seriestart }}").getTime();
+  const deadlineTs = new Date("{{ deadline }}").getTime();
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    const { flipClock, elapsedTime, theme, css } = FlipClock;
+
+    const now = Date.now();
+    const deadlineRemaining = Math.max(0, Math.floor((deadlineTs - now) / 1000));
+    const serieRemaining = Math.max(0, Math.floor((serieStartTs - now) / 1000));
+    
+    // Initialize Deadline Clock
+    flipClock({
+        parent: document.getElementById('deadlineClock'), 
+        face: elapsedTime({
+            to: new Date(deadlineTs), 
+            format: '[DD]:[hh]:[mm]:[ss]'
+        }),
+        theme: theme({
+            dividers: ':',
+            labels: [['Dager'], ['Timer'], ['Minutter'], ['Sekunder']],
+            css: css({
+                fontSize: '2rem'
+            })
+        }),
+        countdown: true,
+        time: deadlineRemaining
+    });
+
+    // Initialize SerieStart Clock
+    flipClock({
+        parent: document.getElementById('serieStartClock'), 
+        face: elapsedTime({
+            to: new Date(serieStartTs), 
+            format: '[DD]:[hh]:[mm]:[ss]'
+        }),
+        theme: theme({
+            dividers: ':',
+            labels: [['Dager'], ['Timer'], ['Minutter'], ['Sekunder']],
+            css: css({
+                fontSize: '2rem'
+            })
+        }),
+        countdown: true,
+        time: deadlineRemaining
+    });
+  });
 
   // Attempt login with provided password
   function attemptLogin(password) {
@@ -317,7 +407,7 @@
         li.innerHTML = `
           <span class="rank w3-margin-left w3-display-left" style="font-weight:bold">${item.rank}</span>
           <span class="team">${item.team}</span>
-
+          ${isBeforeDeadline ? `
           <div class="w3-display-right">
             <button class="w3-button w3-small w3-round"
                     style="background:#30c49f;color:white"
@@ -327,6 +417,7 @@
                     style="background:#E77671;color:white"
                     onclick="moveDown(this)">↓</button>
           </div>
+          ` : ''}
           `;
         list.appendChild(li);
       });
@@ -354,11 +445,18 @@
     document.querySelectorAll("#rankingList li").forEach((li, i) => {
       li.querySelector(".rank").textContent = i + 1;
     });
-    document.getElementById("saveBetsButton").style.display = "block"; // display Save bets button
+    const saveBtn = document.getElementById("saveBetsButton");
+    if (saveBtn) {
+      saveBtn.style.display = "block"; // display Save bets button
+    }
   }
 
   // Submit updated ranking to backend
   function saveBets() {
+    if (!isBeforeDeadline) {
+      alert("Fristen for å endre tabelltips har gått ut.");
+      return;
+    }
     const order = Array.from(
       document.querySelectorAll("#rankingList li .team")
     ).map(span => span.textContent);
