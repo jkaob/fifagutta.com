@@ -1,10 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 
-<!-- FlipClock.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/flipclock@^1/dist/FlipClock.umd.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flipclock@^1/dist/FlipClock.css">
-
 <style>
 
   /* Create a Parallax Effect */
@@ -259,8 +255,6 @@
 <script>
 
   var isBeforeDeadline = {{ is_before_deadline|tojson }};
-
-  
   
   // Initialize FlipClock countdowns
   let deadlineClock, serieStartClock;

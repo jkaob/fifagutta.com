@@ -16,7 +16,7 @@ from src.ball.ball26 import TippeData26
 from src.reader import CsvKampspill
 from src.db import init_db
 from src.routes import register_blueprints
-from src.app_globals import is_before_deadline, is_preseason, SERIESTART, DEADLINE
+from src.app_globals import is_before_deadline, is_before_seriestart, is_preseason, SERIESTART, DEADLINE
 pymysql.install_as_MySQLdb()
 
 app = Flask(__name__)
@@ -59,7 +59,9 @@ else:
             standings=standings,
             names=names,
             contestants=contestants,
-            contestants_json=contestants_json
+            contestants_json=contestants_json,
+            is_before_seriestart=is_before_seriestart(),
+            seriestart=SERIESTART.isoformat()
         )
 
 
