@@ -1,8 +1,7 @@
-import os
-import json
 from flask import Blueprint, request, session, jsonify
 from sqlalchemy.exc import SQLAlchemyError
 
+from src.app_globals import is_before_deadline
 from src.db import db
 from src.db.models import Player, Tabelltips26
 
@@ -70,6 +69,10 @@ def update_rankings():
     
     if not isinstance(order, list):
         return jsonify({ 'success': False, 'error': 'invalid_payload' }), 400
+    
+    # Check if before deadline
+    if not is_before_deadline():
+        return jsonify({ 'success': False, 'error': 'deadline_passed' }), 403
     
     # Clear old rankings
     Tabelltips26.query.filter_by(player_id=user_id).update(

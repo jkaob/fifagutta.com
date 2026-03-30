@@ -16,7 +16,7 @@ from src.ball.ball26 import TippeData26
 from src.reader import CsvKampspill
 from src.db import init_db
 from src.routes import register_blueprints
-import src.app_globals
+from src.app_globals import is_before_deadline, is_preseason, SERIESTART, DEADLINE
 pymysql.install_as_MySQLdb()
 
 app = Flask(__name__)
@@ -28,18 +28,22 @@ app.secret_key = os.getenv('FIFAGUTTA_SECRET_KEY')
 init_db(app)
 register_blueprints(app)
 
-app.jinja_env.globals["g_PRESEASON"] = src.app_globals.PRESEASON
+app.jinja_env.globals["g_BEFORE_DEADLINE"] = is_before_deadline()
+app.jinja_env.globals["g_PRESEASON"] = is_preseason()
 
 
 # PRESEASON
-if src.app_globals.PRESEASON:
+if is_preseason():
     @app.route('/')
     def index():
         balleball26 = TippeData26()
         balleball26.update_standings_only(fetch=True)
         return render_template(
             'preseason.html',
-            standings=balleball26.standings
+            standings=balleball26.standings,
+            is_before_deadline=is_before_deadline(),
+            seriestart=SERIESTART.isoformat(),
+            deadline=DEADLINE.isoformat()
         )
 else:
     @app.route('/')
