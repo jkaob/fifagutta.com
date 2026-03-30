@@ -5,7 +5,7 @@ from flask import Blueprint, request, session, jsonify, render_template
 from flask import redirect, url_for
 from .db      import *
 from .models import Player, Bet, Match, Tabelltips26
-from .app_globals import DEFAULT_N_DAYS
+from .app_globals import DEFAULT_N_DAYS, is_before_deadline
 
 PASSWORD_ID = json.loads(os.getenv('FIFAGUTTA_PASSWORDS_ID_JSON'))
 
@@ -106,6 +106,10 @@ def update_rankings():
     user_id = session.get('user_id')
     if not user_id:
         return jsonify({ 'success': False, 'error': 'not_logged_in' }), 401
+
+    # Check if before deadline
+    if not is_before_deadline():
+        return jsonify({ 'success': False, 'error': 'deadline_passed' }), 403
 
     data = request.get_json() or {}
     order = data.get('order', [])
