@@ -179,8 +179,12 @@ class TippeData(TippeDataBase):
         
         # Transform entries to {name: {prediction: [], short: "", avatar: ""}}
         transformed_entries = {}
-        for player_id, data in entries.items():
-            name = data.get('name') or player_id  # Use 'name' if present, else key
+        for key, data in entries.items(): 
+            if data.get('name') is None and key.isnumeric():
+                continue  # contestant bet not placed, skip
+
+            # key is either name (old) or player_id 
+            name = data.get('name') or key  # Use 'name' if present, else key
             transformed_entries[name] = {
                 'prediction': data['prediction'],
                 'short': data['short'],
