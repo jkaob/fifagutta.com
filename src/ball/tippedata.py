@@ -1,11 +1,11 @@
 
 import shutil
-from .common import Contestant, Team
-from .scraper import Scraper
-from .reader import CsvReader, CsvKampspill
+from ..common import Contestant, Team
+from ..scraper import Scraper
+from ..reader import CsvReader, CsvKampspill
 
 
-#  can we combine this with derived class  ?
+#  todo -  combine this with derived class
 class TippeDataBase:
 
     def __init__(self, debug=False):
@@ -142,14 +142,13 @@ class TippeData(TippeDataBase):
         self.year = year
         self.reader = CsvReader(f"data/{self.year}.csv", self.teams, self.debug)
         self.scraper = Scraper(year)
-        self.kamspill_reader = None # CsvKampspill(f"data/{self.year}-kampspill.csv")
+        self.kampspill_reader = None # CsvKampspill(f"data/{self.year}-kampspill.csv")
 
-        entries = entries_dict #data.tips24.ENTRIES # importing from data/  # {Name: List[team_name]}
-        self.prepare_contestant_entries(entries)
+        self.prepare_contestant_entries(entries_dict)
         self.set_contestant(self.create_average_contestant())
 
-    def get_kamspill_scores(self):
-        return self.kamspill_reader.get_results() if self.kamspill_reader else []
+    def get_kampspill_scores(self):
+        return self.kampspill_reader.get_results() if self.kampspill_reader else []
 
     def create_average_contestant(self):
         for team in self.teams:
@@ -177,19 +176,34 @@ class TippeData(TippeDataBase):
         if not self.teams:
             print(f"teams not set! cant set data dict")
             return
-        # entries: {Name: { prediction: [], short: "", avatar : ""} }
-        for name, data in entries.items():
+        
+        # Transform entries to {name: {prediction: [], short: "", avatar: ""}}
+        transformed_entries = {}
+        for key, data in entries.items(): 
+            if data.get('name') is None and key.isnumeric():
+                continue  # contestant bet not placed, skip
+
+            # key is either name (old) or player_id 
+            name = data.get('name') or key  # Use 'name' if present, else key
+            transformed_entries[name] = {
+                'prediction': data['prediction'],
+                'short': data['short'],
+                'avatar': data.get('avatar', '')  # Default to empty if not present
+            }
+        
+        # Now process the transformed dict
+        for name, data in transformed_entries.items():
             contestant = Contestant(name, data['short'])
             contestant.set_avatar(data['avatar'])
+            
             prediction = []
-            for team_name in data['prediction']: # add each team in order
+            for team_name in data['prediction']:
                 team = self.get_team(team_name)
                 if not team:
                     print(f"did not find team {team_name}")
                     return
                 prediction.append(team)
             contestant.set_prediction(prediction)
-            # add contestant to list of contestants
             self.set_contestant(contestant)
 
     # update CSV file from current standings for each team not already updated

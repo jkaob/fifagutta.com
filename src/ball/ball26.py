@@ -1,15 +1,15 @@
-import data.tips26
+
 from .tippedata import TippeData
-from .common import Team
+from ..common import Team
 import os
-import csv
 import datetime
 import shutil
 
 class TippeData26(TippeData):
     def __init__(self, debug=False):
         year = 2026
-        entries = data.tips26.ENTRIES
+        import data.tips2026
+        entries = data.tips2026.ENTRIES
         teams = [
             Team('Bryne', 'BRY'),
             Team('Egersund', 'EIK'),

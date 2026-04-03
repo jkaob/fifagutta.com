@@ -37,6 +37,7 @@
   {% block head %}{% endblock %}
 </head>
 
+
 <body>
 
   <!--  Navbar  -->
@@ -48,10 +49,10 @@
         <a href="/#entries" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-table"></i> Guttas Tips</a>
         <a href="/#results" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-line-chart"></i> Resultater</a>
       {% endif %}
-      <a href="/2024" class="w3-bar-item w3-button"><i class="fa fa-trophy"></i> 2024</a>
-      <a href="/2025" class="w3-bar-item w3-button"><i class="fa fa-trophy"></i> 2025</a>
+      <a href="/2024" class="w3-bar-item w3-button"><i class="fa fa-trophy"></i> 24</a>
+      <a href="/2025" class="w3-bar-item w3-button"><i class="fa fa-trophy"></i> 25</a>
       {% if not g_PRESEASON %}
-      <a href="/matches" class="w3-bar-item w3-button" style="background-color: #30c49f;">
+      <a href="/bets/home" class="w3-bar-item w3-button" style="background-color: #30c49f;">
         <i class="fa fa-futbol-o"></i> <b>Kampspill</b>
       </a>
       {% endif %}
@@ -72,7 +73,7 @@
 
     
     {% if session.get("user_id") %}
-    <form method="post" action="/logout" style="display:inline;">
+    <form method="post" action="/auth/logout" style="display:inline;">
       <button type="submit" class="w3-button w3-red w3-margin-top">
         Logg ut
       </button>
@@ -82,6 +83,11 @@
   </footer>
 
   <!-- Common JS functions -->
+   
+  <!-- FlipClock.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/flipclock@^1/dist/FlipClock.umd.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flipclock@^1/dist/FlipClock.css">
+
   {% block scripts %}
   {% endblock %} 
 </body>

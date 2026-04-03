@@ -44,7 +44,7 @@
 <div class="w3-content w3-container w3-padding-32 {% if not session.user_id %}locked{% endif %}" id="bets">
   
   <div style="text-align: right;">
-    <form method="GET" action="{{ url_for('matches.display_matches_html') }}" style="display: inline-block;">
+    <form method="GET" action="{{ url_for('bets.display_matches_html') }}" style="display: inline-block;">
       <label for="n_future_days">Vis neste: </label>
       <select name="n_future_days" onchange="this.form.submit()" class="w3-select w3-border w3-round w3-small" 
               style="background-color: #bef0ff; width: auto; display: inline-block;">
@@ -240,8 +240,8 @@ function prepareAllBets() {
         <td style="font-weight: bold; color: grey">{{ loop.index }}</td>
         <td style="font-weight: bold">{{ player.username }}</td>
         <td>{{ player.score }}</td>
-        <td>{{ player.n_correct }}</td>
-        <td>{{ player.n_exact }}</td>
+        <td>{{ player.num_hub }}</td>
+        <td>{{ player.num_corrects }}</td>
       </tr>
       {% endfor %}
     </table>
@@ -285,85 +285,21 @@ function prepareAllBets() {
   }
 </style>
 
+<!--  Past matches with bets placed -->
 <div class="w3-content w3-container w3-padding-32" id="past_matches">
 
-  <div style="text-align: right;">
-    <form method="POST" action="{{ url_for('matches.update_database', n_future_days=n_future_days) }}" style="display: inline-block;">
-      <button type="submit" class="w3-button w3-border w3-small w3-round" style="background-color: #bef0ff">
-        <i class="fa fa-refresh" aria-hidden="true"></i> Oppdater
-      </button>
-    </form>
+  <div style="text-align: center;">
+    <button class="w3-button w3-border  w3-round" 
+            onclick="loadPastMatches()"
+            id="past_matches_btn"
+            style="background-color: #bef0ff">
+      <i class="fa fa-history" aria-hidden="true"></i> Vis tidligere kamper
+    </button>
   </div>
 
-  <div class="w3-xlarge w3-center w3-light-blue w3-padding-10">Tidligere kamper</div>
-  {% for round_number, matches in past_matches.items() %}
-    <div class="w3-card">
-      <button class="w3-button w3-block w3-left-align w3-light-grey"
-              onclick="toggle_visibility_past_round('round_{{ round_number }}')">
-        Runde {{ round_number }}
-      </button>
-    </div>
-    <div id="round_{{ round_number }}" class="w3-hide w3-container w3-padding">
-      {% for match in matches %}
-  
-        <div class="w3-card w3-padding w3-margin-bottom w3-light-grey w3-center"> 
-
-          <div class="w3-large match-row">
-            <span class="match-info">
-              <b>{{ match.home_team }}</b> vs <b>{{ match.away_team }}</b>
-            </span>
-            <span class="w3-small w3-hide-small"> 
-              {{ match.play_date.strftime('%d.%m.%Y') }} &nbsp;&nbsp; {{ match.play_date.strftime('%H:%M') }} 
-            </span>
-            <span class="match-right">
-              <span class="w3-tag w3-black w3-margin-left w3-medium">
-                {{ match.home_goals }} - {{ match.away_goals }}
-              </span>
-              {% set result_letter = 
-                'H' if match.home_goals > match.away_goals 
-                else 'B' if match.home_goals < match.away_goals 
-                else 'U' 
-              %}        
-              <span class="w3-tag w3-margin-left w3-medium
-                {% if result_letter == 'H' %} w3-blue
-                {% elif result_letter == 'B' %} w3-black
-                {% else %} w3-grey {% endif %}">
-                {{ result_letter }}
-              </span>
-            </span>
-          </div>
-
-          <div id="player-bets" style="margin-top:10px;">
-            {% for bet in bets_by_match.get(match.id, []) %}
-              {% set is_exact = bet.goals_home == match.home_goals and bet.goals_away == match.away_goals %}
-              {% set is_correct = bet.goals_home > bet.goals_away and match.home_goals > match.away_goals or
-                                  bet.goals_home < bet.goals_away and match.home_goals < match.away_goals or
-                                  bet.goals_home == bet.goals_away and match.home_goals == match.away_goals %}
-              <span 
-                class="w3-tag w3-medium w3-round" 
-                style="
-                  cursor:pointer;
-                  margin-left:2px;
-                  margin-right:2px;
-                  background-color:
-                    {% if is_exact %}#009b1a
-                    {% elif is_correct %}#70b890
-                    {% else %}#afafaf
-                    {% endif %};"
-                onclick="
-                  if (this.textContent === '{{ bet.username_short }}') {
-                    this.textContent = '{{ bet.goals_home }} - {{ bet.goals_away }}';
-                  } else {
-                    this.textContent = '{{ bet.username_short }}';
-                  }">
-                {{ bet.username_short }}
-              </span>
-            {% endfor %}
-          </div>
-        </div>
-      {% endfor %}
-    </div>
-  {% endfor %}
+  <div id="past_matches_container" style="display: none;">
+    <!-- Past matches will be injected here -->
+  </div>
 
 </div>
 
@@ -379,7 +315,7 @@ function prepareAllBets() {
 <script>
 
   function attemptLogin(password) {
-    fetch('/login', {
+    fetch('/auth/login', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ password: password })
@@ -415,7 +351,7 @@ function prepareAllBets() {
 <!--  Place bet on a single match -->
 <script>
   async function placeBet(matchId, homeGoals, awayGoals) {
-    const resp = await fetch("/place_bet", {
+    const resp = await fetch("/bets/place_bet", {
       method: "POST",
       headers: { "Content-Type":"application/json" },
       body: JSON.stringify({
@@ -431,6 +367,37 @@ function prepareAllBets() {
       window.location.reload();
     }
     // maybe highlight the “Plasser spill” button as disabled now…
+  }
+</script>
+
+
+<!--  Load all past matches -->
+<script>
+  let pastMatchesLoaded = false;
+
+  function loadPastMatches() {
+    if (pastMatchesLoaded) {
+      // Toggle visibility
+      const container = document.getElementById('past_matches_container');
+      if (container.style.display === 'none') {
+        container.style.display = 'block';
+      } else {
+        container.style.display = 'none';
+      }
+      return;
+    }
+
+    // First time: fetch from server
+    fetch('/bets/display_past')
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById('past_matches_container').innerHTML = html;
+        document.getElementById('past_matches_container').style.display = 'block';
+        document.getElementById('past_matches_btn').innerHTML = 
+          '<i class="fa fa-history" aria-hidden="true"></i> Skjul tidligere kamper';
+        pastMatchesLoaded = true;
+      })
+      .catch(error => alert('Error loading past matches: ' + error));
   }
 </script>
 

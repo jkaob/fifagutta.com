@@ -1,10 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 
-<!-- FlipClock.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/flipclock@^1/dist/FlipClock.umd.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flipclock@^1/dist/FlipClock.css">
-
 <style>
 
   /* Create a Parallax Effect */
@@ -158,12 +154,19 @@
         <p><b>Forkortelse:</b> {{ user.username_short }}</p>
         <p><b>Epost:</b> {{ user.email or '-' }}</p>
 
+        
+        {% if is_before_deadline %}
         <button class="w3-button w3-blue w3-margin-top" id="editProfileButton" onclick="toggleEditProfile()">
           Endre detaljer
         </button>
+        {% endif %}
 
         <button class="w3-button w3-green w3-margin-top" id="toggleRankingButton" onclick="toggleRanking()">
+          {% if is_before_deadline %}
           Se / endre ditt tabelltips
+          {% else %}
+          Se ditt tabelltips
+          {% endif %}
         </button>
 
         <!-- Team Ranking Section -->
@@ -176,8 +179,8 @@
               <em>Husk å vippse 50,- til fomoFAPPIS!<br>Tipsene låses <b>torsdag 2. april </b> </em>
             </div>
 
-            {% if is_before_deadline %}
             <div>
+            {% if is_before_deadline %}
               <button class="w3-button w3-green w3-margin-top"
                 id="saveBetsButton"
                 onclick="saveBets()"
@@ -259,8 +262,6 @@
 <script>
 
   var isBeforeDeadline = {{ is_before_deadline|tojson }};
-
-  
   
   // Initialize FlipClock countdowns
   let deadlineClock, serieStartClock;
@@ -314,7 +315,7 @@
 
   // Attempt login with provided password
   function attemptLogin(password) {
-    fetch('/login', {
+    fetch('/auth/login', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ password: password })
@@ -340,7 +341,7 @@
         return;
     }
 
-    fetch('/update_user_details', {
+    fetch('/register/update_user_details', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -360,21 +361,31 @@
   
   // Show/hide edit profile section
   function toggleEditProfile() {
-    document.getElementById("rankingContainer").style.display = "none"; // Hide ranking container
-    document.getElementById("saveBetsButton").style.display = "none"; // hide Save bets button
+    const rankingContainer = document.getElementById("rankingContainer");
+    if (rankingContainer) rankingContainer.style.display = "none"; // Hide ranking container
+
+    const saveBetsBtn = document.getElementById("saveBetsButton");
+    if (saveBetsBtn) saveBetsBtn.style.display = "none"; // hide Save bets button
+
     const editBtn = document.getElementById("editProfileButton"); // disable edit profile button
     const rankingBtn = document.getElementById("toggleRankingButton"); // enable ranking button
     setButtonState(editBtn, false);
     setButtonState(rankingBtn, true, "w3-green");
+
     const editProfileDiv = document.getElementById('editProfile');
-    editProfileDiv.style.display = editProfileDiv.style.display === "none" ? "block" : "none";
+    if (editProfileDiv) {
+      editProfileDiv.style.display = editProfileDiv.style.display === "none" ? "block" : "none";
+    }
   }
 
   // Show ranking container and hide profile info
   function toggleRanking() {
-    document.getElementById("editProfile").style.display = "none";
+    const editProfileDiv = document.getElementById("editProfile");
+    if (editProfileDiv) editProfileDiv.style.display = "none";
+
     const container = document.getElementById("rankingContainer"); // show ranking container
-    container.style.display = "block";
+    if (container) container.style.display = "block";
+
     const editBtn = document.getElementById("editProfileButton"); // enable edit profile button
     const rankingBtn = document.getElementById("toggleRankingButton"); // disable ranking button
     setButtonState(editBtn, true, "w3-blue");
@@ -384,18 +395,22 @@
 
   // Helper to enable / disable buttons
   function setButtonState(btn, enabled, activeClass) {
+    if (!btn) {
+      return;
+    }
+
     btn.disabled = !enabled;
     btn.classList.remove("w3-blue", "w3-green", "w3-grey");
 
-    if (enabled) {
+    if (enabled && activeClass) {
       btn.classList.add(activeClass);
-    } else {
+    } else if (!enabled) {
       btn.classList.add("w3-grey");
     }
   }
 
   function getRanking() {
-    fetch("/get_tabelltips")
+    fetch("/register/get_tabelltips")
     .then(r => r.json())
     .then(data => {
       console.log("Fetched data:", data); // log the parsed JSON
@@ -461,7 +476,7 @@
       document.querySelectorAll("#rankingList li .team")
     ).map(span => span.textContent);
 
-    fetch("/update_rankings", {
+    fetch("/register/update_rankings", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ order })

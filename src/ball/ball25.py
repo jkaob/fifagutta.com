@@ -1,10 +1,9 @@
 import data.tips25
 import os
-import csv
 import datetime
 import shutil
 from .tippedata import TippeData
-from .common import Team
+from ..common import Team
 
 class TippeData25(TippeData):
     def __init__(self, debug=False):

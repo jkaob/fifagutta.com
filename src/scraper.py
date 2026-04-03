@@ -119,7 +119,8 @@ class ScheduleScraper():
         if verbose:
             for match in next_matches:
                 print(f"{match['home_team']} vs {match['away_team']} on {match['date_time']} (Round: {match['round_number']})")
-
+            if not next_matches:
+                print("No matches found in the specified range.")
 
         return next_matches
                 

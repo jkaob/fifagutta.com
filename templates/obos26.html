@@ -25,7 +25,7 @@
 
   /* Third image (Contact) */
   .bgimg-3 {
-    background-image: url("/static/jorgen.jpg");
+    background-image: url("/static/thu.jpg");
     min-height: 400px;
   }
 
@@ -88,19 +88,30 @@
 
 <!-- Container (About Section) -->
 <div class="w3-content w3-container w3-padding-32" id="about" style="max-width: 600px; margin: auto;">
-  <!-- <div class="w3-center w3-xxlarge">Fifagutta tipper tabellen</div> -->
   <p class="w3-justify w3-text-grey w3-large" style="text-align: center;"><em>
-    Vi er her igjen!
+    Hvem skulle trodd? Vi er i OBOS for tredje sesong på rad! 
     <br>
-    Tiden er moden for å vise deres ekspertise. Hva kan Kokos-ligaen finne på i år som vi ikke allerede har sett?
-    Alle gode ting er to! Stabæk skal opp igjen, men hva med de andre lagene?
+    Tiden er moden for å vise deres ekspertise. Hvem rykker opp? Hvem rykker ned?
     <br><br>
-    MrMaggyzinho vant fjorårets konkurranse, men nytt Blaatt år, nye muligheter!
-    Hvem tar seieren i år?
+    ZaHaavi tok seieren i 2025 med tidenes beste tabelltips, men nytt Blaatt år, nye muligheter!
+    Hvem tror DU kommer seg opp av gjørma i år?
   </em></p>
   <p class="w3-justify w3-text-grey w3-large" style="text-align: center;">
     <b>Regler:</b> Man får ett poeng for hver plass et lag er feil plassert, for hvert lag. Den med minst poeng vinner.
   </p>
+
+  
+  {% if is_before_seriestart %}
+  <!-- Countdown timers with FlipClock -->
+  <div class="w3-margin-top w3-padding w3-round" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px;">
+    <p style="margin: 12px 0; font-size: 16px; color: white; text-align: center;">
+      <b>🏁 Seriestart om:</b>
+    </p>
+    <div id="serieStartClockContainer" style="display: flex; justify-content: center;">
+      <div class="flip-clock-wrapper" id="serieStartClock"></div>
+    </div>
+  </div>
+  {% endif %}
 </div>
 
 <!-- Second Parallax Image with Logo Text -->
@@ -381,26 +392,56 @@
 {% endblock %}
 
 {% block scripts %}
-
 <script>
-// Modal Image Gallery
-function onClick(element) {
-  document.getElementById("img01").src = element.src;
-  document.getElementById("modal01").style.display = "block";
-  var captionText = document.getElementById("caption");
-  captionText.innerHTML = element.alt;
-}
 
-// Change style of navbar on scroll
-window.onscroll = function() {onScrollNavbar()};
-function onScrollNavbar() {
-    var navbarfull = document.getElementById("navBarFull");
-    if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
-        navbarfull.className = "w3-bar" + " w3-card" + " w3-animate-top" + " w3-navy";
-    } else {
-        navbarfull.className = navbarfull.className.replace(" w3-card w3-animate-top w3-navy", "");
-    }
-}
+  var isBeforeSeriestart = {{ is_before_seriestart|tojson }};
+  
+  // Parse ISO timestamps from Flask
+  let serieStartClock;
+  const serieStartTs = new Date("{{ seriestart }}").getTime();
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    const { flipClock, elapsedTime, theme, css } = FlipClock;
+    const now = Date.now();
+    const serieRemaining = Math.max(0, Math.floor((serieStartTs - now) / 1000));
+
+    // Initialize SerieStart Clock
+    flipClock({
+        parent: document.getElementById('serieStartClock'), 
+        face: elapsedTime({
+            to: new Date(serieStartTs), 
+            format: '[DD]:[hh]:[mm]:[ss]'
+        }),
+        theme: theme({
+            dividers: ':',
+            labels: [['Dager'], ['Timer'], ['Minutter'], ['Sekunder']],
+            css: css({
+                fontSize: '2rem'
+            })
+        }),
+        countdown: true,
+        time: serieRemaining
+    });
+  });
+
+  // Modal Image Gallery
+  function onClick(element) {
+    document.getElementById("img01").src = element.src;
+    document.getElementById("modal01").style.display = "block";
+    var captionText = document.getElementById("caption");
+    captionText.innerHTML = element.alt;
+  }
+
+  // Change style of navbar on scroll
+  window.onscroll = function() {onScrollNavbar()};
+  function onScrollNavbar() {
+      var navbarfull = document.getElementById("navBarFull");
+      if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+          navbarfull.className = "w3-bar" + " w3-card" + " w3-animate-top" + " w3-navy";
+      } else {
+          navbarfull.className = navbarfull.className.replace(" w3-card w3-animate-top w3-navy", "");
+      }
+  }
 
 
 </script>
