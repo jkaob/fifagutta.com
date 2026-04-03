@@ -361,21 +361,31 @@
   
   // Show/hide edit profile section
   function toggleEditProfile() {
-    document.getElementById("rankingContainer").style.display = "none"; // Hide ranking container
-    document.getElementById("saveBetsButton").style.display = "none"; // hide Save bets button
+    const rankingContainer = document.getElementById("rankingContainer");
+    if (rankingContainer) rankingContainer.style.display = "none"; // Hide ranking container
+
+    const saveBetsBtn = document.getElementById("saveBetsButton");
+    if (saveBetsBtn) saveBetsBtn.style.display = "none"; // hide Save bets button
+
     const editBtn = document.getElementById("editProfileButton"); // disable edit profile button
     const rankingBtn = document.getElementById("toggleRankingButton"); // enable ranking button
     setButtonState(editBtn, false);
     setButtonState(rankingBtn, true, "w3-green");
+
     const editProfileDiv = document.getElementById('editProfile');
-    editProfileDiv.style.display = editProfileDiv.style.display === "none" ? "block" : "none";
+    if (editProfileDiv) {
+      editProfileDiv.style.display = editProfileDiv.style.display === "none" ? "block" : "none";
+    }
   }
 
   // Show ranking container and hide profile info
   function toggleRanking() {
-    document.getElementById("editProfile").style.display = "none";
+    const editProfileDiv = document.getElementById("editProfile");
+    if (editProfileDiv) editProfileDiv.style.display = "none";
+
     const container = document.getElementById("rankingContainer"); // show ranking container
-    container.style.display = "block";
+    if (container) container.style.display = "block";
+
     const editBtn = document.getElementById("editProfileButton"); // enable edit profile button
     const rankingBtn = document.getElementById("toggleRankingButton"); // disable ranking button
     setButtonState(editBtn, true, "w3-blue");
@@ -385,12 +395,16 @@
 
   // Helper to enable / disable buttons
   function setButtonState(btn, enabled, activeClass) {
+    if (!btn) {
+      return;
+    }
+
     btn.disabled = !enabled;
     btn.classList.remove("w3-blue", "w3-green", "w3-grey");
 
-    if (enabled) {
+    if (enabled && activeClass) {
       btn.classList.add(activeClass);
-    } else {
+    } else if (!enabled) {
       btn.classList.add("w3-grey");
     }
   }
