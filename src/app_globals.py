@@ -21,6 +21,8 @@ def is_before_seriestart():
     return current_time < SERIESTART
 
 def is_preseason():
-    current_time = datetime.datetime.now(TZ)
-    return current_time < PRESEASON_END
+    return True
+    # current_time = datetime.datetime.now(TZ)
+    # return current_time < PRESEASON_END
+
 
