@@ -154,12 +154,19 @@
         <p><b>Forkortelse:</b> {{ user.username_short }}</p>
         <p><b>Epost:</b> {{ user.email or '-' }}</p>
 
+        
+        {% if is_before_deadline %}
         <button class="w3-button w3-blue w3-margin-top" id="editProfileButton" onclick="toggleEditProfile()">
           Endre detaljer
         </button>
+        {% endif %}
 
         <button class="w3-button w3-green w3-margin-top" id="toggleRankingButton" onclick="toggleRanking()">
+          {% if is_before_deadline %}
           Se / endre ditt tabelltips
+          {% else %}
+          Se ditt tabelltips
+          {% endif %}
         </button>
 
         <!-- Team Ranking Section -->
@@ -172,8 +179,8 @@
               <em>Husk å vippse 50,- til fomoFAPPIS!<br>Tipsene låses <b>torsdag 2. april </b> </em>
             </div>
 
-            {% if is_before_deadline %}
             <div>
+            {% if is_before_deadline %}
               <button class="w3-button w3-green w3-margin-top"
                 id="saveBetsButton"
                 onclick="saveBets()"
@@ -308,7 +315,7 @@
 
   // Attempt login with provided password
   function attemptLogin(password) {
-    fetch('/login', {
+    fetch('/auth/login', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ password: password })
@@ -334,7 +341,7 @@
         return;
     }
 
-    fetch('/update_user_details', {
+    fetch('/register/update_user_details', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -389,7 +396,7 @@
   }
 
   function getRanking() {
-    fetch("/get_tabelltips")
+    fetch("/register/get_tabelltips")
     .then(r => r.json())
     .then(data => {
       console.log("Fetched data:", data); // log the parsed JSON
@@ -455,7 +462,7 @@
       document.querySelectorAll("#rankingList li .team")
     ).map(span => span.textContent);
 
-    fetch("/update_rankings", {
+    fetch("/register/update_rankings", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ order })

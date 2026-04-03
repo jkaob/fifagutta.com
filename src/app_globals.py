@@ -10,7 +10,7 @@ YEAR = 2026
 TZ = ZoneInfo("Europe/Oslo")
 DEADLINE = datetime.datetime(YEAR, 4, 2, 23, 59, tzinfo=TZ)
 SERIESTART = datetime.datetime(YEAR, 4, 5, 16, 00, tzinfo=TZ)
-PRESEASON_END = datetime.datetime(YEAR, 4, 4, 5, 0, tzinfo=TZ)
+PRESEASON_END = datetime.datetime(YEAR, 4, 3, 16, 20, tzinfo=TZ)
 
 def is_before_deadline():
     current_time = datetime.datetime.now(TZ)
