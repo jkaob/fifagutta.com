@@ -4,7 +4,6 @@ import json
 import argparse
 from src.ball.ball26 import TippeData26
 from src.utils import generate_files_from_tips_json
-from app import app
 
 
 YEAR = 2026
@@ -36,6 +35,7 @@ def main():
     elif args.command == 'kampspill':
         print("updating match schedule")
         from src.db.db_functions import add_matches_to_db, update_player_scores
+        from app import app
         
         n_days = args.n_days
         print(f"Adding games for the next {n_days} days")
