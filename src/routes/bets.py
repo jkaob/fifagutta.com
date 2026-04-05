@@ -70,11 +70,11 @@ def display_past_matches():
     match_ids = [m.id for m in past_matches]
     all_bets_raw = Bet.query.filter(Bet.match_id.in_(match_ids)).all()
     
-    player = Player.query.get(bet.player_id)
 
     # Format bets for template
     bets_by_match = {}
     for bet in all_bets_raw:
+        player = Player.query.get(bet.player_id)
         if bet.match_id not in bets_by_match:
             bets_by_match[bet.match_id] = []
         bets_by_match[bet.match_id].append({
