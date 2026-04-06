@@ -4,7 +4,6 @@ from flask import Blueprint, json, request, session, jsonify, redirect, url_for
 
 from ..db.models import Player
 
-PASSWORD_ID = json.loads(os.getenv('FIFAGUTTA_PASSWORDS_ID_JSON'))
 
 
 # Login / Register name / register bets
@@ -14,6 +13,7 @@ def login():
     print("attempting login")
     data = request.get_json() or {}
     pw = data.get('password', '')
+    PASSWORD_ID = json.loads(os.getenv('FIFAGUTTA_PASSWORDS_ID_JSON'))
     user_id = PASSWORD_ID.get(pw)
     if not user_id:
         print("invalid password:", pw)
