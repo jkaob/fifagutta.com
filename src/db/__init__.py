@@ -11,10 +11,16 @@ DB_URI = os.getenv('FIFAGUTTA_DATABASE_URL')
 
 def init_db(app):
     # Binds SQLAlchemy and Flask-Migrate to the Flask app.
-    app.config.setdefault('SQLALCHEMY_DATABASE_URI', DB_URI)
+    app.config.setdefault('SQLALCHEMY_DATABASE_URI', DB_URI or 'sqlite://')
     app.config.setdefault('SQLALCHEMY_TRACK_MODIFICATIONS', False)
     db.init_app(app)
-    with app.app_context():
-        db.create_all()   # ← creates all tables defined by your models
+    if DB_URI:
+        try:
+            with app.app_context():
+                db.create_all()
+        except Exception as e:
+            print(f"[WARNING] Could not connect to database: {e}")
+    else:
+        print("[WARNING] FIFAGUTTA_DATABASE_URL not set, database features disabled")
     migrate.init_app(app, db)
 

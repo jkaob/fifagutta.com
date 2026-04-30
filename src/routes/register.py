@@ -7,6 +7,11 @@ from src.db.models import Player, Tabelltips26
 
 # Register player and bets
 register_bp = Blueprint('register', __name__)
+
+@register_bp.errorhandler(Exception)
+def handle_register_error(e):
+    return jsonify({'success': False, 'error': 'service_unavailable'}), 503
+
 @register_bp.route('/update_user_details', methods=['POST'])
 def update_user_details():
     user_id = session.get('user_id')

@@ -8,6 +8,11 @@ from ..db.models import Player
 
 # Login / Register name / register bets
 auth_bp = Blueprint('auth', __name__)
+
+@auth_bp.errorhandler(Exception)
+def handle_auth_error(e):
+    return jsonify({'success': False, 'error': 'service_unavailable'}), 503
+
 @auth_bp.route('/login', methods=['POST'])
 def login():
     print("attempting login")
