@@ -20,6 +20,11 @@ from ..app_globals import DEFAULT_N_DAYS
 
 bets_bp = Blueprint('bets', __name__)
 
+@bets_bp.errorhandler(Exception)
+def handle_bets_error(e):
+    return render_template('base.html') if False else \
+        ("<h2>Kampspill er midlertidig utilgjengelig 😢</h2><p>Databasen er nede for øyeblikket. Prøv igjen senere!</p><a href='/'>Tilbake til forsiden</a>", 503)
+
 @bets_bp.route('/home')
 def display_matches_html():
     user_id = session.get('user_id') # try to get user_id from session

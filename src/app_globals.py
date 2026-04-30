@@ -3,7 +3,7 @@ import json
 import datetime
 from zoneinfo import ZoneInfo
 
-PASSWORD_ID = json.loads(os.getenv('FIFAGUTTA_PASSWORDS_ID_JSON'))
+PASSWORD_ID = json.loads(os.getenv('FIFAGUTTA_PASSWORDS_ID_JSON', '{}'))
 DEFAULT_N_DAYS = 7
 YEAR = 2026
 
