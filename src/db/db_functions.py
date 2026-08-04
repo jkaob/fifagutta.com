@@ -135,16 +135,17 @@ def update_player_scores():
             ps = player_scores[player_id]
             ps['num_bets'] += 1
             
-            # Check exact score
+            # Exact score counts as fulltreffer only
             if bet.goals_home == match.home_goals and bet.goals_away == match.away_goals:
                 ps['num_corrects'] += 1
                 ps['num_points'] += 2
-            # Check correct outcome
+            # Correct outcome only
             elif ((bet.goals_home > bet.goals_away and match.home_goals > match.away_goals) or
                   (bet.goals_home < bet.goals_away and match.home_goals < match.away_goals) or
                   (bet.goals_home == bet.goals_away and match.home_goals == match.away_goals)):
                 ps['num_hub'] += 1
                 ps['num_points'] += 1
+            # TODO 2027: keep DB storage as outcome-only H-U-B count, and render exact-score bonus separately in the UI.
     
     # Now update the Kampspill26 table
     for player_id, scores in player_scores.items():

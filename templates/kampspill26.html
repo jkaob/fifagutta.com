@@ -240,7 +240,7 @@ function prepareAllBets() {
         <td style="font-weight: bold; color: grey">{{ loop.index }}</td>
         <td style="font-weight: bold">{{ player.username }}</td>
         <td>{{ player.num_points }}</td>
-        <td>{{ player.num_hub }}</td>
+        <td>{{ player.num_hub + player.num_corrects }}</td>
         <td>{{ player.num_corrects }}</td>
       </tr>
       {% endfor %}
