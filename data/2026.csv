@@ -25,7 +25,7 @@ Bryne,23,35,1,6
 Bryne,24,38,2,6
 Bryne,25,38,1,6
 Bryne,26,39,1,6
-Bryne,27,39,-1,-
+Bryne,27,39,-1,6
 Bryne,28,-,-,-
 Bryne,29,-,-,-
 Bryne,30,-,-,-
@@ -55,7 +55,7 @@ Egersund,23,29,-8,8
 Egersund,24,29,-13,9
 Egersund,25,32,-11,8
 Egersund,26,33,-11,8
-Egersund,27,34,-11,-
+Egersund,27,34,-11,9
 Egersund,28,-,-,-
 Egersund,29,-,-,-
 Egersund,30,-,-,-
@@ -85,7 +85,7 @@ Haugesund,23,52,33,1
 Haugesund,24,55,35,1
 Haugesund,25,56,35,2
 Haugesund,26,59,38,1
-Haugesund,27,59,33,-
+Haugesund,27,59,33,3
 Haugesund,28,-,-,-
 Haugesund,29,-,-,-
 Haugesund,30,-,-,-
@@ -115,7 +115,7 @@ Hødd,23,34,-7,7
 Hødd,24,34,-8,7
 Hødd,25,34,-10,7
 Hødd,26,35,-10,7
-Hødd,27,38,-6,-
+Hødd,27,38,-6,7
 Hødd,28,-,-,-
 Hødd,29,-,-,-
 Hødd,30,-,-,-
@@ -145,7 +145,7 @@ Kongsvinger,23,50,33,2
 Kongsvinger,24,53,35,2
 Kongsvinger,25,56,39,1
 Kongsvinger,26,56,35,3
-Kongsvinger,27,59,39,-
+Kongsvinger,27,59,39,2
 Kongsvinger,28,-,-,-
 Kongsvinger,29,-,-,-
 Kongsvinger,30,-,-,-
@@ -175,7 +175,7 @@ Lyn,23,28,-9,10
 Lyn,24,28,-10,10
 Lyn,25,28,-14,10
 Lyn,26,28,-17,12
-Lyn,27,31,-16,-
+Lyn,27,31,-16,11
 Lyn,28,-,-,-
 Lyn,29,-,-,-
 Lyn,30,-,-,-
@@ -205,7 +205,7 @@ Moss,23,25,-14,11
 Moss,24,25,-16,13
 Moss,25,28,-15,11
 Moss,26,29,-15,11
-Moss,27,29,-16,-
+Moss,27,29,-16,12
 Moss,28,-,-,-
 Moss,29,-,-,-
 Moss,30,-,-,-
@@ -235,7 +235,7 @@ Odd,23,36,11,5
 Odd,24,39,12,5
 Odd,25,42,13,5
 Odd,26,45,14,5
-Odd,27,45,13,-
+Odd,27,45,13,5
 Odd,28,-,-,-
 Odd,29,-,-,-
 Odd,30,-,-,-
@@ -265,7 +265,7 @@ Ranheim,23,28,-2,9
 Ranheim,24,31,3,8
 Ranheim,25,31,-1,9
 Ranheim,26,32,-1,9
-Ranheim,27,35,1,-
+Ranheim,27,35,1,8
 Ranheim,28,-,-,-
 Ranheim,29,-,-,-
 Ranheim,30,-,-,-
@@ -295,7 +295,7 @@ Raufoss,23,19,-35,16
 Raufoss,24,19,-36,16
 Raufoss,25,20,-36,16
 Raufoss,26,20,-40,16
-Raufoss,27,-,-,-
+Raufoss,27,20,-41,16
 Raufoss,28,-,-,-
 Raufoss,29,-,-,-
 Raufoss,30,-,-,-
@@ -325,7 +325,7 @@ Sandnes,23,24,-10,13
 Sandnes,24,25,-10,12
 Sandnes,25,26,-10,13
 Sandnes,26,26,-13,13
-Sandnes,27,26,-17,-
+Sandnes,27,26,-17,14
 Sandnes,28,-,-,-
 Sandnes,29,-,-,-
 Sandnes,30,-,-,-
@@ -355,7 +355,7 @@ Sogndal,23,23,-15,14
 Sogndal,24,23,-16,14
 Sogndal,25,23,-17,14
 Sogndal,26,24,-17,14
-Sogndal,27,-,-,-
+Sogndal,27,27,-16,13
 Sogndal,28,-,-,-
 Sogndal,29,-,-,-
 Sogndal,30,-,-,-
@@ -385,7 +385,7 @@ Stabæk,23,45,28,4
 Stabæk,24,45,26,4
 Stabæk,25,46,26,4
 Stabæk,26,49,29,4
-Stabæk,27,52,30,-
+Stabæk,27,52,30,4
 Stabæk,28,-,-,-
 Stabæk,29,-,-,-
 Stabæk,30,-,-,-
@@ -415,7 +415,7 @@ Strømmen,23,25,-17,12
 Strømmen,24,26,-17,11
 Strømmen,25,27,-17,12
 Strømmen,26,30,-12,10
-Strømmen,27,33,-11,-
+Strømmen,27,33,-11,10
 Strømmen,28,-,-,-
 Strømmen,29,-,-,-
 Strømmen,30,-,-,-
@@ -445,7 +445,7 @@ Strømsgodset,23,48,29,3
 Strømsgodset,24,51,30,3
 Strømsgodset,25,54,34,3
 Strømsgodset,26,57,38,2
-Strømsgodset,27,60,43,-
+Strømsgodset,27,60,43,1
 Strømsgodset,28,-,-,-
 Strømsgodset,29,-,-,-
 Strømsgodset,30,-,-,-
@@ -475,7 +475,7 @@ Strømsgodset,30,-,-,-
 Åsane,24,19,-19,15
 Åsane,25,22,-18,15
 Åsane,26,22,-23,15
-Åsane,27,22,-24,-
+Åsane,27,22,-24,15
 Åsane,28,-,-,-
 Åsane,29,-,-,-
 Åsane,30,-,-,-
